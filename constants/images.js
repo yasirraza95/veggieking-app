@@ -17,6 +17,7 @@ const paypal = require("../assets/images/paypal.png");
 const creditCard = require("../assets/images/credit-card.png");
 const success1 = require("../assets/images/success1.png");
 const success2 = require("../assets/images/success2.png");
+const success3 = require("../assets/images/success3.gif");
 
 const avatar = require("../assets/images/avatar.jpg");
 const avatar2 = require("../assets/images/avatar2.jpg");
@@ -77,6 +78,7 @@ export default {
     creditCard,
     success1,
     success2,
+    success3,
     avatar,
     avatar2,
     avatar3,
