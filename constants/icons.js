@@ -20,10 +20,12 @@ const more = require("../assets/icons/more.png");
 const close  = require("../assets/icons/close.png");
 const mapMarkerIcon = require("../assets/icons/map_marker.png");
 const checked = require("../assets/icons/checked.png");
+const google = require("../assets/icons/google.png");
 
 export default {
     facebook,
     twitter,
+    google,
     apple,
     location,
     menu,

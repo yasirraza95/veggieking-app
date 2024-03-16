@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
 import { COLORS } from '../constants'
 import * as Animatable from "react-native-animatable"
@@ -9,6 +9,8 @@ import { reducer } from '../utils/reducers/formReducers'
 import { commonStyles } from '../styles/CommonStyles'
 import { StatusBar } from 'expo-status-bar'
 import { MaterialIcons } from "@expo/vector-icons"
+import { forgotSchema } from '../schema'
+import { Formik } from 'formik'
 
 const isTestMode = true
 
@@ -42,6 +44,17 @@ const ForgotPassword = ({ navigation }) => {
     }, [error])
 
 
+    const handleForgot = async (values) => {
+        // Assuming your login logic returns a boolean indicating success
+        const SignupSuccess = await handleSubmit(values.email);
+        
+        if (SignupSuccess) {
+          // Navigate to the next screen
+          navigation.navigate('Login');
+        } else {
+          // Handle login failure, maybe show an error message
+        }
+      };
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
             <StatusBar style="light" />
@@ -57,6 +70,13 @@ const ForgotPassword = ({ navigation }) => {
             <Animatable.View
                 animation="fadeInUpBig"
                 style={commonStyles.footer}>
+                       <Formik
+        initialValues={{ email: ''}}
+        validationSchema={forgotSchema}
+        onSubmit={handleForgot}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          <>
                 <Text style={commonStyles.inputHeader}>Email</Text>
                 <Input
                     id="email"
@@ -65,17 +85,28 @@ const ForgotPassword = ({ navigation }) => {
                     placeholder="example@gmail.com"
                     placeholderTextColor={COLORS.black}
                     keyboardType="email-address"
+                    value={values.email}
                 />
+            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
                 <Button
                     title="SEND CODE"
                     isLoading={isLoading}
-                    filled
-                    onPress={() => navigation.navigate('Verification')}
+                    // filled
+                    // onPress={() => navigation.navigate('Verification')}
+                    filled onPress={handleSubmit}
                     style={commonStyles.btn1}
                 />
+                     </>
+        )}
+      </Formik>
             </Animatable.View>
         </View>
     )
 }
+const styles = StyleSheet.create({
+    error: {
+        color: "red"
+    },
+});
 
 export default ForgotPassword

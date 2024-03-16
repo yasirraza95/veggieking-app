@@ -53,10 +53,10 @@ const PaymentMethod = ({ navigation }) => {
     const navigation = useNavigation();
 
     const data = [
-      { id: '1', cardImage: images.cash, cardName: "Cash" },
-      { id: '2', cardImage: images.visa, cardName: "Visa" },
+      { id: '1', cardImage: images.cash, cardName: "JazzCash" },
+      // { id: '2', cardImage: images.visa, cardName: "Visa" },
       { id: '3', cardImage: images.mastercard, cardName: "MasterCard" },
-      { id: '4', cardImage: images.paypal, cardName: "PayPal" }
+      { id: '4', cardImage: images.paypal, cardName: "Easypaisa" }
     ];
 
     const renderItem = ({ item }) => (
@@ -142,7 +142,7 @@ const PaymentMethod = ({ navigation }) => {
     return (
       <View style={{
         position: 'absolute',
-        bottom: 30,
+        bottom: 250,
         width: SIZES.width - 32
       }}>
         <View
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
-    padding: 10,
+    padding: 4,
     marginRight: 10,
     backgroundColor: COLORS.gray6
   },
@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   cardImage: {
-    width: 100,
-    height: 50,
+    width: 150,
+    height: 100,
   },
   cardContainer: {
     flexDirection: 'column',

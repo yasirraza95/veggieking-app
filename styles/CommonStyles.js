@@ -53,6 +53,7 @@ export const commonStyles = StyleSheet.create({
     btn:{
         width: SIZES.width - 44,
         marginBottom: SIZES.padding,
+        marginBottom: 40,
     },
     btn1:{
         width: SIZES.width - 44,

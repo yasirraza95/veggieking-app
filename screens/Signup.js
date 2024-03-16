@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity , StyleSheet} from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
 import { COLORS } from '../constants'
 import * as Animatable from "react-native-animatable"
@@ -10,6 +10,9 @@ import { commonStyles } from '../styles/CommonStyles'
 import { StatusBar } from 'expo-status-bar'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { MaterialIcons } from '@expo/vector-icons';
+import { Formik } from 'formik'
+import { signInSchema } from '../schema'
+import { Ionicons } from '@expo/vector-icons';
 
 const isTestMode = true
 
@@ -34,6 +37,11 @@ const Signup = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(false)
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
 
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+const togglePasswordVisibility = () => {
+setIsPasswordVisible(!isPasswordVisible);
+};
     const inputChangedHandler = useCallback(
         (inputId, inputValue) => {
             const result = validateInput(inputId, inputValue)
@@ -48,6 +56,17 @@ const Signup = ({ navigation }) => {
         }
     }, [error])
 
+    const handleSignUp = async (values) => {
+        // Assuming your login logic returns a boolean indicating success
+        const SignupSuccess = await handleSubmit(values.fullName,values.email, values.password, values.passwordConfirm);
+        
+        if (SignupSuccess) {
+          // Navigate to the next screen
+          navigation.navigate('Login');
+        } else {
+          // Handle login failure, maybe show an error message
+        }
+      };
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
             <StatusBar hidden={true} />
@@ -65,6 +84,13 @@ const Signup = ({ navigation }) => {
                 animation="fadeInUpBig"
                 style={commonStyles.footer}>
                 < KeyboardAwareScrollView>
+                <Formik
+        initialValues={{ fullName: '', email: '', password: '', passwordConfirm: '' }}
+        validationSchema={signInSchema}
+        onSubmit={handleSignUp}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          <>
                     <Text style={commonStyles.inputHeader}>Name</Text>
                     <Input
                         id="fullName"
@@ -72,7 +98,10 @@ const Signup = ({ navigation }) => {
                         errorText={formState.inputValidities['fullName']}
                         placeholder="John Doe"
                         placeholderTextColor={COLORS.black}
+                        value={values.fullName}
                     />
+            {touched.fullName && errors.fullName && <Text style={styles.error}>{errors.fullName}</Text>}
+
                     <Text style={commonStyles.inputHeader}>Email</Text>
                     <Input
                         id="email"
@@ -81,8 +110,13 @@ const Signup = ({ navigation }) => {
                         placeholder="example@gmail.com"
                         placeholderTextColor={COLORS.black}
                         keyboardType="email-address"
+                        value={values.email}
+
                     />
+            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
+
                     <Text style={commonStyles.inputHeader}>Password</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Input
                         onInputChanged={inputChangedHandler}
                         errorText={formState.inputValidities['password']}
@@ -90,10 +124,18 @@ const Signup = ({ navigation }) => {
                         id="password"
                         placeholder="*************"
                         placeholderTextColor={COLORS.black}
-                        secureTextEntry={true}
-                    />
+                        secureTextEntry={!isPasswordVisible} 
+                        value={values.password}
 
-                    <Text style={commonStyles.inputHeader}>Re-Type Password</Text>
+                    />
+                      <TouchableOpacity onPress={togglePasswordVisibility} style={{padding: 0, marginLeft: -40}}>
+    <Ionicons name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline' } size={24} color="black" />
+  </TouchableOpacity>
+{touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
+            </View>        
+                      <Text style={commonStyles.inputHeader}>Re-Type Password</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    
                     <Input
                         onInputChanged={inputChangedHandler}
                         errorText={formState.inputValidities['passwordConfirm']}
@@ -101,20 +143,36 @@ const Signup = ({ navigation }) => {
                         id="passwordConfirm"
                         placeholder="*************"
                         placeholderTextColor={COLORS.black}
-                        secureTextEntry={true}
-                    />
+                        value={values.passwordConfirm}
+                        secureTextEntry={!isPasswordVisible} 
 
+                    />
+                      <TouchableOpacity onPress={togglePasswordVisibility} style={{padding: 0, marginLeft: -40}}>
+    <Ionicons name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline' } size={24} color="black" />
+  </TouchableOpacity>
+{touched.passwordConfirm && errors.passwordConfirm && <Text style={styles.error}>{errors.passwordConfirm}</Text>}
+</View>
                     <Button
                         title="SIGN UP"
                         isLoading={isLoading}
-                        filled
-                        onPress={() => navigation.navigate('Login')}
+                        filled onPress={handleSubmit}
+                        // filled
+                        // onPress={() => navigation.navigate('Login')}
                         style={commonStyles.btn1}
                     />
+                    
+                    </>
+        )}
+      </Formik>
                 </KeyboardAwareScrollView>
             </Animatable.View>
         </View>
     )
 }
+const styles = StyleSheet.create({
+    error: {
+        color: "red"
+    },
+});
 
 export default Signup
