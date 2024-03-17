@@ -166,7 +166,7 @@ const HomeV2 = ({ navigation }) => {
           >
             <Image
               source={item.image}
-              style={{ width: '100%', height: '100%', borderRadius: 50 }}
+              style={{ width: '50%', height: '100%', borderRadius: 50 }}
             />
           </View>
           <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>{item.name}</Text>
@@ -243,7 +243,6 @@ const HomeV2 = ({ navigation }) => {
                 style={{
                   height: '100%',
                   width: '100%',
-                  backgroundColor: 'orange'
                 }} />
                 </View>
                 <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10 }}>{item.name}</Text>
