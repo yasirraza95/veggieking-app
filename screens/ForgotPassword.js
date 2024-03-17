@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
 import { COLORS } from '../constants'
 import * as Animatable from "react-native-animatable"
@@ -11,19 +11,21 @@ import { StatusBar } from 'expo-status-bar'
 import { MaterialIcons } from "@expo/vector-icons"
 import { forgotSchema } from '../schema'
 import { Formik } from 'formik'
+import GeneralService from '../services/general.service'
 
 const initialState = {
     inputValues: {
-        email: '',
+        phone: '',
     },
     inputValidities: {
-        email: false,
+        phone: false,
     },
 }
 
 const ForgotPassword = ({ navigation }) => {
     const [error, setError] = useState()
     const [isLoading, setIsLoading] = useState(false)
+    const [isEnable, setIsEnable] = useState(true)
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
 
     const inputChangedHandler = useCallback(
@@ -42,11 +44,20 @@ const ForgotPassword = ({ navigation }) => {
 
 
     const handleForgot = async (values) => {
-        const SignupSuccess = await handleSubmit(values.email);
-
-        if (SignupSuccess) {
-            navigation.navigate('Login');
-        } else {
+        try {
+            setIsLoading(true);
+            setIsEnable(false);
+            await GeneralService.forgot(values);
+            setIsLoading(false);
+            setIsEnable(true);
+        } catch (err) {
+            if (err?.response?.status == 404) {
+                Alert.alert("Error", "No user found");
+            } else {
+                Alert.alert("Error", "Server error. Please try again later.");
+            }
+            setIsLoading(false);
+            setIsEnable(true);
         }
     };
 
@@ -60,34 +71,37 @@ const ForgotPassword = ({ navigation }) => {
                     <MaterialIcons name="keyboard-arrow-left" size={24} color={COLORS.black} />
                 </TouchableOpacity>
                 <Text style={commonStyles.headerTitle}>Forgot Password</Text>
-                <Text style={commonStyles.subHeaderTitle}>Please provide to your existing email</Text>
+                <Text style={commonStyles.subHeaderTitle}>Please provide your phone number</Text>
             </View>
             <Animatable.View
                 animation="fadeInUpBig"
                 style={commonStyles.footer}>
                 <Formik
-                    initialValues={{ email: '' }}
+                    initialValues={{ phone: '' }}
                     enableReinitialize={true}
                     validationSchema={forgotSchema}
                     onSubmit={handleForgot}
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                         <>
-                            <Text style={commonStyles.inputHeader}>Email</Text>
+                            <Text style={commonStyles.inputHeader}>Phone No.</Text>
                             <Input
-                                id="email"
-                                onInputChanged={inputChangedHandler}
-                                errorText={formState.inputValidities['email']}
-                                placeholder="example@gmail.com"
+                                name="phone"
+                                id="phone"
+                                onChangeText={handleChange('phone')}
+                                onBlur={handleBlur('phone')}
+                                value={values.phone}
+                                placeholder="03001234567"
                                 placeholderTextColor={COLORS.black}
-                                keyboardType="email-address"
-                                value={values.email}
+                                keyboardType="numeric"
                             />
-                            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
+                            {touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
                             <Button
-                                title="SEND CODE"
+                                title="Send Code"
+                                isEnable={isEnable}
                                 isLoading={isLoading}
-                                filled onPress={handleSubmit}
+                                filled
+                                onPress={handleSubmit}
                                 style={commonStyles.btn1}
                             />
                         </>
