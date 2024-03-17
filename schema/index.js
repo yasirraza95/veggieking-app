@@ -2,8 +2,8 @@
 import * as Yup from 'yup';
 
 export const validationSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  password: Yup.string().required('Password is required'),
+  phone: Yup.string().required('Enter Phone No.'),
+  password: Yup.string().required('Enter Password'),
 });
 
 
@@ -16,5 +16,5 @@ export const signInSchema = Yup.object({
   .oneOf([Yup.ref('password'),null],"Password must match")
 });
 export const forgotSchema = Yup.object({
-  email: Yup.string().min(2).required("Please enter the Email"),
+  phone: Yup.string().required("Enter Phone No."),
 });
