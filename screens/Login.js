@@ -94,20 +94,24 @@ return (
       {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
       <>
         <Text style={commonStyles.inputHeader}>Email</Text>
-        <Input id="email" onChangeText={handleChange('email')} onBlur={handleBlur('email')} value={values.email}
+        <Input id="email" onInputChanged={inputChangedHandler} errorText={formState.inputValidities['email']}
+            placeholder="example@gmail.com" placeholderTextColor={COLORS.black} keyboardType="email-address" />
+       
+        {/* <Input id="email" onChangeText={handleChange('email')} onBlur={handleBlur('email')} value={values.email}
           placeholder="example@gmail.com" placeholderTextColor={COLORS.black} keyboardType="email-address" />
+         */}
         {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
 
         <Text style={commonStyles.inputHeader}>Password</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        {/* <Input onChangeText={handleChange('password')} onBlur={handleBlur('password')} value={values.password}
-          autoCapitalize="none" id="password" placeholder="*************" placeholderTextColor={COLORS.black}
-          secureTextEntry={true} /> */}
         <Input onChangeText={handleChange('password')} onBlur={handleBlur('password')} value={values.password}
+          autoCapitalize="none" id="password" placeholder="*************" placeholderTextColor={COLORS.black}
+          secureTextEntry={true} />
+        {/* <Input onChangeText={handleChange('password')} onBlur={handleBlur('password')} value={values.password}
           autoCapitalize="none" placeholder="*************" placeholderTextColor={COLORS.black}
           secureTextEntry={!isPasswordVisible} 
           style={{ flex: 1, marginRight: 10 }}
-          />
+          /> */}
         <TouchableOpacity onPress={togglePasswordVisibility} style={{padding: 0, marginLeft: -40}}>
     <Ionicons name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline' } size={24} color="black" />
   </TouchableOpacity>
@@ -121,7 +125,12 @@ return (
           </TouchableOpacity>
         </View>
 
-        <Button title="Log In" isLoading={isLoading} filled onPress={handleSubmit} style={commonStyles.btn} />
+        {/* <Button title="Log In" isLoading={isLoading} filled onPress={handleSubmit} style={commonStyles.btn} /> */}
+        <Button title="Log In" 
+        isLoading={isLoading} 
+        filled onPress={()=> navigation.navigate('LocationAccess')}
+            style={commonStyles.btn}
+            />
       </>
       )}
     </Formik>

@@ -213,50 +213,53 @@ const HomeV2 = ({ navigation }) => {
           horizontal={true}
           data={categories}
           keyExtractor={item => item.id}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
+          renderItem={({ item, index }) => {
+            return (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+
+              <TouchableOpacity
               key={index}
-              style={{
-                height: 172,
-                paddingHorizontal: 8,
-                marginHorizontal: 10,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                shadowColor: '#F1F1F1',
-                shadowOffset: {
-                  width: 12,
-                  height: 12,
-                },
-                shadowOpacity: 0.15,
-                shadowRadius: 10,
-                elevation: .1,
-                borderRadius: 24,
-                borderColor: COLORS.tertiaryGray,
-                borderWidth: 1
-              }}
             >
+
+<View style={{
+                  height: 104,
+                  width: 122,
+                  borderRadius: 61, // Half of the width to make it a circle
+                  overflow: 'hidden', // Clip the image to the circle
+                  shadowColor: '#F1F1F1',
+                  shadowOffset: {
+                    width: 12,
+                    height: 12,
+                  },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 10,
+                  elevation: 0.1,
+                  borderColor: COLORS.tertiaryGray,
+                  borderWidth: 1,
+                }}>
               <Image
                 source={item.image}
                 resizeMode='contain'
                 style={{
-                  height: 104,
-                  width: 122,
-                  borderRadius: 15,
-                  marginTop: 10
-                }}
-              />
-              <Text style={{ fontSize: 16, fontFamily: 'bold', marginVertical: 4 }}>{item.name}</Text>
+                  height: '100%',
+                  width: '100%',
+                  backgroundColor: 'orange'
+                }} />
+                </View>
+                <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10 }}>{item.name}</Text>
               <View style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 marginTop: 4,
                 marginBottom: 4,
               }}>
-                <Text style={{ fontSize: 14, fontFamily: 'regular' }}>Starting</Text>
-                <Text style={{ fontSize: 16, fontFamily: 'regular' }}>${item.startingPrice}</Text>
+                {/* <Text style={{ fontSize: 14, fontFamily: 'regular' }}>Starting</Text> */}
+                {/* <Text style={{ fontSize: 16, fontFamily: 'regular' }}>${item.startingPrice}</Text> */}
               </View>
             </TouchableOpacity>
-          )}
+            </View>
+            )
+          }}
         /> 
     </View>
 
