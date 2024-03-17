@@ -12,16 +12,13 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { forgotSchema } from '../schema'
 import { Formik } from 'formik'
 
-const isTestMode = true
-
 const initialState = {
     inputValues: {
-        email: isTestMode ? 'example@gmail.com' : '',
+        email: '',
     },
     inputValidities: {
         email: false,
     },
-    formIsValid: false,
 }
 
 const ForgotPassword = ({ navigation }) => {
@@ -45,16 +42,14 @@ const ForgotPassword = ({ navigation }) => {
 
 
     const handleForgot = async (values) => {
-        // Assuming your login logic returns a boolean indicating success
         const SignupSuccess = await handleSubmit(values.email);
-        
+
         if (SignupSuccess) {
-          // Navigate to the next screen
-          navigation.navigate('Login');
+            navigation.navigate('Login');
         } else {
-          // Handle login failure, maybe show an error message
         }
-      };
+    };
+
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
             <StatusBar style="light" />
@@ -70,35 +65,34 @@ const ForgotPassword = ({ navigation }) => {
             <Animatable.View
                 animation="fadeInUpBig"
                 style={commonStyles.footer}>
-                       <Formik
-        initialValues={{ email: ''}}
-        validationSchema={forgotSchema}
-        onSubmit={handleForgot}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <>
-                <Text style={commonStyles.inputHeader}>Email</Text>
-                <Input
-                    id="email"
-                    onInputChanged={inputChangedHandler}
-                    errorText={formState.inputValidities['email']}
-                    placeholder="example@gmail.com"
-                    placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
-                    value={values.email}
-                />
-            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
-                <Button
-                    title="SEND CODE"
-                    isLoading={isLoading}
-                    // filled
-                    // onPress={() => navigation.navigate('Verification')}
-                    filled onPress={handleSubmit}
-                    style={commonStyles.btn1}
-                />
-                     </>
-        )}
-      </Formik>
+                <Formik
+                    initialValues={{ email: '' }}
+                    enableReinitialize={true}
+                    validationSchema={forgotSchema}
+                    onSubmit={handleForgot}
+                >
+                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                        <>
+                            <Text style={commonStyles.inputHeader}>Email</Text>
+                            <Input
+                                id="email"
+                                onInputChanged={inputChangedHandler}
+                                errorText={formState.inputValidities['email']}
+                                placeholder="example@gmail.com"
+                                placeholderTextColor={COLORS.black}
+                                keyboardType="email-address"
+                                value={values.email}
+                            />
+                            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
+                            <Button
+                                title="SEND CODE"
+                                isLoading={isLoading}
+                                filled onPress={handleSubmit}
+                                style={commonStyles.btn1}
+                            />
+                        </>
+                    )}
+                </Formik>
             </Animatable.View>
         </View>
     )

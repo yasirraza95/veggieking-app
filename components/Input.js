@@ -4,7 +4,7 @@ import { COLORS, SIZES } from '../constants'
 
 const Input = (props) => {
     const onChangeText = (text) => {
-        props.onInputChanged(props.id, text)
+            // props.onInputChanged(props.id, text)
     }
 
     return (
@@ -27,7 +27,7 @@ const Input = (props) => {
                 )}
                 <TextInput
                     {...props}
-                    onChangeText={onChangeText}
+                    // onChangeText={onChangeText}
                     style={styles.input}
                     placeholder={props.placeholder}
                     placeholderTextColor={props.placeholderTextColor}
