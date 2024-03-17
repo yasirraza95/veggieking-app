@@ -43,7 +43,9 @@ import { Onboarding1,
     Faqs,
     Settings,
     SubmitQuestion,
-    History
+    History,
+    HomeV3,
+    HomeV2
 } from '../screens'
 import LocationSearch from '../screens/LocationSearch';
 import { NavigationContainer } from '@react-navigation/native'
@@ -102,6 +104,8 @@ const AppNavigation = () => {
                 <Stack.Screen name="LocationAccess" component={LocationAccess}/>
                 <Stack.Screen name="LocationSearch" component={LocationSearch} />
                 <Stack.Screen name="HomeV1" component={HomeV1}/>
+                <Stack.Screen name="HomeV2" component={HomeV2}/>
+                <Stack.Screen name="HomeV3" component={HomeV3}/>
                 
                 <Stack.Screen name="Main" component={BottomTabNavigation}/>
                 <Stack.Screen name="DrawerNavigation" component={DrawerNavigation}/>
