@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
@@ -99,7 +99,12 @@ const Login = ({ navigation }) => {
   };
 
   return (
-
+    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
       <StatusBar style="light" />
       <View style={commonStyles.header}>
@@ -151,8 +156,8 @@ const Login = ({ navigation }) => {
                     size={24}
                     color="black" />
                 </TouchableOpacity>
-                {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
               </View>
+                {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
               <View
                 style={commonStyles.checkBoxContainer}
               >
@@ -201,6 +206,10 @@ const Login = ({ navigation }) => {
         </View>
       </Animatable.View>
     </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
+    </SafeAreaView>
+
   )
 }
 

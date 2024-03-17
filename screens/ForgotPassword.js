@@ -63,7 +63,7 @@ const ForgotPassword = ({ navigation }) => {
 
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
-            <StatusBar style="light" />
+            <StatusBar hidden={true} style="light" />
             <View style={commonStyles.header}>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}

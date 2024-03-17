@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS } from '../constants'
 import * as Animatable from "react-native-animatable"
 import Input from '../components/Input'
@@ -74,8 +75,14 @@ const Signup = ({ navigation }) => {
         }
     };
     return (
+        <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
-            <StatusBar hidden={true} />
+            <StatusBar hidden={true} style="light" />
             <View style={commonStyles.header}>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
@@ -89,7 +96,6 @@ const Signup = ({ navigation }) => {
             <Animatable.View
                 animation="fadeInUpBig"
                 style={commonStyles.footer}>
-                < KeyboardAwareScrollView>
                     <Formik
                         initialValues={{ name: '', phone: '', email: '', password: '', }}
                         validationSchema={signInSchema}
@@ -154,8 +160,8 @@ const Signup = ({ navigation }) => {
                                     <TouchableOpacity onPress={togglePasswordVisibility} style={{ padding: 0, marginLeft: -40 }}>
                                         <Ionicons name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'} size={24} color="black" />
                                     </TouchableOpacity>
-                                    {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
                                 </View>
+                                    {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
                                 <Button
                                     title="Sign Up"
                                     isLoading={isLoading}
@@ -168,9 +174,11 @@ const Signup = ({ navigation }) => {
                             </>
                         )}
                     </Formik>
-                </KeyboardAwareScrollView>
             </Animatable.View>
         </View>
+        </ScrollView>
+    </KeyboardAvoidingView>
+    </SafeAreaView>
     )
 }
 const styles = StyleSheet.create({
