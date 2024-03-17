@@ -52,6 +52,18 @@ const forgot = (values) => {
     );
 };
 
+const checkForgotToken = (values) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.post(
+        `${API_URL}/check-forgot/${values.token}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const locationUpdate = (values) => {
     const headers = {
         "Content-Type": "application/json",
@@ -372,9 +384,9 @@ const sendNotification = () => {
 };
 
 const GeneralService = {
-    login, register, forgot, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty, deleteCart,
-    listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserId, listOrdersDetailByOrderId,
-    updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
+    login, register, forgot, checkForgotToken, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
+    deleteCart, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserId,
+    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
     listAssignedOrderByRiderId, sendNotification
 };
 export default GeneralService;
