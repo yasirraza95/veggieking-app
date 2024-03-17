@@ -15,7 +15,7 @@ const Button = (props) => {
         ? COLORS.white || props.textColor
         : COLORS.primary || props.textColor
     const isLoading = props.isLoading || false
-    const enable = props.isEnable
+    const enable = props.isEnable || false
     // console.log("enabled="+enable)
 
     return (

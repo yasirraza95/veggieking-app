@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity , StyleSheet} from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
 import { COLORS } from '../constants'
 import * as Animatable from "react-native-animatable"
@@ -13,35 +13,35 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Formik } from 'formik'
 import { signInSchema } from '../schema'
 import { Ionicons } from '@expo/vector-icons';
+import GeneralService from '../services/general.service'
 
-const isTestMode = true
 
 const initialState = {
     inputValues: {
-        fullName: isTestMode ? 'John Doe' : '',
-        email: isTestMode ? 'example@gmail.com' : '',
-        password: isTestMode ? '**********' : '',
-        confirmPassword: isTestMode ? '**********' : ''
+        name: '',
+        phone: '',
+        email: '',
+        password: '',
     },
     inputValidities: {
-        fullName: false,
+        name: false,
+        phone: false,
         email: false,
         password: false,
-        confirmPassword: false
     },
-    formIsValid: false,
 }
 
 const Signup = ({ navigation }) => {
     const [error, setError] = useState()
     const [isLoading, setIsLoading] = useState(false)
+    const [isEnable, setIsEnable] = useState(true)
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-const togglePasswordVisibility = () => {
-setIsPasswordVisible(!isPasswordVisible);
-};
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
+    };
     const inputChangedHandler = useCallback(
         (inputId, inputValue) => {
             const result = validateInput(inputId, inputValue)
@@ -57,16 +57,22 @@ setIsPasswordVisible(!isPasswordVisible);
     }, [error])
 
     const handleSignUp = async (values) => {
-        // Assuming your login logic returns a boolean indicating success
-        const SignupSuccess = await handleSubmit(values.fullName,values.email, values.password, values.passwordConfirm);
-        
-        if (SignupSuccess) {
-          // Navigate to the next screen
-          navigation.navigate('Login');
-        } else {
-          // Handle login failure, maybe show an error message
+        try {
+            setIsLoading(true);
+            setIsEnable(false);
+            await GeneralService.register(values);
+            setIsLoading(false);
+            setIsEnable(true);
+        } catch (err) {
+            if (err?.response?.status == 404) {
+                Alert.alert("Error", "No user found");
+            } else {
+                Alert.alert("Error", "Server error. Please try again later.");
+            }
+            setIsLoading(false);
+            setIsEnable(true);
         }
-      };
+    };
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
             <StatusBar hidden={true} />
@@ -84,86 +90,84 @@ setIsPasswordVisible(!isPasswordVisible);
                 animation="fadeInUpBig"
                 style={commonStyles.footer}>
                 < KeyboardAwareScrollView>
-                <Formik
-        initialValues={{ fullName: '', email: '', password: '', passwordConfirm: '' }}
-        validationSchema={signInSchema}
-        onSubmit={handleSignUp}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <>
-                    <Text style={commonStyles.inputHeader}>Name</Text>
-                    <Input
-                        id="fullName"
-                        onInputChanged={inputChangedHandler}
-                        errorText={formState.inputValidities['fullName']}
-                        placeholder="John Doe"
-                        placeholderTextColor={COLORS.black}
-                        value={values.fullName}
-                    />
-            {touched.fullName && errors.fullName && <Text style={styles.error}>{errors.fullName}</Text>}
+                    <Formik
+                        initialValues={{ name: '', phone: '', email: '', password: '', }}
+                        validationSchema={signInSchema}
+                        enableReinitialize={true}
+                        onSubmit={handleSignUp}
+                    >
+                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                            <>
+                                <Text style={commonStyles.inputHeader}>Name</Text>
+                                <Input
+                                    name="name"
+                                    id="name"
+                                    onChangeText={handleChange('name')}
+                                    onBlur={handleBlur('name')}
+                                    value={values.name}
+                                    placeholder="Full Name"
+                                    placeholderTextColor={COLORS.black}
+                                />
+                                {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
 
-                    <Text style={commonStyles.inputHeader}>Email</Text>
-                    <Input
-                        id="email"
-                        onInputChanged={inputChangedHandler}
-                        errorText={formState.inputValidities['email']}
-                        placeholder="example@gmail.com"
-                        placeholderTextColor={COLORS.black}
-                        keyboardType="email-address"
-                        value={values.email}
+                                <Text style={commonStyles.inputHeader}>Phone No.</Text>
+                                <Input
+                                    name="phone"
+                                    id="phone"
+                                    onChangeText={handleChange('phone')}
+                                    onBlur={handleBlur('phone')}
+                                    value={values.phone}
+                                    placeholder="Phone No."
+                                    placeholderTextColor={COLORS.black}
+                                    keyboardType="numeric"
 
-                    />
-            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
+                                />
+                                {touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
 
-                    <Text style={commonStyles.inputHeader}>Password</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Input
-                        onInputChanged={inputChangedHandler}
-                        errorText={formState.inputValidities['password']}
-                        autoCapitalize="none"
-                        id="password"
-                        placeholder="*************"
-                        placeholderTextColor={COLORS.black}
-                        secureTextEntry={!isPasswordVisible} 
-                        value={values.password}
+                                <Text style={commonStyles.inputHeader}>Email Address</Text>
+                                <Input
+                                    name="email"
+                                    id="email"
+                                    onChangeText={handleChange('email')}
+                                    onBlur={handleBlur('email')}
+                                    value={values.email}
+                                    placeholder="Email Address"
+                                    placeholderTextColor={COLORS.black}
+                                    keyboardType="email-address"
+                                />
+                                {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
 
-                    />
-                      <TouchableOpacity onPress={togglePasswordVisibility} style={{padding: 0, marginLeft: -40}}>
-    <Ionicons name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline' } size={24} color="black" />
-  </TouchableOpacity>
-{touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
-            </View>        
-                      <Text style={commonStyles.inputHeader}>Re-Type Password</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    
-                    <Input
-                        onInputChanged={inputChangedHandler}
-                        errorText={formState.inputValidities['passwordConfirm']}
-                        autoCapitalize="none"
-                        id="passwordConfirm"
-                        placeholder="*************"
-                        placeholderTextColor={COLORS.black}
-                        value={values.passwordConfirm}
-                        secureTextEntry={!isPasswordVisible} 
+                                <Text style={commonStyles.inputHeader}>Password</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Input
+                                        name="password"
+                                        id="password"
+                                        onChangeText={handleChange('password')}
+                                        onBlur={handleBlur('password')}
+                                        value={values.password}
+                                        autoCapitalize="none"
+                                        placeholder="*************"
+                                        placeholderTextColor={COLORS.black}
+                                        secureTextEntry={!isPasswordVisible}
 
-                    />
-                      <TouchableOpacity onPress={togglePasswordVisibility} style={{padding: 0, marginLeft: -40}}>
-    <Ionicons name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline' } size={24} color="black" />
-  </TouchableOpacity>
-{touched.passwordConfirm && errors.passwordConfirm && <Text style={styles.error}>{errors.passwordConfirm}</Text>}
-</View>
-                    <Button
-                        title="SIGN UP"
-                        isLoading={isLoading}
-                        filled onPress={handleSubmit}
-                        // filled
-                        // onPress={() => navigation.navigate('Login')}
-                        style={commonStyles.btn1}
-                    />
-                    
-                    </>
-        )}
-      </Formik>
+                                    />
+                                    <TouchableOpacity onPress={togglePasswordVisibility} style={{ padding: 0, marginLeft: -40 }}>
+                                        <Ionicons name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'} size={24} color="black" />
+                                    </TouchableOpacity>
+                                    {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
+                                </View>
+                                <Button
+                                    title="Sign Up"
+                                    isLoading={isLoading}
+                                    filled onPress={handleSubmit}
+                                    isEnable={isEnable}
+                                    // filled
+                                    // onPress={() => navigation.navigate('Login')}
+                                    style={commonStyles.btn1}
+                                />
+                            </>
+                        )}
+                    </Formik>
                 </KeyboardAwareScrollView>
             </Animatable.View>
         </View>
