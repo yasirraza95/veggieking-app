@@ -31,7 +31,8 @@ const avatar9 = require("../assets/images/avatar9.jpeg");
 const avatar10 = require("../assets/images/avatar10.jpeg");
 const avatar11 = require("../assets/images/avatar11.jpeg");
 
-const pizza1 = require("../assets/images/pizza/pizza1.jpg");
+// const pizza1 = require("../assets/images/pizza/pizza1.jpg");
+const pizza1 = require("../assets/images/pizza/pizza1.png");
 const pizza2 = require("../assets/images/pizza/pizza2.jpg");
 const pizza3 = require("../assets/images/pizza/pizza3.jpg");
 const pizza4 = require("../assets/images/pizza/pizza4.jpg");
@@ -53,7 +54,8 @@ const restaurant4 = require("../assets/images/restaurants/restaurant4.jpg");
 const restaurant5 = require("../assets/images/restaurants/restaurant5.jpg");
 const restaurant6 = require("../assets/images/restaurants/restaurant6.png");
 
-const hotdog1 = require("../assets/images/others/hotdog1.jpg");
+// const hotdog1 = require("../assets/images/others/hotdog1.jpg");
+const hotdog1 = require("../assets/images/others/hotdog1.png");
 const hotdog2 = require("../assets/images/others/hotdog2.jpg");
 const Vegetarian = require("../assets/images/others/vegetarian.jpg");
 const user = require("../assets/images/user.jpeg");

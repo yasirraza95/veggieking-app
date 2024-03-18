@@ -222,38 +222,42 @@ const HomeV2 = ({ navigation }) => {
             >
 
 <View style={{
-                  height: 104,
-                  width: 122,
-                  borderRadius: 61, // Half of the width to make it a circle
-                  overflow: 'hidden', // Clip the image to the circle
-                  shadowColor: '#F1F1F1',
-                  shadowOffset: {
-                    width: 12,
-                    height: 12,
-                  },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 10,
-                  elevation: 0.1,
-                  borderColor: COLORS.tertiaryGray,
-                  borderWidth: 1,
-                }}>
+    height: 90,
+    width: 90,
+    borderRadius: 61, // Half of the width to make it a circle
+    overflow: 'hidden', // Clip the image to the circle
+    shadowColor: '#F1F1F1',
+    margin: 5,
+    shadowOffset: {
+      width: 12,
+      height: 12,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 0.1,
+    borderColor: COLORS.tertiaryGray,
+    borderWidth: 2,
+    backgroundColor: 'orange',
+    borderColor: "#c65201",
+  }}>
               <Image
                 source={item.image}
                 resizeMode='contain'
                 style={{
+                  flex: 1,
                   height: '100%',
                   width: '100%',
                 }} />
                 </View>
-                <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10 }}>{item.name}</Text>
+                <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
               <View style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
+                // flexDirection: "row",
+                // justifyContent: "space-between",
                 marginTop: 4,
-                marginBottom: 4,
+                marginBottom: 10,
               }}>
                 {/* <Text style={{ fontSize: 14, fontFamily: 'regular' }}>Starting</Text> */}
-                {/* <Text style={{ fontSize: 16, fontFamily: 'regular' }}>${item.startingPrice}</Text> */}
+                <Text style={{ fontSize: 16, fontFamily: 'regular', textAlign: 'center' }}>${item.startingPrice}</Text>
               </View>
             </TouchableOpacity>
             </View>
@@ -291,13 +295,77 @@ const HomeV2 = ({ navigation }) => {
   }
 
   const renderRestaurants = () => {
+    const numColumns = 2; // Number of columns per row
+  
+    const renderItem = ({ item }) => (
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("RestaurantView")}
+        style={{
+          flex: 1,
+          margin: 8,
+          borderColor: "#f78c47",
+          borderWidth: 1,
+          borderRadius: 20
+        }}
+      >
+        <Image
+          source={item.image}
+          style={{
+            width: '100%',
+            height: 136,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          }}
+        />
+        <View style={{ padding: 8 }}>
+          <Text style={{ fontSize: 18, fontFamily: 'regular', marginVertical: 6 }}>{item.name}</Text>
+          <View style={{ marginBottom: 4 }}>
+  <Text style={{ fontSize: 14, color: COLORS.gray5 }}>
+    {item.keywords.map((keyword, index) => (
+      <Text key={index}>
+        {index !== 0 && " - "}
+        <Text numberOfLines={1} ellipsizeMode="tail" style={{ textTransform: 'capitalize' }}>
+          {keyword}
+        </Text>
+      </Text>
+    ))}
+  </Text>
+</View>
+
+{/* <View style={{ flexDirection: "row", flexWrap: 'wrap' }}>
+  <View style={{ flexDirection: "row", alignItems: "center", marginRight: SIZES.padding3 }}>
+    <Octicons name="star" size={24} color={COLORS.primary} />
+    <Text numberOfLines={1} ellipsizeMode="tail" style={{ marginLeft: 8 }}>
+      {item.rating}
+    </Text>
+  </View>
+  <View style={{ flexDirection: "row", alignItems: "center", marginRight: SIZES.padding3 }}>
+    <MaterialCommunityIcons name="truck-delivery-outline" size={24} color={COLORS.primary} />
+    <Text numberOfLines={1} ellipsizeMode="tail" style={{ marginLeft: 8 }}>
+      {item.shipping}
+    </Text>
+  </View>
+  <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <Fontisto name="stopwatch" size={22} color={COLORS.primary} />
+    <Text numberOfLines={1} ellipsizeMode="tail" style={{ marginLeft: 8 }}>
+      {item.deliveryTime} min
+    </Text>
+  </View>
+</View> */}
+
+        </View>
+      </TouchableOpacity>
+    );
+  
     return (
-      <View style={{ height: "auto" }}>
+      <View style={{ flex: 1 }}>
         <View style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginVertical: 8,
           alignItems: 'center',
+          paddingHorizontal: 16
         }}>
           <Text style={{ ...FONTS.body2 }}>Open Restaurants</Text>
           <TouchableOpacity
@@ -314,55 +382,17 @@ const HomeV2 = ({ navigation }) => {
           nestedScrollEnabled
           data={restaurants}
           keyExtractor={item => item.id}
-          renderItem=
-          {({ item, index }) => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("RestaurantView")}
-              style={{
-                width: SIZES.width - 32,
-                borderColor: COLORS.tertiaryGray,
-                borderWidth: 1,
-                paddingBottom: 2,
-                marginBottom: 12,
-                borderRadius: 15
-              }}>
-              <Image
-                source={item.image}
-                style={{
-                  width: SIZES.width - 32,
-                  height: 136,
-                  borderRadius: 15
-                }}
-              />
-              <Text style={{ fontSize: 18, fontFamily: 'regular', marginVertical: 6 }}>{item.name}</Text>
-              <View style={{ marginBottom: 4, flexDirection: 'row' }}>
-                {item.keywords.map((keyword, index) => (
-                  <Text key={index} style={{ fontSize: 14, color: COLORS.gray5, textTransform: "capitalize" }}>
-                    {keyword}{index !== item.keywords.length - 1 ? "-" : ""}
-                  </Text>
-                ))}
-              </View>
-
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Octicons name="star" size={24} color={COLORS.primary} />
-                  <Text style={{ marginLeft: 8 }}>{item.rating}</Text>
-                </View>
-                <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: SIZES.padding3 }}>
-                  <MaterialCommunityIcons name="truck-delivery-outline" size={24} color={COLORS.primary} />
-                  <Text style={{ marginLeft: 8 }}>{item.shipping}</Text>
-                </View>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Fontisto name="stopwatch" size={22} color={COLORS.primary} />
-                  <Text style={{ marginLeft: 8 }}>{item.deliveryTime} min</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
+          renderItem={renderItem}
+          numColumns={numColumns}
+          contentContainerStyle={{ paddingHorizontal: 8 }}
+      style={{
+        marginBottom: "30%",
+      }}
         />
       </View>
-    )
+    );
   }
+  
   return (
     <SafeAreaView style={styles.area}>
       <View style={{ flex: 1, marginHorizontal: 16 }}>

@@ -65,6 +65,19 @@ export const restaurants = [
         priceRange: 100,
         location: "654 Maple St, City",
         shipping: "Free"
+    },
+    {
+        id: 6,
+        name: "Asian Fusion",
+        category: "Asian",
+        keywords: ["sushi", "ramen", "asian", "stir-fry"],
+        // image: images.restaurants,
+        image: images.restaurant5,
+        rating: 4.4,
+        deliveryTime: 50,
+        priceRange: 100,
+        location: "654 Maple St, City",
+        shipping: "Free"
     }
 ];
 
