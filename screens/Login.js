@@ -15,6 +15,10 @@ import { StatusBar } from 'expo-status-bar'
 import { validationSchema } from '../schema';
 import { Formik } from 'formik';
 import GeneralService from '../services/general.service';
+import { useDispatch, useSelector } from 'react-redux';
+import { actionCreaters } from '../Redux';
+import { bindActionCreators } from 'redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   inputValues: {
@@ -28,6 +32,11 @@ const initialState = {
 }
 
 const Login = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const userActions = bindActionCreators(actionCreaters, dispatch);
+  const state = useSelector((state) => state.stateVals);
+  const { id, userType } = state;
+
   const [error, setError] = useState()
   const [isLoading, setIsLoading] = useState(false)
   const [isEnable, setIsEnable] = useState(true)
@@ -37,6 +46,16 @@ const Login = ({ navigation }) => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
+  console.log(`id=${id}`);
+  useEffect(() => {
+    // console.log("calling");
+    const checkAuthentication = async () => {
+      if (id) {
+        navigation.replace('LocationAccess');
+      }
+    }
+    checkAuthentication();
+  }, [id, navigation]);
 
   useEffect(() => {
     if (error) {
@@ -48,12 +67,27 @@ const Login = ({ navigation }) => {
     try {
       setIsLoading(true);
       setIsEnable(false);
-      await GeneralService.login(values);
-      navigation.navigate('LocationAccess');
+      const response = await GeneralService.login(values);
+      const { data } = response;
+      const { access_token, user } = data;
+      const { id, user_type } = user;
+      // console.log(id);
+      // FIXME
+      // userActions.logIn({
+      //   accessToken: access_token,
+      //   id: id,
+      //   user_type: user_type,
+      // });
+      AsyncStorage.setItem("accessToken", access_token);
+      AsyncStorage.setItem("_id", id);
+      AsyncStorage.setItem("user_type", user_type);
+      // const { id, first_name, last_name, username, phone, email } = user;
+
+      // navigation.navigate('LocationAccess');
       setIsLoading(false);
       setIsEnable(true);
     } catch (err) {
-      console.log(err?.response?.status)
+      console.log(err)
       if (err?.response?.status == 401) {
         Alert.alert("Error", "You entered wrong phone / password");
       } else {

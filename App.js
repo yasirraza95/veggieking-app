@@ -5,8 +5,9 @@ import { useCallback } from 'react'
 import { FONTS } from './constants/fonts'
 import AppNavigation from './navigations/AppNavigation'
 import { LogBox } from 'react-native'
+import { Provider } from 'react-redux'
+import { store } from './Redux/store'
 
-//Ignore all log notifications
 LogBox.ignoreAllLogs();
 
 SplashScreen.preventAutoHideAsync()
@@ -15,18 +16,21 @@ export default function App() {
   const [fontsLoaded] = useFonts(FONTS)
 
   const onLayoutRootView = useCallback(async () => {
-      if (fontsLoaded) {
-          await SplashScreen.hideAsync()
-      }
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync()
+    }
   }, [fontsLoaded])
 
   if (!fontsLoaded) {
-      return null
+    return null
   }
 
   return (
     <SafeAreaProvider onLayout={onLayoutRootView}>
-       <AppNavigation />
+      <Provider store={store}>
+        <AppNavigation />
+      </Provider>
+
     </SafeAreaProvider>
   );
 }
