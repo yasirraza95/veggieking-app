@@ -7,8 +7,21 @@ import { commonStyles } from '../styles/CommonStyles'
 import { Feather, Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { ScrollView } from 'react-native-virtualized-view'
 import { StatusBar } from 'expo-status-bar'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
+    const navigation = useNavigation();
+    
+    const handleLogout = async () => {
+        try {
+          // Clear AsyncStorage
+          await AsyncStorage.clear();
+          // Navigate to the Login page
+          navigation.navigate('Login');
+        } catch (error) {
+          console.error('Error clearing AsyncStorage:', error);
+        }
+      };
     const renderHeader = () => {
         const navigation = useNavigation()
         return (
@@ -222,8 +235,8 @@ const Profile = () => {
 
                 <View style={[styles.container, { marginBottom: 100 }]}>
                     <TouchableOpacity
-                        onPress={() => console.log("Log out")}
                         style={styles.subContainer}
+                        onPress={handleLogout}
                     >
                         <View style={styles.subLeftContainer}>
                             <View style={styles.rounded}>

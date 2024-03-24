@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import { COLORS, images } from "../constants";
 import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search } from "../screens";
+import Otp from "../screens/Otp";
 
 const Drawer = createDrawerNavigator();
 const DrawerNavigation = () => {
@@ -98,6 +99,17 @@ const DrawerNavigation = () => {
             )
           }}
           component={MyOrders}
+        />
+           <Drawer.Screen
+          name="Otp"
+          options={{
+            drawerLabel: "OTP",
+            title: "Otp",
+            drawerIcon: () => (
+              <Ionicons name="gift-outline" size={24} color={COLORS.black} />
+            )
+          }}
+          component={Otp}
         />
         <Drawer.Screen
           name="Search"

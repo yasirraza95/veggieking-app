@@ -1,214 +1,392 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { View, Image, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { COLORS, SIZES, FONTS, icons, images } from '../constants'
-import { useNavigation } from '@react-navigation/native'
-import { commonStyles } from '../styles/CommonStyles'
-import { Feather } from '@expo/vector-icons';
-import Button from '../components/Button'
-import { StatusBar } from 'expo-status-bar'
+import { Ionicons } from '@expo/vector-icons';
+import { SIZES, illustrations, images } from '../constants'
 
-const PaymentCard = ({ cardImage, isSelected, onSelect, cardName }) => {
-  const cardStyle = isSelected ? styles.selectedCard : styles.card;
-
-  return (
-    <View style={styles.cardContainer}>
-      <TouchableOpacity onPress={onSelect} style={cardStyle}>
-        <Image source={cardImage} style={styles.cardImage} />
-
-      </TouchableOpacity>
-      <Text style={styles.cardText}>{cardName}</Text>
-    </View>
-
-  );
+const PaymentMethod = () => {
+const [showStickyNote, setShowStickyNote] = useState(false);
+const [switchValue, setSwitchValue] = useState(false);
+const handleScroll = (event) => {
+const { contentOffset } = event.nativeEvent;
+setShowStickyNote(contentOffset.y > 0);
 };
 
-
-const PaymentMethod = ({ navigation }) => {
-  const renderHeader = () => {
-    const navigation = useNavigation()
-    return (
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 20,
-      }}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={commonStyles.header1Icon}
-        >
-          <Image
-            resizeMode='contain'
-            source={icons.arrowLeft}
-            style={{ height: 24, width: 24, tintColor: COLORS.black }}
-          />
-        </TouchableOpacity>
-        <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Payment</Text>
+return (
+<View style={{ flex: 1 }}>
+  <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={styles.container} onScroll={handleScroll} scrollEventThrottle={16}>
+      {/* Your existing content here */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Checkout</Text>
       </View>
-    )
-  }
-
-  const renderAvailablePayments = () => {
-    const [selectedCard, setSelectedCard] = useState('');
-    const navigation = useNavigation();
-
-    const data = [
-      { id: '1', cardImage: images.cash, cardName: "JazzCash" },
-      // { id: '2', cardImage: images.visa, cardName: "Visa" },
-      { id: '3', cardImage: images.mastercard, cardName: "MasterCard" },
-      { id: '4', cardImage: images.paypal, cardName: "Easypaisa" }
-    ];
-
-    const renderItem = ({ item }) => (
-      <PaymentCard
-        cardImage={item.cardImage}
-        cardName={item.cardName}
-        isSelected={selectedCard === item.id}
-        onSelect={() => setSelectedCard(item.id)}
-      />
-    );
-
-    return (
-      <View style={{ marginVertical: 22 }}>
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-        />
-        <TouchableOpacity
-          onPress={() => console.log("Pressed")}
-          style={{
-            width: SIZES.width - 32,
-            borderRadius: 10,
-            backgroundColor: COLORS.gray,
-            height: 82,
-            marginVertical: 12,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingHorizontal: 10
-          }}>
-          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
-            <Text style={{ ...FONTS.h4, marginBottom: 10 }}>Mastercard</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <Image
-                source={images.mastercard}
-                style={{
-                  width: 28,
-                  height: 16
-                }}
-              />
-              <Text style={{ fontSize: 12, fontFamily: 'regular' }}>*****************436</Text>
-            </View>
+      <View style={styles.content}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Order Summary</Text>
+          <View style={styles.summaryItem}>
+            <Text>Subtotal</Text>
+            <Text>Rs 100</Text>
           </View>
-          <View>
-            <Image
-              source={icons.arrowDown}
-              style={{
-                height: 12,
-                width: 12,
-                tintColor: COLORS.black
-              }}
+          <View style={styles.summaryItem}>
+            <Text>No. of Items</Text>
+            <Text>5</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text>Delivery Charges</Text>
+            <Text>Rs 10</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text>Discount</Text>
+            <Text>Rs 5</Text>
+          </View>
+          <View style={styles.section1}>
+            {/* Display the label "Shopping Bag(s)" */}
+            <Text style={styles.summaryItem}>Shopping Bag(s)</Text>
+            {/* Display the Switch component */}
+            <Switch
+              trackColor={{ false: "#d3d3d3", true: "#d3d3d3" }}
+              thumbColor={switchValue ? "#f44c00" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={(value) => setSwitchValue(value)}
+              value={switchValue}
             />
+            {/* Display the amount */}
+            <Text style={styles.amountText}>Rs 32</Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("AddPaymentCard")}
-          style={{
-            height: 62,
-            width: SIZES.width - 32,
-            borderRadius: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderColor: COLORS.gray,
-            borderWidth: 2
-          }}
-        >
-          <Feather name="plus" size={24} color={COLORS.primary} />
-          <Text style={{
-            fontSize: 16,
-            textTransform: "uppercase",
-            color: COLORS.primary,
-            marginLeft: 12
-          }}>ADD NEW</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  }
-
-  const renderPaymentBtn = () => {
-    return (
-      <View style={{
-        position: 'absolute',
-        bottom: 250,
-        width: SIZES.width - 32
-      }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginVertical: 12
-          }}>
-          <Text style={{
-            fontSize: 16,
-            fontFamily: 'regular',
-            textTransform: "uppercase",
-            color: COLORS.black
-          }}>TOTAL: {" "}</Text>
-          <Text style={{ ...FONTS.h2 }}>$96</Text>
+          <View style={styles.totalAmount}>
+            <Text style={styles.sectionTitle}>Total Amount</Text>
+            <Text style={styles.totalPrice}>Rs 105</Text>
+          </View>
+        <View style={styles.card}>
+        {/* Circle with "10% off" */}
+        <View style={styles.circle}>
+          <Text style={styles.discountText}>10% off</Text>
         </View>
-        <Button
-          filled
-          title="PAY & CONFIRM"
-          onPress={() => navigation.navigate("PaymentSuccess")}
-        />
+        {/* Content */}
+        <View style={styles.content}>
+          {/* For new customers */}
+          <Text style={styles.subText}>For new customers</Text>
+          {/* Line */}
+          <View style={styles.line}></View>
+          {/* Apply button */}
+          <TouchableOpacity style={styles.applyButton2}>
+            <Text style={styles.applyButtonText2}>Apply</Text>
+          </TouchableOpacity>
+          {/* Date and time */}
+          <Text style={styles.dateTimeText}>31-Dec-2025 5:15 PM</Text>
+        </View>
       </View>
-    )
-  }
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <StatusBar hidden={true} />
-      <View style={{ flex: 1, marginHorizontal: 16 }}>
-        {renderHeader()}
-        {renderAvailablePayments()}
-        {renderPaymentBtn()}
+        </View>
+        <View style={styles.section}>
+          <View style={styles.promoCodeContainer}>
+            <TextInput style={styles.promoCodeInput} placeholder="Enter promo code" />
+            <TouchableOpacity style={styles.applyButton}>
+              <Text style={styles.applyButtonText}>Apply</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Payment Methods</Text>
+          <View style={styles.radioContainer}>
+            <TouchableOpacity style={styles.radio}>
+              <Image source={images.jazzcash} resizeMode="contain" style={styles.locationImage} />
+              <Text>JazzCash</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.radio}>
+              <Image source={images.cashDelivery} resizeMode="contain" style={styles.locationImage} />
+              <Text>COD</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.editSection}>
+          <Text style={styles.editText}>Delivery Address</Text>
+          <TouchableOpacity style={styles.editIcon}>
+            <Ionicons name="chevron-forward" size={24} color="#f44c00" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.editSection}>
+          <Text style={styles.editText}>Delivery Time</Text>
+          <TouchableOpacity style={styles.editIcon}>
+            <Ionicons name="chevron-forward" size={24} color="#f44c00" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Delivery Instructions</Text>
+          <TextInput style={styles.deliveryInstructionsInput} placeholder="Add delivery instructions" />
+        </View>
       </View>
-    </SafeAreaView>
-  )
-}
+
+      {/* Adjusted Sticky Note Section */}
+      <View style={showStickyNote ? styles.stickyNoteVisible : styles.stickyNoteHidden}>
+        <Text style={styles.noteText}>
+          <Text style={styles.note}>NOTE: </Text>
+          Order delivery time is 2 hours before 3:30PM. Order placed after 3:30PM will be delivered tomorrow morning on
+          priority.
+        </Text>
+      </View>
+
+      {/* Adjusted Checkout Button */}
+      <View style={showStickyNote ? styles.checkoutButtonVisible : styles.checkoutButtonHidden}>
+        <TouchableOpacity style={styles.checkoutButton}>
+          <Text style={styles.checkoutButtonText}>Confirm Checkout</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  </SafeAreaView>
+</View>
+);
+};
 
 const styles = StyleSheet.create({
-  card: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 4,
-    marginRight: 10,
-    backgroundColor: COLORS.gray6
-  },
-  selectedCard: {
-    borderWidth: 2,
-    borderColor: 'orange',
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-  },
-  cardImage: {
-    width: 150,
-    height: 100,
-  },
-  cardContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  cardText: {
-    fontSize: 14,
-    color: COLORS.black,
-    fontFamily: 'regular',
-    marginVertical: 4
-  }
+container: {
+flexGrow: 1,
+backgroundColor: '#f0f0f0',
+paddingBottom: 180,
+},
+header: {
+backgroundColor: '#f44c00',
+paddingVertical: 15,
+alignItems: 'center',
+},
+headerText: {
+color: '#ffffff',
+fontSize: 18,
+fontWeight: 'bold',
+},
+content: {
+paddingHorizontal: 20,
+// paddingBottom: 20,
+},
+section: {
+marginBottom: 20,
+},
+sectionTitle: {
+fontSize: 18,
+fontWeight: 'bold',
+marginBottom: 10,
+},
+summaryItem: {
+flexDirection: 'row',
+justifyContent: 'space-between',
+marginBottom: 5,
+},
+totalAmount: {
+flexDirection: 'row',
+justifyContent: 'space-between',
+marginTop: 10,
+borderTopWidth: 1,
+paddingTop: 5,
+},
+totalPrice: {
+  color: '#f44c00',
+  fontWeight: 'bold',
+  fontSize: 18,
+},
+section1: {
+flexDirection: 'row',
+alignItems: 'center',
+},
+shoppingBag: {
+flexDirection: 'auto',
+alignItems: 'center',
+},
+amountText: {
+marginLeft: 'auto',
+fontSize: 16,
+},
+checkbox: {
+width: 20,
+height: 20,
+borderWidth: 1,
+borderColor: '#f44c00',
+},
+promoCodeContainer: {
+flexDirection: 'row',
+alignItems: 'center',
+},
+promoCodeInput: {
+flex: 1,
+borderWidth: 1,
+borderColor: '#f44c00',
+borderRadius: 5,
+paddingHorizontal: 10,
+marginBottom: 10,
+},
+card: {
+  backgroundColor: '#f44c00', 
+  width: '50%',
+  borderRadius: 10,
+  padding: 10,
+  alignItems: 'center',
+},
+circle: {
+  backgroundColor: '#fff',
+  color: '#f44c00',
+  borderRadius: 50,
+  width: 80,
+  height: 80,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginBottom: 20,
+},
+discountText: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  color: '#C70039',
+},
+subText: {
+  fontSize: 13,
+  marginBottom: 10,
+  color: '#fff',
+  textAlign: 'center'
+},
+line: {
+  borderBottomWidth: 1,
+  width: '100%',
+  marginBottom: 0,
+},
+applyButton2: {
+  backgroundColor: '#fff',
+  paddingVertical: 5,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  marginBottom: 10,
+},
+applyButtonText2: {
+  color: '#f44c00',
+  fontSize: 12,
+  textAlign: 'center'
+
+},
+dateTimeText: {
+  fontSize: 12,
+  color: '#fff',
+  textAlign: 'center'
+},
+applyButton: {
+backgroundColor: '#f44c00',
+paddingVertical: 5,
+paddingHorizontal: 20,
+borderRadius: 5,
+marginLeft: 10,
+marginBottom: 10,
+},
+applyButtonText: {
+color: '#ffffff',
+fontSize: 16,
+fontWeight: 'bold',
+},
+radioContainer: {
+flexDirection: 'row',
+marginBottom: 20,
+},
+radio: {
+borderWidth: 1,
+borderColor: '#f44c00',
+padding: 10,
+marginRight: 10,
+},
+locationImage: {
+height: SIZES.width * 0.3,
+width: SIZES.width * 0.3,
+},
+editSection: {
+flexDirection: 'row',
+justifyContent: 'space-between',
+alignItems: 'center',
+marginBottom: 20,
+},
+editText: {
+fontSize: 16,
+},
+editIcon: {
+borderWidth: 1,
+borderColor: '#f44c00',
+paddingHorizontal: 10,
+paddingVertical: 5,
+borderRadius: 5,
+},
+editIconText: {
+color: '#f44c00',
+fontSize: 18,
+},
+deliveryInstructionsInput: {
+borderWidth: 1,
+borderColor: '#f44c00',
+borderRadius: 5,
+paddingHorizontal: 10,
+marginBottom: 20,
+},
+noteSection: {
+backgroundColor: '#ffffff',
+padding: 20,
+marginBottom: 20,
+},
+note: {
+color: '#f44c00',
+},
+noteText: {
+fontSize: 14,
+color: '#333333',
+textAlign: 'center',
+},
+checkoutButtonContainer: {
+position: 'absolute',
+bottom: 60,
+left: 0,
+right: 0,
+paddingHorizontal: 20,
+paddingBottom: 20,
+},
+
+checkoutButton: {
+backgroundColor: '#f44c00',
+paddingVertical: 15,
+borderRadius: 5,
+alignItems: 'center',
+},
+checkoutButtonText: {
+color: '#ffffff',
+fontSize: 16,
+fontWeight: 'bold',
+},
+stickyNoteSection: {
+position: 'absolute',
+bottom: 60,
+left: 0,
+right: 0,
+top: "74%",
+backgroundColor: '#f5f5f5',
+padding: 15,
+borderTopWidth: 1,
+borderTopColor: '#ddd',
+},
+stickyNoteVisible: {
+position: 'absolute',
+bottom: 120, // Adjusted to avoid overlap with the checkout button
+left: 0,
+right: 0,
+backgroundColor: '#f5f5f5',
+padding: 15,
+borderTopWidth: 1,
+borderTopColor: '#ddd',
+},
+stickyNoteHidden: {
+display: 'none',
+},
+checkoutButtonVisible: {
+position: 'absolute',
+bottom: 20, // Adjusted to set proper distance from the bottom
+left: 0,
+right: 0,
+paddingHorizontal: 20,
+paddingBottom: 60,
+},
+checkoutButtonHidden: {
+display: 'none',
+},
+
 });
 
-export default PaymentMethod
+export default PaymentMethod;

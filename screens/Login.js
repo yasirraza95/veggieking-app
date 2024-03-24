@@ -83,7 +83,6 @@ const Login = ({ navigation }) => {
       AsyncStorage.setItem("user_type", user_type);
       // const { id, first_name, last_name, username, phone, email } = user;
 
-      // navigation.navigate('LocationAccess');
       setIsLoading(false);
       setIsEnable(true);
     } catch (err) {

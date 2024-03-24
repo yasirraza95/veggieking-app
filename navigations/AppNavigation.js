@@ -52,6 +52,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import BottomTabNavigation from './BottomTabNavigation'
 import DrawerNavigation from './DrawerNavigation'
 import MapLocation from '../screens/MapLocation';
+import Otp from '../screens/Otp';
 
 const Stack = createNativeStackNavigator()
 
@@ -97,6 +98,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="Signup" component={Signup}/>
                 <Stack.Screen name="StartUpScreen" component={StartUpScreen}/>
                 <Stack.Screen name="Login" component={Login}/>
+                <Stack.Screen name="Opt" component={Otp}/>
                 {/* <Stack.Screen name="MapLocation" component={MapLocation}/> */}
                 <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
                 <Stack.Screen name="ResetPassword" component={ResetPassword}/>

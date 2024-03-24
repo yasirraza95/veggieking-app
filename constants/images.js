@@ -59,6 +59,8 @@ const hotdog1 = require("../assets/images/others/hotdog1.png");
 const hotdog2 = require("../assets/images/others/hotdog2.jpg");
 const Vegetarian = require("../assets/images/others/vegetarian.jpg");
 const user = require("../assets/images/user.jpeg");
+const jazzcash = require("../assets/images/jazzcash.png");
+const cashDelivery = require("../assets/images/cod.png");
 
 export default {
     logo,
@@ -114,5 +116,7 @@ export default {
     avatar9,
     avatar10,
     avatar11,
-    user
+    user,
+    jazzcash,
+    cashDelivery
 }
