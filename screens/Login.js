@@ -46,7 +46,8 @@ const Login = ({ navigation }) => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
-  console.log(`id=${id}`);
+  // console.log(`id=${id}`);
+  console.log('id=', JSON.stringify(id));
   useEffect(() => {
     // console.log("calling");
     const checkAuthentication = async () => {
