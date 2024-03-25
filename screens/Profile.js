@@ -14,7 +14,8 @@ const Profile = () => {
     const handleLogout = async () => {
         try {
           // Clear AsyncStorage
-          await AsyncStorage.clear();
+          await AsyncStorage.removeItem("accessToken");
+            await AsyncStorage.removeItem("_id");
           // Navigate to the Login page
           navigation.navigate('Login');
         } catch (error) {
