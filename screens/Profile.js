@@ -7,6 +7,8 @@ import { commonStyles } from '../styles/CommonStyles'
 import { Feather, Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { ScrollView } from 'react-native-virtualized-view'
 import { StatusBar } from 'expo-status-bar'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Profile = () => {
     const navigation = useNavigation();

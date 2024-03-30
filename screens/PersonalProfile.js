@@ -1,5 +1,5 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, Text, Input, Image, TouchableOpacity, StyleSheet } from 'react-native'
+import { useState, useEffect} from 'react'
 import { ScrollView } from 'react-native-virtualized-view'
 import { COLORS, SIZES, FONTS, icons, images } from "../constants"
 import { useNavigation } from '@react-navigation/native'
@@ -7,8 +7,38 @@ import { commonStyles } from '../styles/CommonStyles'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import { StatusBar } from 'expo-status-bar'
+import { Formik } from 'formik'
+import { useDispatch, useSelector } from "react-redux";
+import { actionCreaters, bindActionCreators } from '../Redux';
+import GeneralService from '../services/general.service'
 
 const PersonalProfile = () => {
+  const dispatch = useDispatch();
+  const userActions = bindActionCreators(actionCreaters, dispatch);
+  const state = useSelector((state) => state.stateVals);
+  
+  const { id, accessToken } = state;
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+
+    const getProfile = async () => {
+        try {
+          const response = await GeneralService.showProfile(accessToken);
+          setName(response.data.name);
+          setEmail(response.data.email);
+          setPhone(response.data.phone);
+    
+          // }
+        } catch (err) {
+          console.log(err);
+        }
+      };
+    
+      useEffect(() => {
+        getProfile();
+      }, []);
     const renderHeader = () => {
         const navigation = useNavigation()
         return (
@@ -72,50 +102,65 @@ const PersonalProfile = () => {
 
     const renderUserProfileInfo = () => {
         return (
-            <View style={{ flexDirection: 'column' }}>
+            <Formik
+            initialValues={{
+              Name: name || '',
+              email: email || '',
+              phoneNumber: phone || '',
+            }}
+            onSubmit={(values) => {
+              // Handle form submission
+            }}
+          >
+            {(formikProps) => (
+              <View style={{ flexDirection: 'column' }}>
                 <View style={styles.container}>
-                    <TouchableOpacity
-                        style={styles.subContainer}
-                    >
-                        <View style={styles.subLeftContainer}>
-                            <View style={styles.rounded}>
-                                <Feather name="user" size={24} color={COLORS.primary} />
-                            </View>
-                            <View style={{ flexDirection: 'column' }}>
-                                <Text style={styles.boldBody}>Full Name</Text>
-                                <Text style={styles.textBody}>Vishal Khadok</Text>
-                            </View>
-                        </View>
-
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.subContainer}
-                    >
-                        <View style={styles.subLeftContainer}>
-                            <View style={styles.rounded}>
-                                <MaterialCommunityIcons name="email-outline" size={24} color="#413DFB" />
-                            </View>
-                            <View style={{ flexDirection: 'column' }}>
-                                <Text style={styles.boldBody}>Email</Text>
-                                <Text style={styles.textBody}>hello@gmail.com</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.subContainer}
-                    >
-                        <View style={styles.subLeftContainer}>
-                            <View style={styles.rounded}>
-                                <Feather name="phone" size={24} color="#369BFF" />
-                            </View>
-                            <View style={{ flexDirection: 'column' }}>
-                                <Text style={styles.boldBody}>Phone Number</Text>
-                                <Text style={styles.textBody}>408-278-248</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.subContainer}
+                  >
+                    {/* Formik field for Full Name */}
+                    <View style={styles.subLeftContainer}>
+                      <View style={styles.rounded}>
+                        <Feather name="user" size={24} color={COLORS.primary} />
+                      </View>
+                      <View style={{ flexDirection: 'column' }}>
+                        <Text style={styles.boldBody}>Full Name</Text>
+                        <Input
+                          style={styles.textBody}
+                          onChangeText={formikProps.handleChange('fullName')}
+                          onBlur={formikProps.handleBlur('fullName')}
+                          value={formikProps.values.fullName}
+                        />
+                        <Text style={styles.errorText}>{formikProps.touched.fullName && formikProps.errors.fullName}</Text>
+                      </View>
+                      <View style={{ flexDirection: 'column' }}>
+                        <Text style={styles.boldBody}>Email</Text>
+                        <Input
+                          style={styles.textBody}
+                          onChangeText={formikProps.handleChange('email')}
+                          onBlur={formikProps.handleBlur('email')}
+                          value={formikProps.values.email}
+                        />
+                        <Text style={styles.errorText}>{formikProps.touched.email && formikProps.errors.email}</Text>
+                      </View>
+                      <View style={{ flexDirection: 'column' }}>
+                        <Text style={styles.boldBody}>Phone No</Text>
+                        <Input
+                          style={styles.textBody}
+                          onChangeText={formikProps.handleChange('phone')}
+                          onBlur={formikProps.handleBlur('phone')}
+                          value={formikProps.values.phone}
+                        />
+                        <Text style={styles.errorText}>{formikProps.touched.phone && formikProps.errors.phone}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  {/* Repeat similar pattern for other form fields */}
                 </View>
-            </View>
+              </View>
+            )}
+          </Formik>
+          
         )
     }
 

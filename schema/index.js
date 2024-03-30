@@ -7,6 +7,7 @@ export const validationSchema = Yup.object().shape({
 
 export const signInSchema = Yup.object({
   name: Yup.string().min(2, "Min 5 characters required").max(50, "Max 50 characters allowed").required("Enter Full Name"),
+  address: Yup.string().required('Enter Address'),
   phone: Yup.string().min(11, "Min 11 numbers required").max(11, "Max 11 numbers allowed").matches(
     /^03[0-9]{9}$/, 'Invalid phone number'
   ).required("Enter Phone No."),

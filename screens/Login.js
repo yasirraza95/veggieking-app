@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actionCreaters } from '../Redux';
 import { bindActionCreators } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 const initialState = {
   inputValues: {
@@ -95,6 +96,30 @@ const Login = ({ navigation }) => {
       }
       setIsLoading(false);
       setIsEnable(true);
+    }
+  };
+  
+    const [ userInfo, setUserInfo ] = useState(null);
+  // useEffect(() => {
+  //   GoogleSignin.configure({
+  //     webClientId: '836571060958-mfbvkmvi0kbdm2170veivuus20u2u7ud.apps.googleusercontent.com',
+  //   });
+  // }, []);
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      setUserInfo({ userInfo });
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (e.g. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+      } else {
+        // some other error happened
+      }
     }
   };
 
@@ -182,7 +207,10 @@ const Login = ({ navigation }) => {
         </Formik>
         <View style={styles.hr} />
         <TouchableOpacity
-          style={styles.googleButton}>
+          style={styles.googleButton}
+          onPress={()=>{signIn();
+          }}
+          >
           <Image
             source={icons.google}
             resizeMode="contain"

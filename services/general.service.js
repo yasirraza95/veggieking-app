@@ -27,6 +27,7 @@ const register = (values) => {
         `${API_URL}/user-register`,
         {
             name: values.name,
+            address: values.address,
             phone: values.phone,
             email: values.email,
             password: values.password,
@@ -63,7 +64,11 @@ const checkForgotToken = (values) => {
         }
     );
 };
-
+const showProfile = (accessToken) => {
+    return axios.get(`${API_URL}/profile`, {
+      headers: authHeader(accessToken),
+    });
+  };
 const locationUpdate = (values) => {
     const headers = {
         "Content-Type": "application/json",
@@ -384,7 +389,7 @@ const sendNotification = () => {
 };
 
 const GeneralService = {
-    login, register, forgot, checkForgotToken, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
+    login, register, forgot, checkForgotToken,showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
     deleteCart, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserId,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
     listAssignedOrderByRiderId, sendNotification

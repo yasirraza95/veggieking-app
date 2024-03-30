@@ -47,10 +47,14 @@ const ForgotPassword = ({ navigation }) => {
         try {
             setIsLoading(true);
             setIsEnable(false);
-            await GeneralService.forgot(values);
+            const response = await GeneralService.forgot(values); // Call the forgot method and capture the response
+            console.log('Forgot response:', response); // Log the response to see the structure and extract the message if needed
             setIsLoading(false);
             setIsEnable(true);
+            // Display the response message, assuming the response contains a 'message' field
+            Alert.alert('Success', 'Check your email to reset password'); // Modify the field according to your API response structure
         } catch (err) {
+            console.error('Error occurred:', err);
             if (err?.response?.status == 404) {
                 Alert.alert("Error", "No user found");
             } else {
@@ -60,6 +64,7 @@ const ForgotPassword = ({ navigation }) => {
             setIsEnable(true);
         }
     };
+    
 
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>

@@ -38,19 +38,19 @@ const Settings = ({ navigation }) => {
 
   function renderAppSettings() {
     const [notificationEnabled, setNotificationEnabled] = useState(false);
-    const [darkModeEnabled, setDarkModeEnabled] = useState(false);
     const [locationEnabled, setLocationEnabled] = useState(true);
     const [currency, setCurrency] = useState('USD');
     const [language, setLanguage] = useState('English');
     const [isCurrencyModalVisible, setCurrencyModalVisible] = useState(false);
     const [isLanguageModalVisible, setLanguageModalVisible] = useState(false);
+    const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
-    const handleNotificationToggle = () => {
-      setNotificationEnabled((prevValue) => !prevValue);
-    };
 
     const handleDarkModeToggle = () => {
-      setDarkModeEnabled((prevValue) => !prevValue);
+      setDarkModeEnabled(prevValue => !prevValue);
+    };
+    const handleNotificationToggle = () => {
+      setNotificationEnabled((prevValue) => !prevValue);
     };
 
     const handleLocationToggle = () => {
@@ -100,7 +100,7 @@ const Settings = ({ navigation }) => {
     );
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, darkModeEnabled && styles.darkContainer]}>
         <View style={styles.settingContainer}>
           <Text style={styles.settingLabel}>Enable Notifications</Text>
           <Switch
@@ -112,14 +112,16 @@ const Settings = ({ navigation }) => {
         </View>
 
         <View style={styles.settingContainer}>
-          <Text style={styles.settingLabel}>Dark Mode</Text>
-          <Switch
-            value={darkModeEnabled}
-            onValueChange={handleDarkModeToggle}
-            thumbColor={darkModeEnabled ? COLORS.primary : '#f4f3f4'}
-            trackColor={{ false: '#f4f3f4', true: COLORS.primary }}
-          />
-        </View>
+        <Text style={[styles.settingLabel, darkModeEnabled && styles.darkSettingLabel]}>
+          Dark Mode
+        </Text>
+        <Switch
+          value={darkModeEnabled}
+          onValueChange={handleDarkModeToggle}
+          thumbColor={darkModeEnabled ? '#ffffff' : '#f4f3f4'}
+          trackColor={{ false: '#f4f3f4', true: '#222222' }}
+        />
+      </View>
 
         <View style={styles.settingContainer}>
           <Text style={styles.settingLabel}>Enable Location</Text>
@@ -219,6 +221,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     padding: 16,
     marginTop: 16
+  },
+  darkContainer: {
+    backgroundColor: '#222222', // dark mode background color
   },
   title: {
     fontSize: 24,
