@@ -1,5 +1,5 @@
 import { Dimensions, View, Text, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { COLORS, FONTS, SIZES, icons, images } from '../constants'
 import { Feather, Ionicons, MaterialIcons, Octicons, MaterialCommunityIcons, Fontisto } from "@expo/vector-icons"
 import { ScrollView } from 'react-native-virtualized-view'
@@ -12,20 +12,33 @@ import Carousel from 'react-native-reanimated-carousel';
 import restaurant6 from '../assets/images/restaurants/restaurant6.png';
 import restaurant7 from '../assets/images/restaurants/restaurant7.jpg';
 import restaurant8 from '../assets/images/restaurants/restaurant8.png';
+import GeneralService from '../services/general.service'
 
 const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const handlePressGotIt = () => {
-    // Handle the logic when the "GOT IT" button is pressed
-    // For example, you can close the modal or perform any other action
     setModalVisible(false);
   };
 
   const handleSearch = (text) => {
     setSearchQuery(text);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await GeneralService.listAllProducts();
+        setCategories(response.data.categories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   
   const renderCarousel = () => {
@@ -190,7 +203,7 @@ const HomeV2 = ({ navigation }) => {
   const renderFoodCategories = () => {
     return (
       <>
-      <View>
+           <View>
         <View style={{
           flexDirection: 'row',
           justifyContent: 'space-between',

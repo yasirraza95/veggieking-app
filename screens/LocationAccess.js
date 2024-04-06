@@ -84,7 +84,8 @@ const LocationAccess = ({ navigation }) => {
                         </View>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.addButton}>
+                
+                {/* <TouchableOpacity style={styles.addButton}>
                     <View style={styles.buttonContent} color={COLORS.white}>
                         <Text
                             style={styles.addButtonText}
@@ -104,7 +105,7 @@ const LocationAccess = ({ navigation }) => {
                             />
                         </View>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <Text style={styles.bottomText}>
                     VEGGIE KING WILL ACCESS YOUR LOCATION ONLY WHILE USING THE

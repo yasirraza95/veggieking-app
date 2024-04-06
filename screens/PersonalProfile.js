@@ -30,7 +30,6 @@ const PersonalProfile = () => {
           setEmail(response.data.email);
           setPhone(response.data.phone);
     
-          // }
         } catch (err) {
           console.log(err);
         }
