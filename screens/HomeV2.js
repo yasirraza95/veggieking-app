@@ -4,11 +4,8 @@ import { COLORS, FONTS, SIZES, icons, images } from '../constants'
 import { Feather, Ionicons, MaterialIcons, Octicons, MaterialCommunityIcons, Fontisto } from "@expo/vector-icons"
 import { ScrollView } from 'react-native-virtualized-view'
 import { StatusBar } from 'expo-status-bar'
-import { categories } from '../data/categories'
-import { restaurants } from '../data/restaurants'
 import CustomModal from '../components/CustomModal'
 import Carousel from 'react-native-reanimated-carousel';
-
 import restaurant6 from '../assets/images/restaurants/restaurant6.png';
 import restaurant7 from '../assets/images/restaurants/restaurant7.jpg';
 import restaurant8 from '../assets/images/restaurants/restaurant8.png';
@@ -17,7 +14,8 @@ import GeneralService from '../services/general.service'
 const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [featured, setFeatured] = useState([]);
+  const [moreProd, setMoreProd] = useState([]);
 
   const handlePressGotIt = () => {
     setModalVisible(false);
@@ -28,17 +26,28 @@ const HomeV2 = ({ navigation }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const featuredProducts = async () => {
       try {
         const response = await GeneralService.listAllProducts();
-        setCategories(response.data.response);
-        console.log(response.data.response);
+        setFeatured(response.data.response);
+        console.error('Featured products fetched');
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching featured:', error);
       }
     };
 
-    fetchData();
+    const moreProducts = async () => {
+      try {
+        const response = await GeneralService.listAllProducts();
+        setMoreProd(response.data.response);
+        console.error('More products fetched');
+      } catch (error) {
+        console.error('Error fetching more products:', error);
+      }
+    };
+
+    featuredProducts();
+    moreProducts();
   }, []);
 
 
@@ -51,42 +60,6 @@ const HomeV2 = ({ navigation }) => {
         }}>
         </View>
 
-        {/* <Carousel
-          loop
-          width={width}
-          height={width / 3}
-          autoPlay={true}
-          data={[...new Array(6).keys()]}
-          scrollAnimationDuration={3500}
-          onSnapToItem={(index) => console.log('current index:', index)}
-          style={{
-            width: SIZES.width - 32,
-            borderColor: COLORS.tertiaryGray,
-            borderWidth: 1,
-            paddingBottom: 2,
-            marginBottom: 12,
-            borderRadius: 15
-          }
-          }
-          renderItem={({ index }) => (
-            <View
-              style={{
-                flex: 1,
-                borderWidth: 1,
-                justifyContent: 'center',
-              }}
-            >
-              <Image
-                source={images.restaurant6}
-                style={{
-                  width: SIZES.width - 1,
-                  height: width/2,
-                  borderRadius: 15
-                }}
-              />
-            </View>
-          )}
-        /> */}
         <Carousel
           loop
           width={width}
@@ -168,8 +141,7 @@ const HomeV2 = ({ navigation }) => {
     )
   }
 
-
-  const renderFoodCategories = () => {
+  const renderFeaturedProducts = () => {
     return (
       <>
         <View>
@@ -181,7 +153,7 @@ const HomeV2 = ({ navigation }) => {
           }}>
             <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
             <TouchableOpacity
-              onPress={() => console.log("See all category")}
+              // onPress={() => console.log("See all category")}
               style={{ flexDirection: 'row', alignItems: 'center' }}
             >
             </TouchableOpacity>
@@ -189,13 +161,14 @@ const HomeV2 = ({ navigation }) => {
 
           <FlatList
             horizontal={true}
-            data={categories}
+            data={featured}
             keyExtractor={item => item.id}
             renderItem={({ item, index }) => {
               return (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
                   <TouchableOpacity
                     key={index}
+                    onPress={() => navigation.navigate("RestaurantView")}
                   >
                     <View style={{
                       height: 90,
@@ -241,72 +214,9 @@ const HomeV2 = ({ navigation }) => {
       </>
     )
   }
-  // const renderSearchBar = () => {
-  //   return (
-  //     <View style={{
-  //       width: SIZES.width - 32,
-  //       height: 62,
-  //       borderRadius: 10,
-  //       backgroundColor: COLORS.tertiaryGray,
-  //       alignItems: 'center',
-  //       flexDirection: 'row'
-  //     }}>
-  //       <View style={{
-  //         marginHorizontal: SIZES.padding
-  //       }}>
-  //         <Ionicons name="search" size={24} color={COLORS.gray4} />
-  //       </View>
-  //       <TextInput
-  //         placeholder='Search dishes, restaurants'
-  //         onChangeText={handleSearch}
-  //         placeholderTextColor={COLORS.gray5}
-  //       />
-  //     </View>
-  //   )
-  // }
 
-  const renderRestaurants = () => {
+  const renderMoreProducts = () => {
     const numColumns = 2;
-
-    const renderItem = ({ item }) => (
-
-      <TouchableOpacity
-        onPress={() => navigation.navigate("RestaurantView")}
-        style={{
-          flex: 1,
-          margin: 8,
-          borderColor: "#f78c47",
-          borderWidth: 1,
-          borderRadius: 20
-        }}
-      >
-        <Image
-          source={item.image}
-          style={{
-            width: '100%',
-            height: 136,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-          }}
-        />
-        <View style={{ padding: 8 }}>
-          <Text style={{ fontSize: 18, fontFamily: 'regular', marginVertical: 6 }}>{item.name}</Text>
-          <View style={{ marginBottom: 4 }}>
-            <Text style={{ fontSize: 14, color: COLORS.gray5 }}>
-              {item.keywords.map((keyword, index) => (
-                <Text key={index}>
-                  {index !== 0 && " - "}
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={{ textTransform: 'capitalize' }}>
-                    {keyword}
-                  </Text>
-                </Text>
-              ))}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-
     return (
       <View style={{ flex: 1 }}>
         <View style={{
@@ -316,9 +226,9 @@ const HomeV2 = ({ navigation }) => {
           alignItems: 'center',
           paddingHorizontal: 16
         }}>
-          <Text style={{ ...FONTS.body2 }}>Open Restaurants</Text>
+          <Text style={{ ...FONTS.body2 }}>More Products</Text>
           <TouchableOpacity
-            onPress={() => navigation.navigate("OpenShops")}
+            onPress={() => navigation.navigate("RestaurantView")}
             style={{ flexDirection: 'row', alignItems: 'center' }}
           >
             <Text style={{ fontSize: 16, fontFamily: 'regular' }}>See All</Text>
@@ -328,14 +238,42 @@ const HomeV2 = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <FlatList
-          nestedScrollEnabled
-          data={restaurants}
+          data={moreProd}
           keyExtractor={item => item.id}
-          renderItem={renderItem}
           numColumns={numColumns}
           contentContainerStyle={{ paddingHorizontal: 8 }}
           style={{
             marginBottom: "30%",
+          }}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={() => navigation.navigate("RestaurantView")}
+                style={{
+                  flex: 1,
+                  margin: 8,
+                  borderColor: "#f78c47",
+                  borderWidth: 1,
+                  borderRadius: 20
+                }}
+              >
+                <Image
+                  source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }}
+                  resizeMode='cover'
+                  style={{
+                    width: '100%',
+                    height: 136,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                  }}
+                />
+                <View style={{ padding: 8 }}>
+                  <Text style={{ fontSize: 18, fontFamily: 'regular', marginVertical: 6, textAlign: "center" }}>{item.name}</Text>
+                  <Text style={{ textTransform: 'capitalize', textAlign: "center" }}>{item.name}</Text>
+                </View>
+              </TouchableOpacity>
+            )
           }}
         />
       </View>
@@ -434,19 +372,10 @@ const HomeV2 = ({ navigation }) => {
           </View>
         </View>
 
-        {/* <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginVertical: 16
-        }}>
-          <Text style={{ fontSize: 16, fontFamily: 'regular' }}>Hey Halal,</Text>
-          <Text style={{ fontSize: 16, fontFamily: 'bold' }}>Good Afternoon!</Text>
-        </View> */}
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* {renderSearchBar()} */}
           {renderCarousel()}
-          {renderFoodCategories()}
-          {renderRestaurants()}
+          {renderFeaturedProducts()}
+          {renderMoreProducts()}
         </ScrollView>
       </View>
       <CustomModal
