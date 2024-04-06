@@ -88,7 +88,7 @@ const AppNavigation = () => {
             <Stack.Navigator
                 screenOptions={{ headerShown: false }}
                 initialRouteName={
-                    isFirstLaunch ? 'Onboarding1' : 'Login'
+                    isFirstLaunch ? 'HomeV2' : 'Login'
                 }
             >
                 <Stack.Screen name="Onboarding1" component={Onboarding1}/>

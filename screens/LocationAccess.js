@@ -63,7 +63,7 @@ const LocationAccess = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
                 {/* Add New Address button */}
-                <TouchableOpacity style={styles.addButton}>
+                {/* <TouchableOpacity style={styles.addButton}>
                     <View style={styles.buttonContent} color={COLORS.white}>
                         <Text
                             style={styles.addButtonText}
@@ -83,7 +83,7 @@ const LocationAccess = ({ navigation }) => {
                             />
                         </View>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 
                 {/* <TouchableOpacity style={styles.addButton}>
                     <View style={styles.buttonContent} color={COLORS.white}>

@@ -166,6 +166,18 @@ const deleteCart = (values) => {
     );
 };
 
+const fetchProductByType = (type) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/fetch-product-by-type/${type}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const listAllProducts = () => {
     const headers = {
         "Content-Type": "application/json",
@@ -390,7 +402,7 @@ const sendNotification = () => {
 
 const GeneralService = {
     login, register, forgot, checkForgotToken,showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
-    deleteCart, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserId,
+    deleteCart, fetchProductByType, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserId,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
     listAssignedOrderByRiderId, sendNotification
 };
