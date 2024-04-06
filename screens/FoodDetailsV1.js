@@ -213,7 +213,7 @@ const FoodDetailsV1 = () => {
             borderRadius: 24,
             paddingHorizontal: 10,
             paddingVertical: 16
-          }}>
+            }}>
             <View style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
