@@ -31,7 +31,7 @@ This is a comprehensive Food Delivery App template built using React Native Expo
 Follow these steps to set up the Food Delivery App template:
 
 1. Unzip the main folder:
-2. Go to Fooda Folder
+2. Go to VeggieKing Folder
 3. Install all dependencies:
 
 ```shell

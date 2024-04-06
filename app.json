@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Fooda",
-    "slug": "Fooda",
+    "name": "VeggieKing",
+    "slug": "VeggieKing",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -27,7 +27,7 @@
           "apiKey": "AIzaSyD9dz07KGRRgDjIyuWlNjjegX1SugkniZ4"
         }
       },
-      "package": "com.thoms90.Fooda"
+      "package": "com.mirza.VeggieKing"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
