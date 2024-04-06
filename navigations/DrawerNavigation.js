@@ -8,8 +8,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import { COLORS, images } from "../constants";
-import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search } from "../screens";
+import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory } from "../screens";
 import Otp from "../screens/Otp";
+import Logout from "../screens/Logout";
 
 const Drawer = createDrawerNavigator();
 const DrawerNavigation = () => {
@@ -96,7 +97,7 @@ const DrawerNavigation = () => {
           title: "Profile",
           headerShadowVisible: false,
           drawerIcon: () => (
-            <Ionicons name="briefcase" size={24} color={COLORS.black} />
+            <Ionicons name="briefcase-outline" size={24} color={COLORS.black} />
           )
         }}
         component={HomeV2}
@@ -110,7 +111,7 @@ const DrawerNavigation = () => {
             <Ionicons name="gift-outline" size={24} color={COLORS.black} />
           )
         }}
-        component={MyOrders}
+        component={TransactionHistory}
       />
       {/* <Drawer.Screen
         name="Otp"
@@ -140,7 +141,7 @@ const DrawerNavigation = () => {
           drawerLabel: "Cart",
           title: "Cart",
           drawerIcon: () => (
-            <Ionicons name="cart" size={24} color={COLORS.black} />
+            <Ionicons name="cart-outline" size={24} color={COLORS.black} />
           )
         }}
         component={Cart}
@@ -152,10 +153,10 @@ const DrawerNavigation = () => {
           drawerLabel: "Logout",
           title: "Logout",
           drawerIcon: () => (
-            <Ionicons name="log-out" size={24} color={COLORS.black} />
+            <Ionicons name="log-out-outline" size={24} color={COLORS.black} />
           )
         }}
-        component={Cart}
+        component={Logout}
       />
 
       {/* <Drawer.Screen

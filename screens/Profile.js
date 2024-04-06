@@ -12,18 +12,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
     const navigation = useNavigation();
-    
+
     const handleLogout = async () => {
         try {
-          // Clear AsyncStorage
-          await AsyncStorage.removeItem("accessToken");
+            await AsyncStorage.removeItem("accessToken");
             await AsyncStorage.removeItem("_id");
-          // Navigate to the Login page
-          navigation.navigate('Login');
+            navigation.navigate('Login');
         } catch (error) {
-          console.error('Error clearing AsyncStorage:', error);
+            console.error('Error clearing AsyncStorage:', error);
         }
-      };
+    };
     const renderHeader = () => {
         const navigation = useNavigation()
         return (

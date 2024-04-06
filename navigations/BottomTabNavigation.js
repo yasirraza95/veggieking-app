@@ -2,7 +2,7 @@ import { View, Text, Platform } from 'react-native'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { COLORS } from '../constants'
-import { HomeV1, Profile, Search, Card, Notifications, Menu, MyOrders, Message } from '../screens'
+import { HomeV1, Profile, Search, Card, Notifications, Menu, MyOrders, Message, PersonalProfile, Cart } from '../screens'
 import { Ionicons, SimpleLineIcons} from '@expo/vector-icons'
 import DrawerNavigation from './DrawerNavigation'
 
@@ -48,7 +48,7 @@ const BottomTabNavigation = () => {
                     tabBarIcon: ({ focused }) => {
                         return (
                             <Ionicons 
-                            name="list-sharp" 
+                            name="gift-outline" 
                             size={24} 
                             color={
                                 focused
@@ -89,13 +89,13 @@ const BottomTabNavigation = () => {
             />
 
             <Tab.Screen
-                name="Message"
-                component={Message}
+                name="Cart"
+                component={Cart}
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
                             <Ionicons 
-                            name={ focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
+                            name={ focused ? "cart-sharp" : "cart-outline"}
                             size={24} 
                             color={
                                 focused ? COLORS.primary : COLORS.black
@@ -108,7 +108,7 @@ const BottomTabNavigation = () => {
 
             <Tab.Screen
                 name="Profile"
-                component={Profile}
+                component={PersonalProfile}
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
