@@ -48,18 +48,18 @@ const Login = ({ navigation }) => {
     setIsPasswordVisible(!isPasswordVisible);
   };
   // console.log(`id=${id}`);
-  console.log('user-id=', JSON.stringify(userId));
+  // console.log('user-id=', JSON.stringify(userId));
   useEffect( async () => {
     // console.log("calling");
-    let userId = await AsyncStorage.getItem("_id");
-
+    
     const checkAuthentication = async () => {
+      let userId = await AsyncStorage.getItem("_id");
       if (userId) {
         navigation.replace('LocationAccess');
       }
     }
     checkAuthentication();
-  }, [userId, navigation]);
+  }, []);
 
   useEffect(() => {
     if (error) {
