@@ -13,11 +13,11 @@ import { actionCreaters, bindActionCreators } from '../Redux';
 import GeneralService from '../services/general.service'
 
 const PersonalProfile = () => {
-  const dispatch = useDispatch();
-  const userActions = bindActionCreators(actionCreaters, dispatch);
-  const state = useSelector((state) => state.stateVals);
+  // const dispatch = useDispatch();
+  // const userActions = bindActionCreators(actionCreaters, dispatch);
+  // const state = useSelector((state) => state.stateVals);
   
-  const { id, accessToken } = state;
+  // const { id, accessToken } = state;
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -25,6 +25,7 @@ const PersonalProfile = () => {
 
     const getProfile = async () => {
         try {
+          let accessToken = await AsyncStorage.getItem("accessToken");
           const response = await GeneralService.showProfile(accessToken);
           setName(response.data.name);
           setEmail(response.data.email);

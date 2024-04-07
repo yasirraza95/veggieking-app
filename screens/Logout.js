@@ -5,11 +5,14 @@ const Logout = ({ navigation }) => {
     try {
       await AsyncStorage.removeItem("accessToken");
       await AsyncStorage.removeItem("_id");
+      console.error('Cleared successfully:');
+
       navigation.replace('Login');
     } catch (error) {
       console.error('Error clearing AsyncStorage:', error);
     }
   };
+
   handleLogout();
 };
 

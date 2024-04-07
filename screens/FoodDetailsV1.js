@@ -120,7 +120,7 @@ const FoodDetailsV1 = () => {
           }}>
             Prosciutto e funghi is a pizza variety that is topped with tomato sauce.</Text>
 
-          <View style={{ flexDirection: "row", marginTop: 16 }}>
+          {/* <View style={{ flexDirection: "row", marginTop: 16 }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Octicons name="star" size={24} color={COLORS.primary} />
               <Text style={{ marginLeft: 8 }}>4.7</Text>
@@ -133,9 +133,9 @@ const FoodDetailsV1 = () => {
               <Fontisto name="stopwatch" size={22} color={COLORS.primary} />
               <Text style={{ marginLeft: 8 }}>20 min</Text>
             </View>
-          </View>
+          </View> */}
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+          {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
             <Text style={{ fontSize: 14, fontFamily: "regular", marginRight: 20 }}>SIZE: </Text>
 
             <View style={{ flexDirection: "row", marginVertical: 18 }}>
@@ -175,9 +175,9 @@ const FoodDetailsV1 = () => {
 
 
             </View>
-          </View>
+          </View> */}
 
-          <View>
+          {/* <View>
             <Text style={{ fontSize: 14, fontFamily: 'regular', textTransform: 'uppercase' }}>ingridents</Text>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               {
@@ -206,7 +206,8 @@ const FoodDetailsV1 = () => {
                 ))
               }
             </View>
-          </View>
+          </View> */}
+          
 
           <View style={{
             backgroundColor: COLORS.tertiaryGray,
@@ -219,7 +220,7 @@ const FoodDetailsV1 = () => {
               justifyContent: 'space-between',
               marginBottom: 16,
             }}>
-              <Text style={{ fontSize: 28, fontFamily: 'regular' }}>$32</Text>
+              <Text style={{ fontSize: 28, fontFamily: 'regular' }}>Rs. 32</Text>
               <View style={{
                 backgroundColor: COLORS.blue,
                 width: 125,

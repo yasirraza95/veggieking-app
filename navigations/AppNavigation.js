@@ -53,6 +53,7 @@ import BottomTabNavigation from './BottomTabNavigation'
 import DrawerNavigation from './DrawerNavigation'
 import MapLocation from '../screens/MapLocation';
 import Otp from '../screens/Otp';
+import OrderDetail from '../screens/OrderDetail';
 
 const Stack = createNativeStackNavigator()
 
@@ -134,6 +135,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="AddReview" component={AddReview}/>
                 <Stack.Screen name="CancelOrders" component={CancelOrders}/>
                 <Stack.Screen name="TransactionHistory" component={TransactionHistory}/>
+                <Stack.Screen name="OrderDetail" component={OrderDetail}/>
                 <Stack.Screen name="Faqs" component={Faqs}/>
                 <Stack.Screen name="Settings" component={Settings}/>
                 <Stack.Screen name="SubmitQuestion" component={SubmitQuestion}/>

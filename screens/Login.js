@@ -33,10 +33,10 @@ const initialState = {
 }
 
 const Login = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const userActions = bindActionCreators(actionCreaters, dispatch);
-  const state = useSelector((state) => state.stateVals);
-  const { id, userType } = state;
+  // const dispatch = useDispatch();
+  // const userActions = bindActionCreators(actionCreaters, dispatch);
+  // const state = useSelector((state) => state.stateVals);
+  // const { id, userType } = state;
 
   const [error, setError] = useState()
   const [isLoading, setIsLoading] = useState(false)
@@ -48,16 +48,18 @@ const Login = ({ navigation }) => {
     setIsPasswordVisible(!isPasswordVisible);
   };
   // console.log(`id=${id}`);
-  console.log('id=', JSON.stringify(id));
-  useEffect(() => {
+  console.log('user-id=', JSON.stringify(userId));
+  useEffect( async () => {
     // console.log("calling");
+    let userId = await AsyncStorage.getItem("_id");
+
     const checkAuthentication = async () => {
-      if (id) {
+      if (userId) {
         navigation.replace('LocationAccess');
       }
     }
     checkAuthentication();
-  }, [id, navigation]);
+  }, [userId, navigation]);
 
   useEffect(() => {
     if (error) {
@@ -73,16 +75,18 @@ const Login = ({ navigation }) => {
       const { data } = response;
       const { access_token, user } = data;
       const { id, user_type } = user;
-      // console.log(id);
+      console.log(id);
       // FIXME
       // userActions.logIn({
       //   accessToken: access_token,
       //   id: id,
       //   user_type: user_type,
       // });
-      AsyncStorage.setItem("accessToken", access_token);
-      AsyncStorage.setItem("_id", id);
-      AsyncStorage.setItem("user_type", user_type);
+      await AsyncStorage.setItem("accessToken", access_token);
+      await AsyncStorage.setItem("_id", String(id));
+      await AsyncStorage.setItem("user_type", user_type);
+      navigation.replace('LocationAccess');
+
       // const { id, first_name, last_name, username, phone, email } = user;
 
       setIsLoading(false);

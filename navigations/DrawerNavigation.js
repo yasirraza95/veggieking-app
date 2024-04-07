@@ -111,7 +111,7 @@ const DrawerNavigation = () => {
             <Ionicons name="gift-outline" size={24} color={COLORS.black} />
           )
         }}
-        component={TransactionHistory}
+        component={MyOrders}
       />
       {/* <Drawer.Screen
         name="Otp"

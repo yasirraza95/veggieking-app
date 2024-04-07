@@ -15,6 +15,8 @@ import GeneralService from '../services/general.service'
 const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [featuredLoading, setFeaturedLoading] = useState(false);
+  const [moreLoading, setMoreLoading] = useState(false);
   const [featured, setFeatured] = useState([]);
   const [moreProd, setMoreProd] = useState([]);
 
@@ -29,20 +31,26 @@ const HomeV2 = ({ navigation }) => {
   useEffect(() => {
     const featuredProducts = async () => {
       try {
+        setFeaturedLoading(true);
         const response = await GeneralService.listAllProducts();
         setFeatured(response.data.response);
+        setFeaturedLoading(false);
         console.error('Featured products fetched');
       } catch (error) {
+        setFeaturedLoading(false);
         console.error('Error fetching featured:', error);
       }
     };
 
     const moreProducts = async () => {
       try {
+        setMoreLoading(true);
         const response = await GeneralService.listAllProducts();
         setMoreProd(response.data.response);
+        setMoreLoading(false);
         console.error('More products fetched');
       } catch (error) {
+        setMoreLoading(false);
         console.error('Error fetching more products:', error);
       }
     };
@@ -137,12 +145,12 @@ const HomeV2 = ({ navigation }) => {
             >
             </TouchableOpacity>
           </View>
-
+          
           <FlatList horizontal={true} data={featured} keyExtractor={item => item.id}
             renderItem={({ item, index }) => {
               return (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <TouchableOpacity key={index} onPress={() => navigation.navigate("RestaurantView")}
+                  <TouchableOpacity key={index} onPress={() => navigation.navigate("FoodDetails")}
                   >
                     <View style={{
                       height: 90,
@@ -247,7 +255,7 @@ const HomeV2 = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity key={index} onPress={() => navigation.navigate("RestaurantView")}
+              <TouchableOpacity key={index} onPress={() => navigation.navigate("FoodDetails")}
                 style={{
                   flex: 1,
                   margin: 8,

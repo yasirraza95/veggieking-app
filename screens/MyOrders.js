@@ -153,7 +153,7 @@ const HistoryRoute = () => {
               justifyContent: 'space-between',
               marginVertical: 18
             }}>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => navigation.navigate("AddReview")}
                 style={{
                   height: 38,
@@ -171,8 +171,9 @@ const HistoryRoute = () => {
                   fontSize: 14,
                   fontFamily: 'regular'
                 }}>Rate</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
+              onPress={() => navigation.navigate("OrderDetail")}
                 style={{
                   height: 38,
                   width: 140,
@@ -186,7 +187,7 @@ const HistoryRoute = () => {
                   color: COLORS.white,
                   fontSize: 14,
                   fontFamily: 'regular'
-                }}>Re-Order</Text>
+                }}>Details</Text>
               </TouchableOpacity>
 
             </View>
