@@ -104,10 +104,9 @@ const PersonalProfile = () => {
     return (
       <Formik
         initialValues={{
-          // Name: name || '',
-          Name: '',
-          email: '',
-          phoneNumber: '',
+          Name: name || '',
+          email: email || '',
+          phoneNumber: phone || '',
         }}
         onSubmit={(values) => {
           // Handle form submission

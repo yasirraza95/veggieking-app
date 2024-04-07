@@ -4,21 +4,21 @@ import { COLORS } from '../constants'
 import { ScrollView } from 'react-native-virtualized-view'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TransactionHistoryData } from '../data/utils'
-import TransactionCard from '../components/TransactionCard'
 import Header from '../components/Header'
+import OrdDtlCard from '../components/OrdDtlCard'
 
 const OrderDetail = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.area}>
       <View style={styles.container}>
-        <Header title="Transaction History" />
+        <Header title="Order Detail" />
         <ScrollView>
           <FlatList
             data={TransactionHistoryData}
             keyExtractor={item => item.id}
             renderItem={({ item, index }) => (
-              <TransactionCard
+              <OrdDtlCard
                 image={item.image}
                 amount={item.amount}
                 type={item.type}
