@@ -272,12 +272,36 @@ const listAllOrders = () => {
     );
 };
 
-const listOrdersByUserId = (values) => {
+const listOrdersByUserIdandStatus = (status, userId) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-orders-user/${values.user_id}`,
+        `${API_URL}/list-orders-user/${status}/${userId}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listOrdersByUserIdOngoing = (userId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-orders-user-ongoing/${userId}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listOrdersByUserIdHistory = (userId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-orders-user-history/${userId}`,
         {
             headers: headers,
         }
@@ -402,8 +426,8 @@ const sendNotification = () => {
 
 const GeneralService = {
     login, register, forgot, checkForgotToken,showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
-    deleteCart, fetchProductByType, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserId,
+    deleteCart, fetchProductByType, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
-    listAssignedOrderByRiderId, sendNotification
+    listAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory
 };
 export default GeneralService;
