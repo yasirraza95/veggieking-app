@@ -15,6 +15,7 @@ const OngoingRoute = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [ongoingData, setOngoingData] = useState([]);
 
+  const navigate = useNavigation();
   var userId = 0;
   useEffect(async () => {
     userId = await AsyncStorage.getItem("_id");
@@ -87,7 +88,8 @@ const OngoingRoute = ({ navigation }) => {
             marginVertical: 18
           }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("TrackingOrders")}
+              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id })}
+              // onPress={() => navigate.navigate("TrackingOrders")}
               style={{
                 height: 38,
                 width: 140,
@@ -104,7 +106,8 @@ const OngoingRoute = ({ navigation }) => {
               }}>Track Order</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => navigation.navigate("CancelOrders")}
+              onPress={() => navigate.navigate("CancelOrders", { orderId: item.id })}
+              // onPress={() => navigation.navigate("CancelOrders")}
               style={{
                 height: 38,
                 width: 140,
@@ -138,7 +141,8 @@ const OngoingRoute = ({ navigation }) => {
 const HistoryRoute = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [historyData, setHistoryData] = useState([]);
-
+  const navigate = useNavigation();
+  
   var userId = 0;
   useEffect(async () => {
     userId = await AsyncStorage.getItem("_id");
@@ -215,7 +219,8 @@ const HistoryRoute = ({ navigation }) => {
                 marginVertical: 18
               }}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("OrderDetail")}
+                  onPress={() => navigate.navigate("OrderDetail", { orderId: 1 })}
+                  // onPress={() => navigation.navigate("OrderDetail")}
                   style={{
                     height: 38,
                     width: 140,

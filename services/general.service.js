@@ -308,12 +308,12 @@ const listOrdersByUserIdHistory = (userId) => {
     );
 };
 
-const listOrdersDetailByOrderId = (values) => {
+const listOrdersDetailByOrderId = (id) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-order-dtl/${values.order_id}`,
+        `${API_URL}/list-order-dtl/${id}`,
         {
             headers: headers,
         }

@@ -1,5 +1,5 @@
 import { View, StyleSheet, FlatList } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { COLORS } from '../constants'
 import { ScrollView } from 'react-native-virtualized-view'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -7,7 +7,33 @@ import { TransactionHistoryData } from '../data/utils'
 import Header from '../components/Header'
 import OrdDtlCard from '../components/OrdDtlCard'
 
-const OrderDetail = ({ navigation }) => {
+const OrderDetail = ({ route, navigation }) => {
+
+  const { orderId } = route.params;
+  console.log(orderId);
+  const [isLoading, setIsLoading] = useState(false)
+  const [detailData, setDetailData] = useState([]);
+
+  // useEffect(async () => {
+  //   const getOrderDetail = async (id) => {
+  //     try {
+  //       setIsLoading(true);
+  //       const ordersData = await GeneralService.listOrdersDetailByOrderId(id);
+  //       const { data } = ordersData;
+  //       const { response } = data;
+  //       console.log(`detail-data=${JSON.stringify(response)}`);
+  //       setIsLoading(false);
+  //       setDetailData(response);
+  //     } catch (err) {
+  //       console.log(err);
+  //       setIsLoading(false);
+  //       setDetailData([]);
+  //     }
+  //   }
+
+  //   getOrderDetail(orderId);
+  // }, [orderId, navigation]);
+
 
   return (
     <SafeAreaView style={styles.area}>

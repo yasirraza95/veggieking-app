@@ -45,7 +45,8 @@ import { Onboarding1,
     SubmitQuestion,
     History,
     HomeV3,
-    HomeV2
+    HomeV2,
+    MyOrders
 } from '../screens'
 import LocationSearch from '../screens/LocationSearch';
 import { NavigationContainer } from '@react-navigation/native'
@@ -54,8 +55,10 @@ import DrawerNavigation from './DrawerNavigation'
 import MapLocation from '../screens/MapLocation';
 import Otp from '../screens/Otp';
 import OrderDetail from '../screens/OrderDetail';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createNativeStackNavigator()
+// const Stack = createStackNavigator()
 
 const AppNavigation = () => {
     const [isFirstLaunch, setIsFirstLaunch] = useState(null)
@@ -135,6 +138,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="AddReview" component={AddReview}/>
                 <Stack.Screen name="CancelOrders" component={CancelOrders}/>
                 <Stack.Screen name="TransactionHistory" component={TransactionHistory}/>
+                <Stack.Screen name="MyOrders" component={MyOrders}/>
                 <Stack.Screen name="OrderDetail" component={OrderDetail}/>
                 <Stack.Screen name="Faqs" component={Faqs}/>
                 <Stack.Screen name="Settings" component={Settings}/>
