@@ -3,12 +3,12 @@ import React from 'react'
 import { COLORS } from '../constants'
 import { AntDesign } from "@expo/vector-icons"
 
-const OrdDtlCard = ({ image, name, date, type, amount }) => {
+const OrdDtlCard = ({ image, name, date, type, amount, quantity, totalAmt }) => {
     return (
         <TouchableOpacity style={styles.container}>
             <View style={{ flexDirection: "row" }}>
                 <Image
-                    source={image}
+                    source={{ uri: `https://api.veggieking.pk/resources/images/${image}` }}
                     resizeMode="contain"
                     style={styles.carImage}
                 />
@@ -19,7 +19,7 @@ const OrdDtlCard = ({ image, name, date, type, amount }) => {
                     paddingVertical: 8
                 }}>
                     <Text style={styles.carName}>{name}</Text>
-                    <Text style={styles.date}>Quantity: 1 | Rs: 1</Text>
+                    <Text style={styles.date}>Quantity: {quantity} | Rs: {amount}</Text>
                 </View>
             </View>
             <View style={{
@@ -28,7 +28,7 @@ const OrdDtlCard = ({ image, name, date, type, amount }) => {
                 justifyContent: "space-between",
                 paddingVertical: 8
             }}>
-                <Text style={styles.amount}>Rs. 1</Text>
+                <Text style={styles.amount}>Rs. {totalAmt}</Text>
             </View>
         </TouchableOpacity>
     )
