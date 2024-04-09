@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image } from 'react-native'
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { images, icons, SIZES, COLORS, FONTS } from '../constants'
@@ -13,25 +13,27 @@ import GeneralService from '../services/general.service'
 
 // TODO
 const TrackingOrderV3 = ({ route, navigation }) => {
-  const { orderId } = route.params;
+  const [loading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const { orderId, orderNo, orderDate } = route.params;
 
-  useEffect(async () => {
-    getOrderTracking(orderId);
+  useEffect(() => {
+    getOrderDetailById(orderId);
   }, [navigation]);
 
-  const getOrderTracking = async (id) => {
+  const getOrderDetailById = async (id) => {
     try {
       setIsLoading(true);
-      const ordersData = await GeneralService.listOrdersByUserIdOngoing(id);
+      const ordersData = await GeneralService.listOrdersDetailByOrderId(id);
       const { data } = ordersData;
       const { response } = data;
-      console.log(`ongoing-data=${JSON.stringify(response)}`);
+      // console.log(`tracking=${JSON.stringify(response)}`);
       setIsLoading(false);
-      setOngoingData(response);
+      setData(response);
     } catch (err) {
       console.log(err);
       setIsLoading(false);
-      setOngoingData([]);
+      setData([]);
     }
   }
 
@@ -84,7 +86,7 @@ const TrackingOrderV3 = ({ route, navigation }) => {
           <View style={{
             marginRight: 12
           }}>
-            <Image
+            {/* <Image
               // source={images.food}
               source={images.burger1}
               style={{
@@ -94,21 +96,26 @@ const TrackingOrderV3 = ({ route, navigation }) => {
                 borderColor: COLORS.gray,
                 borderWidth: 1
               }}
-            />
+            /> */}
           </View>
           <View style={{
             flexDirection: 'column',
           }}>
-            <Text style={{ ...FONTS.h4 }}>Uttora Coffee House</Text>
-            <Text style={styles.body3}>Orderd at 06 Sept, 10:00pm</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.h3}>2x</Text>
-              <Text style={styles.body3}>Burger</Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ ...FONTS.h4 }}>{orderNo}</Text>
+            <Text style={styles.body3}>Orderd at {orderDate}</Text>
+            {data.map((res) => {
+              return (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={styles.h3}>{res.quantity}x</Text>
+                  <Text style={styles.body3}>{res.prod_name}</Text>
+                </View>
+              )
+            })}
+
+            {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.h3}>4x</Text>
               <Text style={styles.body3}>Sandwitch</Text>
-            </View>
+            </View> */}
           </View>
         </View>
         <View style={{

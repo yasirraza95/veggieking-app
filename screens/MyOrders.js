@@ -88,7 +88,7 @@ const OngoingRoute = ({ navigation }) => {
             marginVertical: 18
           }}>
             <TouchableOpacity
-              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id })}
+              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
               // onPress={() => navigate.navigate("TrackingOrders")}
               style={{
                 height: 38,
