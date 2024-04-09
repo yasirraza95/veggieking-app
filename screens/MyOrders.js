@@ -105,9 +105,8 @@ const OngoingRoute = ({ navigation }) => {
                 fontFamily: 'regular'
               }}>Track Order</Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => navigate.navigate("CancelOrders", { orderId: item.id })}
-              // onPress={() => navigation.navigate("CancelOrders")}
               style={{
                 height: 38,
                 width: 140,
@@ -124,7 +123,7 @@ const OngoingRoute = ({ navigation }) => {
                 fontSize: 14,
                 fontFamily: 'regular'
               }}>Cancel Order</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       )}
@@ -142,7 +141,7 @@ const HistoryRoute = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [historyData, setHistoryData] = useState([]);
   const navigate = useNavigation();
-  
+
   var userId = 0;
   useEffect(async () => {
     userId = await AsyncStorage.getItem("_id");

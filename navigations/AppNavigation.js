@@ -56,6 +56,7 @@ import MapLocation from '../screens/MapLocation';
 import Otp from '../screens/Otp';
 import OrderDetail from '../screens/OrderDetail';
 import { createStackNavigator } from '@react-navigation/stack';
+import TrackingOrderV3 from '../screens/TrackingOrderV3';
 
 const Stack = createNativeStackNavigator()
 // const Stack = createStackNavigator()
@@ -124,7 +125,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="PaymentMethodNoCard" component={PaymentMethodNoCard}/>
                 <Stack.Screen name="AddPaymentCard" component={AddPaymentCard}/>
                 <Stack.Screen name="PaymentSuccess" component={PaymentSuccess}/>
-                <Stack.Screen name="TrackingOrders" component={TrackingOrderV2}/>
+                <Stack.Screen name="TrackingOrders" component={TrackingOrderV3}/>
                 <Stack.Screen name="Call" component={Call}/>
                 <Stack.Screen name="Message" component={Message}/>
                 <Stack.Screen name="Menu" component={Menu}/>
