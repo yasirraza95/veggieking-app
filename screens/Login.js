@@ -74,8 +74,8 @@ const Login = ({ navigation }) => {
       const response = await GeneralService.login(values);
       const { data } = response;
       const { access_token, user } = data;
-      const { id, user_type } = user;
-      console.log(id);
+      const { id, user_type, first_name, last_name } = user;
+      console.log(user);
       // FIXME
       // userActions.logIn({
       //   accessToken: access_token,
@@ -85,6 +85,8 @@ const Login = ({ navigation }) => {
       await AsyncStorage.setItem("accessToken", access_token);
       await AsyncStorage.setItem("_id", String(id));
       await AsyncStorage.setItem("user_type", user_type);
+      // await AsyncStorage.setItem("name", first_name + " " + last_name);
+      await AsyncStorage.setItem("user_name", "testing name");
       navigation.replace('LocationAccess');
 
       // const { id, first_name, last_name, username, phone, email } = user;

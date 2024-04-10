@@ -11,9 +11,21 @@ import { COLORS, images } from "../constants";
 import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory } from "../screens";
 import Otp from "../screens/Otp";
 import Logout from "../screens/Logout";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Drawer = createDrawerNavigator();
 const DrawerNavigation = () => {
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      let name = await AsyncStorage.getItem("user_name");
+      setName(name);
+    }
+    fetchInfo();
+  }, []);
+
   return (
     <Drawer.Navigator
       drawerContent={
@@ -29,13 +41,14 @@ const DrawerNavigation = () => {
                 }}
               >
                 <Image
-                  source={images.avatar2}
+                  source={images.icon}
                   style={{
                     height: 100,
                     width: 100,
                     borderRadius: 50
                   }}
                 />
+
                 <Text
                   style={{
                     fontSize: 18,
@@ -43,14 +56,14 @@ const DrawerNavigation = () => {
                     fontFamily: "bold",
                     color: COLORS.black
                   }}
-                >Vishal Khadok</Text>
-                <Text
+                >{name}</Text>
+                {/* <Text
                   style={{
                     fontSize: 16,
                     color: COLORS.black,
                     fontFamily: 'regular'
                   }}
-                >Product Manager</Text>
+                >Product Manager</Text> */}
               </View>
               <DrawerItemList {...props} />
             </SafeAreaView>

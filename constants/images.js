@@ -1,4 +1,5 @@
 const logo = require("../assets/images/logo.png");
+const icon = require("../assets/images/icon.png");
 const onboarding1 = require("../assets/images/onboarding1.png");
 const onboarding2 = require("../assets/images/onboarding2.png");
 const onboarding3 = require("../assets/images/onboarding3.png");
@@ -64,6 +65,7 @@ const cashDelivery = require("../assets/images/cod.png");
 
 export default {
     logo,
+    icon,
     onboarding1,
     onboarding2,
     onboarding3,

@@ -11,14 +11,19 @@ import restaurant6 from '../assets/images/restaurants/restaurant6.png';
 import restaurant7 from '../assets/images/restaurants/restaurant7.jpg';
 import restaurant8 from '../assets/images/restaurants/restaurant8.png';
 import GeneralService from '../services/general.service'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
 
 const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [userAddress, setUserAddress] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [featuredLoading, setFeaturedLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
   const [featured, setFeatured] = useState([]);
   const [moreProd, setMoreProd] = useState([]);
+
+  const navigate = useNavigation();
 
   const handlePressGotIt = () => {
     setModalVisible(false);
@@ -55,9 +60,15 @@ const HomeV2 = ({ navigation }) => {
       }
     };
 
+    const fetchAddress = async () => {
+      let userAddress = await AsyncStorage.getItem("user_address");
+      console.log(userAddress);
+      setUserAddress(userAddress);
+    };
+    fetchAddress();
     featuredProducts();
     moreProducts();
-  }, []);
+  }, [navigation]);
 
   const renderCarousel = () => {
     const width = Dimensions.get('window').width;
@@ -145,12 +156,12 @@ const HomeV2 = ({ navigation }) => {
             >
             </TouchableOpacity>
           </View>
-          
+
           <FlatList horizontal={true} data={featured} keyExtractor={item => item.id}
             renderItem={({ item, index }) => {
               return (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <TouchableOpacity key={index} onPress={() => navigation.navigate("FoodDetails")}
+                  <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
                   >
                     <View style={{
                       height: 90,
@@ -255,7 +266,7 @@ const HomeV2 = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity key={index} onPress={() => navigation.navigate("FoodDetails")}
+              <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
                 style={{
                   flex: 1,
                   margin: 8,
@@ -274,14 +285,13 @@ const HomeV2 = ({ navigation }) => {
                   padding: 8,
                   bottom: 10,
                 }}>
-                  <Text
-                    style={{ fontSize: 18, fontFamily: 'regular', marginVertical: 6 }}>{item.name}</Text>
+
                   <View style={{
                     flexDirection: 'row',
-                    flexWrap: 'wrap',
+                    flexWrap: 'wrap-reverse',
                     position: 'relative',
                   }}>
-                    <Text style={{ textTransform: 'capitalize', }}>{item.name}</Text>
+                    {/* <Text style={{ textTransform: 'capitalize', }}>{item.name}</Text> */}
                     <TouchableOpacity
                       onPress={() => console.log("Add to cart")}
                       style={{
@@ -297,7 +307,7 @@ const HomeV2 = ({ navigation }) => {
                       <AntDesign name="plus" size={12} color={COLORS.white} />
                     </TouchableOpacity>
                   </View>
-
+                  <Text style={{ fontSize: 18, fontFamily: 'regular', marginVertical: 6 }}>{item.name}</Text>
                 </View>
               </TouchableOpacity>
             )
@@ -343,7 +353,7 @@ const HomeV2 = ({ navigation }) => {
                 fontSize: 12,
                 fontWeight: 'bold',
                 color: COLORS.primary
-              }}>DELIVER TO</Text>
+              }}>Address</Text>
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center'
@@ -351,16 +361,17 @@ const HomeV2 = ({ navigation }) => {
                 <Text style={{
                   fontSize: 14,
                   fontWeight: 'regular'
-                }}>Halab lab office</Text>
-                <Image source={icons.arrowDown2} style={{
+                }}>{userAddress ?? "N/A"}</Text>
+                {/* <Image source={icons.arrowDown2} style={{
                   height: 12,
                   width: 12,
                   marginLeft: 4
-                }} />
+                }} /> */}
               </View>
             </View>
           </View>
 
+          {/* cart counter */}
           <View style={{
             height: 45,
             width: 45,
@@ -385,7 +396,7 @@ const HomeV2 = ({ navigation }) => {
                 <Text style={{
                   fontSize: 16,
                   color: COLORS.white
-                }}>2</Text>
+                }}>0</Text>
               </View>
               <Feather name="shopping-bag" size={24} color={COLORS.white} />
             </View>

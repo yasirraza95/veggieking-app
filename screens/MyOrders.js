@@ -8,6 +8,7 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { FlatList } from 'react-native'
 import { history, orders } from '../data/utils'
 import { StatusBar } from 'expo-status-bar'
+import { Feather, Ionicons, MaterialCommunityIcons, Fontisto, Octicons } from "@expo/vector-icons"
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -124,6 +125,7 @@ const OngoingRoute = ({ navigation }) => {
                 fontFamily: 'regular'
               }}>Cancel Order</Text>
             </TouchableOpacity> */}
+
           </View>
         </View>
       )}
@@ -300,7 +302,39 @@ const MyOrders = ({ navigation }) => {
           </TouchableOpacity>
           <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>My Orders</Text>
         </View>
-        <TouchableOpacity
+
+        <View style={{
+          height: 45,
+          width: 45,
+          borderRadius: 22.5,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: COLORS.tertiaryBlack
+        }}>
+          <View>
+            <View style={{
+              position: 'absolute',
+              top: -16,
+              left: 12,
+              backgroundColor: COLORS.primary,
+              height: 25,
+              width: 25,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 12.5,
+              zIndex: 999
+            }}>
+              <Text style={{
+                fontSize: 16,
+                color: COLORS.white
+              }}>0</Text>
+            </View>
+            <Feather name="shopping-bag" size={24} color={COLORS.white} />
+          </View>
+        </View>
+
+        {/* TODO cart counter here */}
+        {/* <TouchableOpacity
           onPress={() => console.log("Pressed")}
           style={commonStyles.header1Icon}
         >
@@ -309,7 +343,8 @@ const MyOrders = ({ navigation }) => {
             source={icons.more}
             style={{ height: 24, width: 24, tintColor: COLORS.black }}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
       </View>
     )
   }

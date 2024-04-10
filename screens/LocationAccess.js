@@ -5,6 +5,7 @@ import { COLORS, FONTS, SIZES, illustrations } from '../constants'
 import { Ionicons } from '@expo/vector-icons'
 import * as Location from 'expo-location'
 import { StatusBar } from 'expo-status-bar'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const LocationAccess = ({ navigation }) => {
     const arrayGPS = []
@@ -31,6 +32,7 @@ const LocationAccess = ({ navigation }) => {
                 latitude: latitude,
                 longitude: longitude,
             })
+            await AsyncStorage.setItem("user_address", address[0].district + " " + address[0].city);
             setAddress(
                 `${address[0].name}, ${address[0].district}, ${address[0].city}`
             )
@@ -84,7 +86,7 @@ const LocationAccess = ({ navigation }) => {
                         </View>
                     </View>
                 </TouchableOpacity> */}
-                
+
                 {/* <TouchableOpacity style={styles.addButton}>
                     <View style={styles.buttonContent} color={COLORS.white}>
                         <Text

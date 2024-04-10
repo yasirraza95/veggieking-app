@@ -1,4 +1,4 @@
-import { View, Text, Input, Image, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Input, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
 import { useState, useEffect } from 'react'
 import { ScrollView } from 'react-native-virtualized-view'
 import { COLORS, SIZES, FONTS, icons, images } from "../constants"
@@ -11,6 +11,7 @@ import { Formik } from 'formik'
 import { useDispatch, useSelector } from "react-redux";
 import { actionCreaters, bindActionCreators } from '../Redux';
 import GeneralService from '../services/general.service'
+// import Input from '../components/Input'
 
 const PersonalProfile = () => {
   // const dispatch = useDispatch();
@@ -174,7 +175,7 @@ const PersonalProfile = () => {
       }}>
         {renderHeader()}
         <ScrollView>
-          {renderUserProfile()}
+          {/* {renderUserProfile()} */}
           {renderUserProfileInfo()}
         </ScrollView>
       </View>
