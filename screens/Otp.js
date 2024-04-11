@@ -4,7 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SIZES, illustrations } from '../constants'
 
 
-const VerificationComponent = () => {
+const VerificationComponent = ({ route }) => {
+  const { email } = route.params;
   const handleBack = () => {
     // Implement your back button logic here
   };
@@ -18,31 +19,31 @@ const VerificationComponent = () => {
         <Text style={styles.headerText}>OTP Verification</Text>
       </View>
       <View style={styles.content}>
-      <Image
-                    source={illustrations.otpVerify}
-                    resizeMode="contain"
-                    style={styles.locationImage}
-                />
+        <Image
+          source={illustrations.otpVerify}
+          resizeMode="contain"
+          style={styles.locationImage}
+        />
         <Text style={styles.subHeaderText}>We've sent a verification code to</Text>
-        <Text style={styles.phoneNumber}>+92-12XXX-XXX90</Text>
+        <Text style={styles.phoneNumber}>{email}</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value="5" />
-          <TextInput style={styles.input} value="2" />
-          <TextInput style={styles.input} value="7" />
-          <TextInput style={styles.input} value="4" />
+          <TextInput keyboardType='numeric' style={styles.input} value="5" />
+          <TextInput keyboardType='numeric' style={styles.input} value="2" />
+          <TextInput keyboardType='numeric' style={styles.input} value="7" />
+          <TextInput keyboardType='numeric' style={styles.input} value="4" />
         </View>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Resend SMS</Text>
+            <Text style={styles.buttonText}>Resend Code</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.secondaryButton]}>
-            <Text style={[styles.buttonText, styles.secondaryButtonText]}>Call me in 15</Text>
+            <Text style={[styles.buttonText, styles.secondaryButtonText]}>Confirm</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Text style={styles.otherMethods}>Try other login methods</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
   locationImage: {
     height: SIZES.width * 0.8,
     width: SIZES.width * 0.9,
-},
+  },
   content: {
     flex: 1,
     alignItems: 'center',

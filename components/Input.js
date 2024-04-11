@@ -4,7 +4,7 @@ import { COLORS, SIZES } from '../constants'
 
 const Input = (props) => {
     const onChangeText = (text) => {
-            // props.onInputChanged(props.id, text)
+        // props.onInputChanged(props.id, text)
     }
 
     return (

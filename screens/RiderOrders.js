@@ -29,7 +29,7 @@ const OngoingRoute = ({ navigation }) => {
   const getOrderOngoing = async (id) => {
     try {
       setIsLoading(true);
-      const ordersData = await GeneralService.listOrdersByUserIdOngoing(id);
+      const ordersData = await GeneralService.listOngoingAssignedOrderByRiderId(id);
       const { data } = ordersData;
       const { response } = data;
       console.log(`ongoing-data=${JSON.stringify(response)}`);
@@ -91,8 +91,8 @@ const OngoingRoute = ({ navigation }) => {
             marginVertical: 18
           }}>
             <TouchableOpacity
-              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
-              // onPress={() => navigate.navigate("TrackingOrders")}
+              // onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
+              onPress={() => navigate.navigate("OrderDetail", { orderId: item.id })}
               style={{
                 height: 38,
                 width: 140,
@@ -106,28 +106,8 @@ const OngoingRoute = ({ navigation }) => {
                 color: COLORS.white,
                 fontSize: 14,
                 fontFamily: 'regular'
-              }}>Track Order</Text>
+              }}>Details</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity
-              onPress={() => navigate.navigate("CancelOrders", { orderId: item.id })}
-              style={{
-                height: 38,
-                width: 140,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: COLORS.white,
-                borderColor: COLORS.primary,
-                borderWidth: 1,
-                borderRadius: 8
-              }}
-            >
-              <Text style={{
-                color: COLORS.primary,
-                fontSize: 14,
-                fontFamily: 'regular'
-              }}>Cancel Order</Text>
-            </TouchableOpacity> */}
-
           </View>
         </View>
       )}
@@ -159,7 +139,7 @@ const HistoryRoute = ({ navigation }) => {
   const getOrderHistory = async (id) => {
     try {
       setIsLoading(true);
-      const ordersData = await GeneralService.listOrdersByUserIdHistory(id);
+      const ordersData = await GeneralService.listHistoryAssignedOrderByRiderId(id);
       const { data } = ordersData;
       const { response } = data;
       console.log(`data=${JSON.stringify(response)}`);
@@ -257,7 +237,7 @@ const renderScene = SceneMap({
   second: HistoryRoute,
 });
 
-const MyOrders = ({ navigation }) => {
+const RiderOrders = ({ navigation }) => {
   const layout = useWindowDimensions();
 
   const [index, setIndex] = React.useState(0);
@@ -285,6 +265,20 @@ const MyOrders = ({ navigation }) => {
   );
   const renderHeader = () => {
     const navigation = useNavigation()
+
+    const handleLogout = async () => {
+      try {
+        await AsyncStorage.removeItem("accessToken");
+        await AsyncStorage.removeItem("_id");
+        await AsyncStorage.removeItem("user_type");
+        console.error('Cleared successfully:');
+
+        navigation.replace('Login');
+      } catch (error) {
+        console.error('Error clearing AsyncStorage:', error);
+      }
+    };
+
     return (
       <View style={{
         flexDirection: 'row',
@@ -294,7 +288,7 @@ const MyOrders = ({ navigation }) => {
         marginHorizontal: 16
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={commonStyles.header1Icon}
           >
@@ -303,8 +297,8 @@ const MyOrders = ({ navigation }) => {
               source={icons.arrowLeft}
               style={{ height: 24, width: 24, tintColor: COLORS.black }}
             />
-          </TouchableOpacity>
-          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>My Orders</Text>
+          </TouchableOpacity> */}
+          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Orders</Text>
         </View>
 
         <View style={{
@@ -316,7 +310,7 @@ const MyOrders = ({ navigation }) => {
           backgroundColor: COLORS.tertiaryBlack
         }}>
           <View>
-            <View style={{
+            {/* <View style={{
               position: 'absolute',
               top: -16,
               left: 12,
@@ -332,8 +326,12 @@ const MyOrders = ({ navigation }) => {
                 fontSize: 16,
                 color: COLORS.white
               }}>0</Text>
-            </View>
-            <Feather name="shopping-bag" size={24} color={COLORS.white} />
+            </View> */}
+            <TouchableOpacity
+              onPress={handleLogout}
+            >
+              <Feather name="log-out" size={24} color={COLORS.white} />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -374,4 +372,4 @@ const MyOrders = ({ navigation }) => {
   )
 }
 
-export default MyOrders
+export default RiderOrders

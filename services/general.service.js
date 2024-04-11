@@ -45,7 +45,7 @@ const forgot = (values) => {
     return axios.post(
         `${API_URL}/forgot`,
         {
-            phone: values.phone,
+            email: values.email,
         },
         {
             headers: headers,
@@ -66,9 +66,9 @@ const checkForgotToken = (values) => {
 };
 const showProfile = (accessToken) => {
     return axios.get(`${API_URL}/profile`, {
-      headers: authHeader(accessToken),
+        headers: authHeader(accessToken),
     });
-  };
+};
 const locationUpdate = (values) => {
     const headers = {
         "Content-Type": "application/json",
@@ -400,12 +400,24 @@ const assignOrderToRider = (values) => {
     );
 };
 
-const listAssignedOrderByRiderId = (values) => {
+const listOngoingAssignedOrderByRiderId = (id, status) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-rider-order/${values.id}`,
+        `${API_URL}/list-rider-order-ongoing/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listHistoryAssignedOrderByRiderId = (id, status) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-rider-order-history/${id}`,
         {
             headers: headers,
         }
@@ -425,9 +437,9 @@ const sendNotification = () => {
 };
 
 const GeneralService = {
-    login, register, forgot, checkForgotToken,showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
+    login, register, forgot, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
     deleteCart, fetchProductByType, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
-    listAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory
+    listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory
 };
 export default GeneralService;

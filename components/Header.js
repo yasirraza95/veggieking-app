@@ -18,14 +18,13 @@ const Header = ({ title }) => {
         />
     </TouchableOpacity>
     <Text style={styles.title}>{title}</Text>
-    {/* TODO work here */}
-    <TouchableOpacity style={styles.headerIcon}>
+    {/* <TouchableOpacity style={styles.headerIcon}>
         <Image
             source={icons.more}
             resizeMode='contain'
             style={styles.moreIcon}
         />
-    </TouchableOpacity>
+    </TouchableOpacity> */}
 </View>
   )
 }
