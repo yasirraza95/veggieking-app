@@ -8,9 +8,24 @@ import { Feather, Ionicons, MaterialCommunityIcons, Fontisto, Octicons } from "@
 import { ScrollView } from 'react-native-virtualized-view'
 import Button from "../components/Button"
 import { StatusBar } from 'expo-status-bar'
+import GeneralService from '../services/general.service'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili]
 const FoodDetailsV1 = ({ route }) => {
+
+  const addCart = async (id) => {
+    try {
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await GeneralService.addCart(userId, id);
+      console.log(response);
+      console.log(id);
+    } catch (err) {
+      console.log(err);
+    }
+
+  }
+
   const { id, name, image, price, minQty, type } = route.params;
   const renderHeader = () => {
     const navigation = useNavigation()
@@ -32,7 +47,7 @@ const FoodDetailsV1 = ({ route }) => {
               style={{ height: 24, width: 24, tintColor: COLORS.black }}
             />
           </TouchableOpacity>
-          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>My Orders</Text>
+          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Product Details</Text>
         </View>
 
         <View style={{
@@ -177,7 +192,7 @@ const FoodDetailsV1 = ({ route }) => {
             </View>
             <Button
               filled
-              onPress={() => navigation.navigate("Cart")}
+              onPress={() => addCart(item.id)}
               title="ADD TO CART"
             />
           </View>

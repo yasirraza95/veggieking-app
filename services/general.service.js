@@ -109,26 +109,42 @@ const emailVerification = (values) => {
     );
 };
 
-const listCartByUserId = (values) => {
+const listCartByUserId = (id) => {
+    // console.log(`id=${id}`);
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-cart/${values.id}`,
+        `${API_URL}/list-cart/${id}`,
         {
             headers: headers,
         }
     );
 };
 
-const increaseQty = (values) => {
+const addCart = (userId, prodId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.post(
+        `${API_URL}/add-cart`, {
+        created_by: userId,
+        prod_id: prodId,
+    },
+        {
+            headers: headers,
+        }
+    );
+};
+
+const increaseQty = (userId, prodId) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.put(
         `${API_URL}/increase-quantity`, {
-        created_by: values.user_id,
-        prod_id: values.prod_id,
+        created_by: userId,
+        prod_id: prodId,
     },
         {
             headers: headers,
@@ -136,14 +152,14 @@ const increaseQty = (values) => {
     );
 };
 
-const decreaseQty = (values) => {
+const decreaseQty = (userId, prodId) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.put(
         `${API_URL}/decrease-quantity`, {
-        created_by: values.user_id,
-        prod_id: values.prod_id,
+        created_by: userId,
+        prod_id: prodId,
     },
         {
             headers: headers,
@@ -151,17 +167,21 @@ const decreaseQty = (values) => {
     );
 };
 
-const deleteCart = (values) => {
+const deleteCart = (userId, prodId) => {
     const headers = {
         "Content-Type": "application/json",
     };
+
+    const data = {
+        created_by: userId,
+        prod_id: prodId,
+    };
+
     return axios.delete(
-        `${API_URL}/delete-cart`, {
-        created_by: values.user_id,
-        prod_id: values.prod_id,
-    },
+        `${API_URL}/delete-cart`,
         {
             headers: headers,
+            data: data
         }
     );
 };
@@ -440,6 +460,6 @@ const GeneralService = {
     login, register, forgot, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
     deleteCart, fetchProductByType, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
-    listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory
+    listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart
 };
 export default GeneralService;

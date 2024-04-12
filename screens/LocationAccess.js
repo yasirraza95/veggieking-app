@@ -12,6 +12,11 @@ const LocationAccess = ({ navigation }) => {
     const [gps, setGps] = useState(null)
     const [errorMsg, setErrorMsg] = useState(null)
     const [address, setAddress] = useState(null)
+    // Image.prefetch(illustrations.mapLocation);
+
+    // const prefetchImage = async () => {
+    //     await Image.prefetch(illustrations.mapLocation);
+    // };
 
     // Get user location
     useEffect(() => {
@@ -46,6 +51,7 @@ const LocationAccess = ({ navigation }) => {
         <SafeAreaView style={styles.area}>
             <StatusBar hidden={true} />
             <View style={styles.center}>
+                
                 <Image
                     source={illustrations.mapLocation}
                     resizeMode="contain"

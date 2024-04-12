@@ -33,6 +33,18 @@ const HomeV2 = ({ navigation }) => {
     setSearchQuery(text);
   };
 
+  const addCart = async (id) => {
+    try {
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await GeneralService.addCart(userId, id);
+      console.log(response);
+      console.log(id);
+    } catch (err) {
+      console.log(err);
+    }
+
+  }
+
   useEffect(() => {
     const featuredProducts = async () => {
       try {
@@ -293,7 +305,7 @@ const HomeV2 = ({ navigation }) => {
                   }}>
                     {/* <Text style={{ textTransform: 'capitalize', }}>{item.name}</Text> */}
                     <TouchableOpacity
-                      onPress={() => console.log("Add to cart")}
+                      onPress={() => addCart(item.id)}
                       style={{
                         height: 30,
                         width: 30,
