@@ -60,6 +60,7 @@ import OrderDetail from '../screens/OrderDetail';
 import { createStackNavigator } from '@react-navigation/stack';
 import TrackingOrderV3 from '../screens/TrackingOrderV3';
 import CategoryProducts from '../screens/CategoryProducts';
+import Thankyou from '../screens/Thankyou';
 // import { Toast } from '@react-native-toast-message';
 
 const Stack = createNativeStackNavigator()
@@ -126,6 +127,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="RestaurantView" component={RestaurantView1} />
                 <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
                 <Stack.Screen name="Cart" component={Cart} />
+                <Stack.Screen name="Thankyou" component={Thankyou} />
                 <Stack.Screen name="EditCart" component={EditCart} />
                 <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
                 <Stack.Screen name="PaymentMethodNoCard" component={PaymentMethodNoCard} />

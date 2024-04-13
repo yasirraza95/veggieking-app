@@ -19,3 +19,15 @@ export const signInSchema = Yup.object({
 export const forgotSchema = Yup.object({
   email: Yup.string().email('Enter valid email').required("Please enter the Email"),
 });
+const ProfileSchema = Yup.object().shape({
+  fullName: Yup.string()
+    .required('Full Name is required'),
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Email is required'),
+  phone: Yup.string()
+    .required('Phone number is required')
+    .matches(/^[0-9]+$/, 'Phone number must contain only digits')
+    .min(10, 'Phone number must be at least 10 characters')
+    .max(15, 'Phone number must not exceed 15 characters'),
+});

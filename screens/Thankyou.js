@@ -1,0 +1,108 @@
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { COLORS, FONTS, SIZES, illustrations } from '../constants'
+import { Ionicons } from '@expo/vector-icons'
+import { StatusBar } from 'expo-status-bar'
+const Thankyou = ({ navigation }) => {
+
+    return (
+        <SafeAreaView style={styles.area}>
+            <StatusBar hidden={true} />
+            <View style={styles.center}>
+                
+                <Image
+                    source={illustrations.mapLocation}
+                    resizeMode="contain"
+                    style={styles.locationImage}
+                />
+                <TouchableOpacity
+                    onPress={() => navigation.replace('Thankyou')}
+                    style={styles.btn}
+                >
+                    <Text style={styles.btnText}>Use Current Location</Text>
+                    <View style={styles.iconContainer}>
+                        <Ionicons
+                            name="location-outline"
+                            size={20}
+                            color={COLORS.white}
+                        />
+                    </View>
+                </TouchableOpacity>
+
+                <Text style={styles.bottomText}>
+                    VEGGIE KING WILL ACCESS YOUR LOCATION ONLY WHILE USING THE
+                    APP
+                </Text>
+            </View>
+        </SafeAreaView>
+    )
+}
+
+const styles = StyleSheet.create({
+    addButton: {
+        backgroundColor: COLORS.primary, // Replace 'primary' with your desired color
+        borderWidth: 1,
+        borderColor: COLORS.white,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+    },
+    buttonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    addButtonText: {
+        color: COLORS.white,
+        marginLeft: 5, // Adjust the spacing between the icon and text as needed
+    },
+    area: {
+        flex: 1,
+        backgroundColor: COLORS.white,
+    },
+    center: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 22,
+    },
+    btn: {
+        paddingHorizontal: SIZES.padding,
+        paddingVertical: SIZES.padding2,
+        borderColor: COLORS.primary,
+        borderWidth: 2,
+        borderRadius: SIZES.padding,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: SIZES.width - 44,
+        marginTop: SIZES.padding2 * 4,
+        marginBottom: SIZES.padding2 * 2,
+        backgroundColor: COLORS.primary,
+    },
+    locationImage: {
+        height: SIZES.width * 0.7,
+        width: SIZES.width * 0.7,
+    },
+    btnText: {
+        ...FONTS.body3,
+        textTransform: 'uppercase',
+        color: COLORS.white,
+    },
+    iconContainer: {
+        marginLeft: SIZES.padding3,
+        height: 32,
+        width: 32,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(255,255,255,0.2)',
+    },
+    bottomText: {
+        ...FONTS.body4,
+        textTransform: 'uppercase',
+        marginVertical: SIZES.padding * 2,
+        textAlign: 'center',
+    },
+})
+export default Thankyou
