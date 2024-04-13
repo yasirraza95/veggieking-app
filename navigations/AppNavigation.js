@@ -1,16 +1,17 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useState, useEffect } from 'react'
-import { Onboarding1, 
-    Onboarding2, 
-    Onboarding3, 
-    Signup, 
+import {
+    Onboarding1,
+    Onboarding2,
+    Onboarding3,
+    Signup,
     Verification,
     Login,
-    StartUpScreen, 
-    ForgotPassword, 
-    ResetPassword, 
-    Onboarding4 ,
+    StartUpScreen,
+    ForgotPassword,
+    ResetPassword,
+    Onboarding4,
     LocationAccess,
     HomeV1,
     FoodDetailsV1,
@@ -45,7 +46,9 @@ import { Onboarding1,
     SubmitQuestion,
     History,
     HomeV3,
-    HomeV2
+    HomeV2,
+    MyOrders,
+    RiderOrders
 } from '../screens'
 import LocationSearch from '../screens/LocationSearch';
 import { NavigationContainer } from '@react-navigation/native'
@@ -53,8 +56,14 @@ import BottomTabNavigation from './BottomTabNavigation'
 import DrawerNavigation from './DrawerNavigation'
 import MapLocation from '../screens/MapLocation';
 import Otp from '../screens/Otp';
+import OrderDetail from '../screens/OrderDetail';
+import { createStackNavigator } from '@react-navigation/stack';
+import TrackingOrderV3 from '../screens/TrackingOrderV3';
+import CategoryProducts from '../screens/CategoryProducts';
+// import { Toast } from '@react-native-toast-message';
 
 const Stack = createNativeStackNavigator()
+// const Stack = createStackNavigator()
 
 const AppNavigation = () => {
     const [isFirstLaunch, setIsFirstLaunch] = useState(null)
@@ -91,54 +100,61 @@ const AppNavigation = () => {
                     isFirstLaunch ? 'HomeV2' : 'Login'
                 }
             >
-                <Stack.Screen name="Onboarding1" component={Onboarding1}/>
-                <Stack.Screen name="Onboarding2" component={Onboarding2}/>
-                <Stack.Screen name="Onboarding3" component={Onboarding3}/>
-                <Stack.Screen name="Onboarding4" component={Onboarding4}/>
-                <Stack.Screen name="Signup" component={Signup}/>
-                <Stack.Screen name="StartUpScreen" component={StartUpScreen}/>
-                <Stack.Screen name="Login" component={Login}/>
-                <Stack.Screen name="Opt" component={Otp}/>
+
+                <Stack.Screen name="Onboarding1" component={Onboarding1} />
+                <Stack.Screen name="Onboarding2" component={Onboarding2} />
+                <Stack.Screen name="Onboarding3" component={Onboarding3} />
+                <Stack.Screen name="Onboarding4" component={Onboarding4} />
+                <Stack.Screen name="Signup" component={Signup} />
+                <Stack.Screen name="StartUpScreen" component={StartUpScreen} />
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="opt" component={Otp} />
                 {/* <Stack.Screen name="MapLocation" component={MapLocation}/> */}
-                <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
-                <Stack.Screen name="ResetPassword" component={ResetPassword}/>
-                <Stack.Screen name="Verification" component={Verification}/>
-                <Stack.Screen name="LocationAccess" component={LocationAccess}/>
+                <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+                <Stack.Screen name="ResetPassword" component={ResetPassword} />
+                <Stack.Screen name="Verification" component={Verification} />
+                <Stack.Screen name="LocationAccess" component={LocationAccess} />
                 <Stack.Screen name="LocationSearch" component={LocationSearch} />
-                <Stack.Screen name="HomeV1" component={HomeV1}/>
-                <Stack.Screen name="HomeV2" component={HomeV2}/>
-                <Stack.Screen name="HomeV3" component={HomeV3}/>
-                
-                <Stack.Screen name="Main" component={BottomTabNavigation}/>
-                <Stack.Screen name="DrawerNavigation" component={DrawerNavigation}/>
-                <Stack.Screen name="FoodByKeywords" component={FoodByKeywords}/>
-                <Stack.Screen name="FoodDetails" component={FoodDetailsV1}/>
-                <Stack.Screen name="RestaurantView" component={RestaurantView1}  />
-                <Stack.Screen name="Cart" component={Cart}/>
-                <Stack.Screen name="EditCart" component={EditCart}/>
-                <Stack.Screen name="PaymentMethod" component={PaymentMethod}/>
-                <Stack.Screen name="PaymentMethodNoCard" component={PaymentMethodNoCard}/>
-                <Stack.Screen name="AddPaymentCard" component={AddPaymentCard}/>
-                <Stack.Screen name="PaymentSuccess" component={PaymentSuccess}/>
-                <Stack.Screen name="TrackingOrders" component={TrackingOrderV2}/>
-                <Stack.Screen name="Call" component={Call}/>
-                <Stack.Screen name="Message" component={Message}/>
-                <Stack.Screen name="Menu" component={Menu}/>
-                <Stack.Screen name="PersonalProfile" component={PersonalProfile}/>
-                <Stack.Screen name="EditProfile" component={EditProfile}/>
-                <Stack.Screen name="Address" component={Address}/>
-                <Stack.Screen name="AddNewAddress" component={AddNewAddress}/>
-                <Stack.Screen name="Chat" component={Chat}/>
-                <Stack.Screen name="VideoCall" component={VideoCall}/>
-                <Stack.Screen name="OpenShops" component={OpenShops}/>
-                <Stack.Screen name="AddReview" component={AddReview}/>
-                <Stack.Screen name="CancelOrders" component={CancelOrders}/>
-                <Stack.Screen name="TransactionHistory" component={TransactionHistory}/>
-                <Stack.Screen name="Faqs" component={Faqs}/>
-                <Stack.Screen name="Settings" component={Settings}/>
-                <Stack.Screen name="SubmitQuestion" component={SubmitQuestion}/>
-                <Stack.Screen name="History" component={History}/>
+                <Stack.Screen name="HomeV1" component={HomeV1} />
+                <Stack.Screen name="HomeV2" component={HomeV2} />
+                <Stack.Screen name="HomeV3" component={HomeV3} />
+
+                <Stack.Screen name="Main" component={BottomTabNavigation} />
+                <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
+                <Stack.Screen name="FoodByKeywords" component={FoodByKeywords} />
+                <Stack.Screen name="FoodDetails" component={FoodDetailsV1} />
+                <Stack.Screen name="RestaurantView" component={RestaurantView1} />
+                <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
+                <Stack.Screen name="Cart" component={Cart} />
+                <Stack.Screen name="EditCart" component={EditCart} />
+                <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
+                <Stack.Screen name="PaymentMethodNoCard" component={PaymentMethodNoCard} />
+                <Stack.Screen name="AddPaymentCard" component={AddPaymentCard} />
+                <Stack.Screen name="PaymentSuccess" component={PaymentSuccess} />
+                <Stack.Screen name="TrackingOrders" component={TrackingOrderV3} />
+                <Stack.Screen name="Call" component={Call} />
+                <Stack.Screen name="Message" component={Message} />
+                <Stack.Screen name="Menu" component={Menu} />
+                <Stack.Screen name="PersonalProfile" component={PersonalProfile} />
+                <Stack.Screen name="EditProfile" component={EditProfile} />
+                <Stack.Screen name="Address" component={Address} />
+                <Stack.Screen name="AddNewAddress" component={AddNewAddress} />
+                <Stack.Screen name="Chat" component={Chat} />
+                <Stack.Screen name="VideoCall" component={VideoCall} />
+                <Stack.Screen name="OpenShops" component={OpenShops} />
+                <Stack.Screen name="AddReview" component={AddReview} />
+                <Stack.Screen name="CancelOrders" component={CancelOrders} />
+                <Stack.Screen name="TransactionHistory" component={TransactionHistory} />
+                <Stack.Screen name="MyOrders" component={MyOrders} />
+                <Stack.Screen name="RiderOrders" component={RiderOrders} />
+                <Stack.Screen name="OrderDetail" component={OrderDetail} />
+                <Stack.Screen name="Faqs" component={Faqs} />
+                <Stack.Screen name="Settings" component={Settings} />
+                <Stack.Screen name="SubmitQuestion" component={SubmitQuestion} />
+                <Stack.Screen name="History" component={History} />
             </Stack.Navigator>
+            {/* <Toast ref={(ref) => Toast.setRef(ref)} /> */}
+
         </NavigationContainer>
     )
 }

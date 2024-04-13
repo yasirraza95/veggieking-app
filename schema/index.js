@@ -17,5 +17,5 @@ export const signInSchema = Yup.object({
 });
 
 export const forgotSchema = Yup.object({
-  phone: Yup.string().min(11, "Min 11 numbers required").max(11, "Max 11 numbers allowed").required("Enter Phone No."),
+  email: Yup.string().email('Enter valid email').required("Please enter the Email"),
 });

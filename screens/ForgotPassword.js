@@ -12,21 +12,23 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { forgotSchema } from '../schema'
 import { Formik } from 'formik'
 import GeneralService from '../services/general.service'
+import { useNavigation } from '@react-navigation/native'
 
 const initialState = {
     inputValues: {
-        phone: '',
+        email: '',
     },
     inputValidities: {
-        phone: false,
+        email: false,
     },
 }
 
-const ForgotPassword = ({ navigation }) => {
+const ForgotPassword = () => {
     const [error, setError] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const [isEnable, setIsEnable] = useState(true)
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
+    const navigation = useNavigation();
 
     const inputChangedHandler = useCallback(
         (inputId, inputValue) => {
@@ -52,7 +54,8 @@ const ForgotPassword = ({ navigation }) => {
             setIsLoading(false);
             setIsEnable(true);
             // Display the response message, assuming the response contains a 'message' field
-            Alert.alert('Success', 'Check your email to reset password'); // Modify the field according to your API response structure
+            // Alert.alert('Success', 'Check your email to reset password'); // Modify the field according to your API response structure
+            navigation.navigate("opt", { email: values.email });
         } catch (err) {
             console.error('Error occurred:', err);
             if (err?.response?.status == 404) {
@@ -64,7 +67,7 @@ const ForgotPassword = ({ navigation }) => {
             setIsEnable(true);
         }
     };
-    
+
 
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
@@ -76,31 +79,31 @@ const ForgotPassword = ({ navigation }) => {
                     <MaterialIcons name="keyboard-arrow-left" size={24} color={COLORS.black} />
                 </TouchableOpacity>
                 <Text style={commonStyles.headerTitle}>Forgot Password</Text>
-                <Text style={commonStyles.subHeaderTitle}>Please provide your phone number</Text>
+                <Text style={commonStyles.subHeaderTitle}>Please provide your email address</Text>
             </View>
             <Animatable.View
                 animation="fadeInUpBig"
                 style={commonStyles.footer}>
                 <Formik
-                    initialValues={{ phone: '' }}
+                    initialValues={{ email: '' }}
                     enableReinitialize={true}
                     validationSchema={forgotSchema}
                     onSubmit={handleForgot}
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                         <>
-                            <Text style={commonStyles.inputHeader}>Phone No.</Text>
+                            <Text style={commonStyles.inputHeader}>Email Address</Text>
                             <Input
-                                name="phone"
-                                id="phone"
-                                onChangeText={handleChange('phone')}
-                                onBlur={handleBlur('phone')}
-                                value={values.phone}
-                                placeholder="03001234567"
+                                name="email"
+                                id="email"
+                                onChangeText={handleChange('email')}
+                                onBlur={handleBlur('email')}
+                                value={values.email}
+                                placeholder="Email Address"
                                 placeholderTextColor={COLORS.black}
-                                keyboardType="numeric"
+                                keyboardType="email-address"
                             />
-                            {touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
+                            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
                             <Button
                                 title="Send Code"
                                 isEnable={isEnable}

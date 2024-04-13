@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, useWindowDimensions, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, Image, useWindowDimensions, Alert, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, icons } from '../constants'
@@ -23,21 +23,52 @@ const OngoingRoute = ({ navigation, index }) => {
     fetchData();
   }, [index]);
 
-  const fetchData = async () => {
-    userId = await AsyncStorage.getItem("_id");
-    getOrderOngoing(userId);
-  }
-
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
     }, [])
   );
 
+  const fetchData = async () => {
+    userId = await AsyncStorage.getItem("_id");
+    getOrderOngoing(userId);
+  }
+
+  const refreshPage = () => {
+    fetchData();
+  }
+
+  const confirmDeliver = (orderId) => {
+    console.log(orderId);
+    const delivery = async () => {
+      try {
+        const response = await GeneralService.updateOrderStatus(orderId, 'delivered');
+        const { data } = response;
+        const { response: res } = data;
+        Alert.alert(
+          'Delivery Status',
+          res,
+          [
+            {
+              text: 'OK',
+              onPress: () => refreshPage(),
+            },
+          ],
+          { cancelable: false }
+        );
+        console.log(res);
+      } catch (err) {
+        console.log(err?.response);
+      }
+    }
+
+    delivery();
+  }
+
   const getOrderOngoing = async (id) => {
     try {
       setIsLoading(true);
-      const ordersData = await GeneralService.listOrdersByUserIdOngoing(id);
+      const ordersData = await GeneralService.listOngoingAssignedOrderByRiderId(id);
       const { data } = ordersData;
       const { response } = data;
       console.log(`ongoing-data=${JSON.stringify(response)}`);
@@ -50,7 +81,6 @@ const OngoingRoute = ({ navigation, index }) => {
     }
   }
 
-  // console.log(ongoingData.length);
   let result = <View style={{ flex: 1 }}>
     <FlatList
       data={ongoingData}
@@ -91,6 +121,7 @@ const OngoingRoute = ({ navigation, index }) => {
                 (item.status === "DELIVERED" ? COLORS.green :
                   (item.status === "PACKING" ? COLORS.blue :
                     (item.status === "CANCELLED" ? COLORS.red : COLORS.blue)))
+
             }}>{item.status}</Text>
           </View>
           <View style={{
@@ -99,8 +130,8 @@ const OngoingRoute = ({ navigation, index }) => {
             marginVertical: 18
           }}>
             <TouchableOpacity
-              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderStatus: item.status, orderNo: item.order_no, orderDate: item.created_at })}
-              // onPress={() => navigate.navigate("TrackingOrders")}
+              // onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
+              onPress={() => navigate.navigate("OrderDetail", { orderId: item.id })}
               style={{
                 height: 38,
                 width: 140,
@@ -114,12 +145,32 @@ const OngoingRoute = ({ navigation, index }) => {
                 color: COLORS.white,
                 fontSize: 14,
                 fontFamily: 'regular'
-              }}>Track Order</Text>
+              }}>Details</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              // onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
+              onPress={() => confirmDeliver(item.id)}
+              style={{
+                height: 38,
+                width: 140,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: COLORS.green,
+                borderRadius: 8
+              }}
+            >
+              <Text style={{
+                color: COLORS.white,
+                fontSize: 14,
+                fontFamily: 'regular'
+              }}>Mark Deliver</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
     />
+
   </View>;
 
   let response = ongoingData.length > 0 ? result : <View style={{ flex: 1 }}>
@@ -136,22 +187,25 @@ const OngoingRoute = ({ navigation, index }) => {
   )
 }
 
+
 const HistoryRoute = ({ navigation, index }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [historyData, setHistoryData] = useState([]);
   const navigate = useNavigation();
 
   var userId = 0;
-
-  useEffect(() => {
-    fetchData();
-  }, [index]);
-
+  // useEffect(() => {
+  //   fetchData();
+  // }, [navigation]);
 
   const fetchData = async () => {
     userId = await AsyncStorage.getItem("_id");
     getOrderHistory(userId);
   }
+
+  useEffect(() => {
+    fetchData();
+  }, [index]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -163,7 +217,7 @@ const HistoryRoute = ({ navigation, index }) => {
   const getOrderHistory = async (id) => {
     try {
       setIsLoading(true);
-      const ordersData = await GeneralService.listOrdersByUserIdHistory(id);
+      const ordersData = await GeneralService.listHistoryAssignedOrderByRiderId(id);
       const { data } = ordersData;
       const { response } = data;
       console.log(`data=${JSON.stringify(response)}`);
@@ -178,7 +232,6 @@ const HistoryRoute = ({ navigation, index }) => {
 
   // const navigation = useNavigation();
   let result =
-
     <View style={{ flex: 1 }}>
       <FlatList
         data={historyData}
@@ -249,7 +302,7 @@ const HistoryRoute = ({ navigation, index }) => {
           </View>
         )}
       />
-    </View>
+    </View>;
 
   let response = historyData.length > 0 ? result : <View style={{ flex: 1 }}>
     <Text style={{
@@ -259,7 +312,7 @@ const HistoryRoute = ({ navigation, index }) => {
     }}>No record found</Text></View>;
 
   response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
-
+  
   return (
     response
   )
@@ -270,7 +323,7 @@ const renderScene = SceneMap({
   second: HistoryRoute,
 });
 
-const MyOrders = ({ navigation }) => {
+const RiderOrders = ({ navigation }) => {
   const layout = useWindowDimensions();
 
   const [index, setIndex] = React.useState(0);
@@ -296,21 +349,22 @@ const MyOrders = ({ navigation }) => {
       )}
     />
   );
+
   const renderHeader = () => {
     const navigation = useNavigation()
-    const [cartCounter, setCartCounter] = useState(0);
 
-    useFocusEffect(
-      React.useCallback(() => {
-        const cartCounter = async () => {
-          let cartCounter = await AsyncStorage.getItem("cart_counter");
-          console.log(`cart-counter=${cartCounter}`);
-          setCartCounter(cartCounter);
-        };
+    const handleLogout = async () => {
+      try {
+        await AsyncStorage.removeItem("accessToken");
+        await AsyncStorage.removeItem("_id");
+        await AsyncStorage.removeItem("user_type");
+        console.error('Cleared successfully:');
 
-        cartCounter();
-      }, [])
-    );
+        navigation.replace('Login');
+      } catch (error) {
+        console.error('Error clearing AsyncStorage:', error);
+      }
+    };
 
     return (
       <View style={{
@@ -321,17 +375,7 @@ const MyOrders = ({ navigation }) => {
         marginHorizontal: 16
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={commonStyles.header1Icon}
-          >
-            <Image
-              resizeMode='contain'
-              source={icons.arrowLeft}
-              style={{ height: 24, width: 24, tintColor: COLORS.black }}
-            />
-          </TouchableOpacity>
-          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>My Orders</Text>
+          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Orders</Text>
         </View>
 
         <View style={{
@@ -343,26 +387,14 @@ const MyOrders = ({ navigation }) => {
           backgroundColor: COLORS.tertiaryBlack
         }}>
           <View>
-            <View style={{
-              position: 'absolute',
-              top: -16,
-              left: 12,
-              backgroundColor: COLORS.primary,
-              height: 25,
-              width: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 12.5,
-              zIndex: 999
-            }}>
-              <Text style={{
-                fontSize: 16,
-                color: COLORS.white
-              }}>{cartCounter}</Text>
-            </View>
-            <Feather name="shopping-bag" size={24} color={COLORS.white} />
+            <TouchableOpacity
+              onPress={handleLogout}
+            >
+              <Feather name="log-out" size={24} color={COLORS.white} />
+            </TouchableOpacity>
           </View>
         </View>
+
       </View>
     )
   }
@@ -377,7 +409,17 @@ const MyOrders = ({ navigation }) => {
         }}>
           <TabView
             navigationState={{ index, routes }}
-            renderScene={renderScene}
+            // renderScene={renderScene}
+            renderScene={({ route }) => {
+              switch (route.key) {
+                case 'first':
+                  return <OngoingRoute index={index} />;
+                case 'second':
+                  return <HistoryRoute index={index} />;
+                default:
+                  return null;
+              }
+            }}
             onIndexChange={setIndex}
             initialLayout={{ width: layout.width }}
             renderTabBar={renderTabBar}
@@ -388,4 +430,4 @@ const MyOrders = ({ navigation }) => {
   )
 }
 
-export default MyOrders
+export default RiderOrders

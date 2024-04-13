@@ -1,42 +1,130 @@
-import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import { View, Image, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, icons, images } from '../constants'
 import { commonStyles } from '../styles/CommonStyles'
-import { useNavigation } from '@react-navigation/native'
-import { Ionicons, MaterialCommunityIcons, Fontisto, Octicons } from "@expo/vector-icons";
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { Feather, Ionicons, MaterialCommunityIcons, Fontisto, Octicons } from "@expo/vector-icons";
 import { ScrollView } from 'react-native-virtualized-view'
 import Button from "../components/Button"
 import { StatusBar } from 'expo-status-bar'
+import GeneralService from '../services/general.service'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+// import Toast from '@react-native-toast-message';
 
 const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili]
-const FoodDetailsV1 = () => {
+const FoodDetailsV1 = ({ route }) => {
+
+  const [cartCounter, setCartCounter] = useState(0);
+  const [screenLoading, setScreenLoading] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const cartCounter = async () => {
+        let cartCounter = await AsyncStorage.getItem("cart_counter");
+        console.log(`cart-counter=${cartCounter}`);
+        setCartCounter(cartCounter);
+      };
+
+      cartCounter();
+
+    }, [])
+  );
+
+  const cartAddition = (id) => {
+    console.log(`id=${id}`);
+
+    const addCart = async () => {
+      try {
+        let userId = await AsyncStorage.getItem("_id");
+        setScreenLoading(true);
+
+        const timeout = 8000;
+        const response = await Promise.race([
+          GeneralService.addCart(userId, id),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+
+        if (response) {
+          if (response.status == 200) {
+            let cartCounter = await AsyncStorage.getItem("cart_counter");
+            cartCounter = parseInt(cartCounter, 10);
+            cartCounter++;
+            await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+          }
+
+          setCartCounter(cartCounter);
+          setScreenLoading(false);
+        } else {
+          throw new Error('No response from the server');
+        }
+      } catch (err) {
+        setScreenLoading(false);
+      }
+    }
+    addCart();
+  }
+
+  const { id, name, image, price, minQty, type } = route.params;
   const renderHeader = () => {
     const navigation = useNavigation()
     return (
       <View style={{
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         marginTop: 20,
       }}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={commonStyles.header1Icon}
-        >
-          <Image
-            resizeMode='contain'
-            source={icons.arrowLeft}
-            style={{ height: 24, width: 24, tintColor: COLORS.black }}
-          />
-        </TouchableOpacity>
-        <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Details</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={commonStyles.header1Icon}
+          >
+            <Image
+              resizeMode='contain'
+              source={icons.arrowLeft}
+              style={{ height: 24, width: 24, tintColor: COLORS.black }}
+            />
+          </TouchableOpacity>
+          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Product Details</Text>
+        </View>
+
+        <View style={{
+          height: 45,
+          width: 45,
+          borderRadius: 22.5,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: COLORS.tertiaryBlack
+        }}>
+          <View>
+            <View style={{
+              position: 'absolute',
+              top: -16,
+              left: 12,
+              backgroundColor: COLORS.primary,
+              height: 25,
+              width: 25,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 12.5,
+              zIndex: 999
+            }}>
+              <Text style={{
+                fontSize: 16,
+                color: COLORS.white
+              }}>{cartCounter}</Text>
+            </View>
+            <Feather name="shopping-bag" size={24} color={COLORS.white} />
+          </View>
+        </View>
       </View>
     )
   }
 
   const renderFoodDetails = () => {
     const [isFavourite, setIsFavourite] = useState(false);
-    const [quantity, setQuantity] = useState(2);
+    const [quantity, setQuantity] = useState(1);
     const navigation = useNavigation();
 
     const [selectedSize, setSelectedSize] = useState(null);
@@ -67,8 +155,7 @@ const FoodDetailsV1 = () => {
               color={isFavourite ? COLORS.primary : COLORS.white} />
           </TouchableOpacity>
           <Image
-            // source={images.food}
-            source={images.burger3}
+            source={{ uri: `https://api.veggieking.pk/resources/images/${image}` }}
             resizeMode='contain'
             style={{
               width: SIZES.width - 32,
@@ -79,193 +166,32 @@ const FoodDetailsV1 = () => {
             }}
           />
         </View>
-        {/* Food details infos */}
         <View style={{ marginVertical: 16 }}>
-          <View style={{
-            flexDirection: 'row',
-            height: 47,
-            width: 220,
-            borderRadius: 50,
-            paddingHorizontal: 16,
-            alignItems: 'center',
-            borderWidth: 1,
-            borderColor: COLORS.gray6,
-          }}>
-            <Image
-              source={images.restaurantLogo}
-              resizeMode='contain'
-              style={{
-                width: 22,
-                height: 22
-              }}
-            />
-            <Text
-              style={{
-                marginLeft: 12,
-                fontFamily: 'regular',
-                fontSize: 14
-              }}
-            >Uttora Coffe House</Text>
-          </View>
+
           <Text style={{
             fontSize: 18,
             fontFamily: 'bold',
             textTransform: 'capitalize',
             marginVertical: 10
-          }}>pizza calzone european</Text>
-          <Text style={{
-            fontSize: 13,
-            fontFamily: 'regular',
-            color: COLORS.gray5
-          }}>
-            Prosciutto e funghi is a pizza variety that is topped with tomato sauce.</Text>
-
-          <View style={{ flexDirection: "row", marginTop: 16 }}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Octicons name="star" size={24} color={COLORS.primary} />
-              <Text style={{ marginLeft: 8 }}>4.7</Text>
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: SIZES.padding3 }}>
-              <MaterialCommunityIcons name="truck-delivery-outline" size={24} color={COLORS.primary} />
-              <Text style={{ marginLeft: 8 }}>Free</Text>
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Fontisto name="stopwatch" size={22} color={COLORS.primary} />
-              <Text style={{ marginLeft: 8 }}>20 min</Text>
-            </View>
-          </View>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-            <Text style={{ fontSize: 14, fontFamily: "regular", marginRight: 20 }}>SIZE: </Text>
-
-            <View style={{ flexDirection: "row", marginVertical: 18 }}>
-              <TouchableOpacity
-                style={[
-                  styles.checkboxContainer,
-                  selectedSize === "10”" && styles.selectedCheckbox
-                ]}
-                onPress={() => handleSizeSelection("10”")}
-              >
-                <Text style={[selectedSize === "10”" && styles.checkboxText]}>10”</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.checkboxContainer,
-                  selectedSize === "14”" && styles.selectedCheckbox
-                ]}
-                onPress={() => handleSizeSelection("14”")}
-              >
-                <Text style={[selectedSize === "14”" && styles.checkboxText]}>14”</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.checkboxContainer,
-                  selectedSize === "16”" && styles.selectedCheckbox
-                ]}
-                onPress={() => handleSizeSelection("16”")}
-              >
-                <Text style={
-                  [
-                    selectedSize === "16”" && styles.checkboxText
-                  ]
-                }>16”</Text>
-              </TouchableOpacity>
-
-
-            </View>
-          </View>
-
-          <View>
-            <Text style={{ fontSize: 14, fontFamily: 'regular', textTransform: 'uppercase' }}>ingridents</Text>
-            <View style={{ flexDirection: 'row', marginVertical: 16 }}>
-              {
-                ingridents.map((item, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      height: 50,
-                      width: 50,
-                      borderRadius: 25,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: COLORS.orange,
-                      marginRight: 16
-                    }}>
-                    <Image
-                      source={item}
-                      resizeMode='contain'
-                      style={{
-                        height: 24,
-                        width: 24,
-                        tintColor: COLORS.primary
-                      }}
-                    />
-                  </View>
-                ))
-              }
-            </View>
-          </View>
-
+          }}>{name}</Text>
           <View style={{
             backgroundColor: COLORS.tertiaryGray,
             borderRadius: 24,
             paddingHorizontal: 10,
             paddingVertical: 16
-            }}>
+          }}>
             <View style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               marginBottom: 16,
             }}>
-              <Text style={{ fontSize: 28, fontFamily: 'regular' }}>$32</Text>
-              <View style={{
-                backgroundColor: COLORS.blue,
-                width: 125,
-                height: 48,
-                borderRadius: 24,
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 12,
-                justifyContent: 'space-between'
-              }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (quantity > 2) {
-                      setQuantity(quantity - 1)
-                    }
-                  }}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    backgroundColor: 'rgba(255,255,255,0.2)'
-                  }}
-                >
-                  <Text style={{ color: COLORS.white }}>-</Text>
-                </TouchableOpacity>
-                <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-                <TouchableOpacity
-                  onPress={() => setQuantity(quantity + 1)}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    backgroundColor: 'rgba(255,255,255,0.2)'
-                  }}
-                >
-                  <Text style={{ color: COLORS.white }}>+</Text>
-                </TouchableOpacity>
-              </View>
+              <Text style={{ fontSize: 28, fontFamily: 'regular' }}>Rs. {price}/{type}</Text>
+
             </View>
             <Button
               filled
-              onPress={() => navigation.navigate("Cart")}
+              onPress={() => cartAddition(id)}
+              isEnable={true}
               title="ADD TO CART"
             />
           </View>
@@ -275,9 +201,13 @@ const FoodDetailsV1 = () => {
   }
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <StatusBar hidden={true}/>
+      <StatusBar hidden={true} />
       <View style={{ flex: 1, paddingHorizontal: 16 }}>
         {renderHeader()}
+        {
+          screenLoading ?
+            <ActivityIndicator size="large" color="blue" /> : null
+        }
         <ScrollView showsVerticalScrollIndicator={false}>
           {renderFoodDetails()}
         </ScrollView>

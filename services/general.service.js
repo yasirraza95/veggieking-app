@@ -8,7 +8,7 @@ const login = (values) => {
         "Content-Type": "application/json",
     };
     return axios.post(
-        `${API_URL}/login/user`,
+        `${API_URL}/login-user`,
         {
             phone: values.phone,
             password: values.password,
@@ -45,7 +45,7 @@ const forgot = (values) => {
     return axios.post(
         `${API_URL}/forgot`,
         {
-            phone: values.phone,
+            email: values.email,
         },
         {
             headers: headers,
@@ -66,9 +66,9 @@ const checkForgotToken = (values) => {
 };
 const showProfile = (accessToken) => {
     return axios.get(`${API_URL}/profile`, {
-      headers: authHeader(accessToken),
+        headers: authHeader(accessToken),
     });
-  };
+};
 const locationUpdate = (values) => {
     const headers = {
         "Content-Type": "application/json",
@@ -109,26 +109,55 @@ const emailVerification = (values) => {
     );
 };
 
-const listCartByUserId = (values) => {
+const listCartByUserId = (id) => {
+    // console.log(`id=${id}`);
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-cart/${values.id}`,
+        `${API_URL}/list-cart/${id}`,
         {
             headers: headers,
         }
     );
 };
 
-const increaseQty = (values) => {
+const cartCounterByUserId = (id) => {
+    // console.log(`id=${id}`);
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/cart-counter/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const addCart = (userId, prodId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.post(
+        `${API_URL}/add-cart`, {
+        created_by: userId,
+        prod_id: prodId,
+    },
+        {
+            headers: headers,
+        }
+    );
+};
+
+const increaseQty = (userId, prodId) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.put(
         `${API_URL}/increase-quantity`, {
-        created_by: values.user_id,
-        prod_id: values.prod_id,
+        created_by: userId,
+        prod_id: prodId,
     },
         {
             headers: headers,
@@ -136,14 +165,14 @@ const increaseQty = (values) => {
     );
 };
 
-const decreaseQty = (values) => {
+const decreaseQty = (userId, prodId) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.put(
         `${API_URL}/decrease-quantity`, {
-        created_by: values.user_id,
-        prod_id: values.prod_id,
+        created_by: userId,
+        prod_id: prodId,
     },
         {
             headers: headers,
@@ -151,17 +180,21 @@ const decreaseQty = (values) => {
     );
 };
 
-const deleteCart = (values) => {
+const deleteCart = (userId, prodId) => {
     const headers = {
         "Content-Type": "application/json",
     };
+
+    const data = {
+        created_by: userId,
+        prod_id: prodId,
+    };
+
     return axios.delete(
-        `${API_URL}/delete-cart`, {
-        created_by: values.user_id,
-        prod_id: values.prod_id,
-    },
+        `${API_URL}/delete-cart`,
         {
             headers: headers,
+            data: data
         }
     );
 };
@@ -190,6 +223,42 @@ const listAllProducts = () => {
     );
 };
 
+const listProductByCat = (id) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-product-by-cat/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listFeaturedProducts = () => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-featured-product`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listAllCategories = () => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-categories`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const addProduct = (values) => {
     const headers = {
         "Content-Type": "application/json",
@@ -200,6 +269,22 @@ const addProduct = (values) => {
         image: values.image,
         price: values.price,
         type: values.type,
+        created_by: values.user_id,
+    },
+        {
+            headers: headers,
+        }
+    );
+};
+
+const addCategory = (values) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.post(
+        `${API_URL}/add-category`, {
+        name: values.name,
+        image: values.image,
         created_by: values.user_id,
     },
         {
@@ -241,18 +326,15 @@ const deleteProduct = (values) => {
     );
 };
 
-const placeOrder = (values) => {
+const placeOrder = (userId, address, instruction) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.post(
-        `${API_URL}/place-order/${values.user_id}`, {
-        name: values.name,
-        phone: values.phone,
-        email: values.email,
-        address: values.address,
-        latitude: values.latitude,
-        longitude: values.longitude,
+        `${API_URL}/place-order`, {
+        user_id: userId,
+        address: address,
+        instruction: instruction,
     },
         {
             headers: headers,
@@ -272,36 +354,60 @@ const listAllOrders = () => {
     );
 };
 
-const listOrdersByUserId = (values) => {
+const listOrdersByUserIdandStatus = (status, userId) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-orders-user/${values.user_id}`,
+        `${API_URL}/list-orders-user/${status}/${userId}`,
         {
             headers: headers,
         }
     );
 };
 
-const listOrdersDetailByOrderId = (values) => {
+const listOrdersByUserIdOngoing = (userId) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-order-dtl/${values.order_id}`,
+        `${API_URL}/list-orders-user-ongoing/${userId}`,
         {
             headers: headers,
         }
     );
 };
 
-const updateOrderStatus = (values) => {
+const listOrdersByUserIdHistory = (userId) => {
     const headers = {
         "Content-Type": "application/json",
     };
-    return axios.post(
-        `${API_URL}/order-status/${values.order_id}/${values.status}`,
+    return axios.get(
+        `${API_URL}/list-orders-user-history/${userId}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listOrdersDetailByOrderId = (id) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-order-dtl/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const updateOrderStatus = (orderId, status) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.put(
+        `${API_URL}/order-status/${orderId}/${status}`,
         {
             headers: headers,
         }
@@ -376,12 +482,24 @@ const assignOrderToRider = (values) => {
     );
 };
 
-const listAssignedOrderByRiderId = (values) => {
+const listOngoingAssignedOrderByRiderId = (id, status) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.get(
-        `${API_URL}/list-rider-order/${values.id}`,
+        `${API_URL}/list-rider-order-ongoing/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listHistoryAssignedOrderByRiderId = (id, status) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-rider-order-history/${id}`,
         {
             headers: headers,
         }
@@ -401,9 +519,9 @@ const sendNotification = () => {
 };
 
 const GeneralService = {
-    login, register, forgot, checkForgotToken,showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
-    deleteCart, fetchProductByType, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserId,
+    login, register, forgot, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
+    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listAllCategories, listFeaturedProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
-    listAssignedOrderByRiderId, sendNotification
+    listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart
 };
 export default GeneralService;

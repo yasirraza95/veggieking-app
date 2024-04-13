@@ -7,14 +7,15 @@ import ReasonItem from '../components/ReasonItem'
 import Header from '../components/Header'
 
 const CancelOrders = ({ navigation }) => {
+  // const [comment, setComment] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  /***
-   * Render content
-   */
+  
+  const submission = () => {
+    console.log(selectedItem);
+  }
 
   const renderContent = () => {
-    const [comment, setComment] = useState("");
-    const [selectedItem, setSelectedItem] = useState(null);
 
     const handleCheckboxPress = (itemTitle) => {
       if (selectedItem === itemTitle) {
@@ -38,16 +39,16 @@ const CancelOrders = ({ navigation }) => {
             onPress={() => handleCheckboxPress('Changed mind about coffee choice')}
             title="Changed mind about coffee choice"
           />
-          <ReasonItem
+          {/* <ReasonItem
             checked={selectedItem === 'Unforeseen change in meeting schedule'}
             onPress={() => handleCheckboxPress('Unforeseen change in meeting schedule')}
             title="Unforeseen change in meeting schedule"
-          />
-          <ReasonItem
+          /> */}
+          {/* <ReasonItem
             checked={selectedItem === 'Weather affecting visit plans'}
             onPress={() => handleCheckboxPress('Weather affecting visit plans')}
             title="Weather affecting visit plans"
-          />
+          /> */}
           <ReasonItem
             checked={selectedItem === 'Sudden change in mood or taste preference'}
             onPress={() => handleCheckboxPress('Sudden change in mood or taste preference')}
@@ -64,7 +65,7 @@ const CancelOrders = ({ navigation }) => {
             title="Other reason"
           />
         </View>
-        <Text style={styles.inputLabel}>Add detailed reason</Text>
+        {/* <Text style={styles.inputLabel}>Add detailed reason</Text>
         <TextInput
           style={styles.input}
           placeholder="Write your reason here..."
@@ -72,7 +73,7 @@ const CancelOrders = ({ navigation }) => {
           numberOfLines={4} // Set the number of lines you want to display initially
           onChangeText={handleCommentChange}
           value={comment}
-        />
+        /> */}
       </View>
     )
   }
@@ -84,7 +85,8 @@ const CancelOrders = ({ navigation }) => {
     return (
       <View style={styles.btnContainer}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          // onPress={() => navigation.goBack()}
+          onPress={() => submission()}
           style={styles.btn}>
           <Text style={styles.btnText}>Submit</Text>
         </TouchableOpacity>

@@ -35,6 +35,7 @@ import EditProfile from "./EditProfile";
 import Address from "./Address";
 import AddNewAddress from "./AddNewAddress";
 import MyOrders from "./MyOrders";
+import RiderOrders from "./RiderOrders";
 import Chat from "./Chat";
 import VideoCall from "./VideoCall";
 import OpenShops from "./OpenShops";
@@ -85,6 +86,7 @@ export {
     Address,
     AddNewAddress,
     MyOrders,
+    RiderOrders,
     Chat,
     VideoCall,
     OpenShops,

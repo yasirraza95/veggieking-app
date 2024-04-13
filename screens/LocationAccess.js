@@ -5,16 +5,25 @@ import { COLORS, FONTS, SIZES, illustrations } from '../constants'
 import { Ionicons } from '@expo/vector-icons'
 import * as Location from 'expo-location'
 import { StatusBar } from 'expo-status-bar'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const LocationAccess = ({ navigation }) => {
     const arrayGPS = []
     const [gps, setGps] = useState(null)
     const [errorMsg, setErrorMsg] = useState(null)
     const [address, setAddress] = useState(null)
+    // Image.prefetch(illustrations.mapLocation);
+
+    // const prefetchImage = async () => {
+    //     await Image.prefetch(illustrations.mapLocation);
+    // };
 
     // Get user location
     useEffect(() => {
         const getPermissions = async () => {
+            let userType = await AsyncStorage.getItem("user_type");
+            console.log(`location-type=${userType}`);
+
             let { status } = await Location.requestForegroundPermissionsAsync()
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied')
@@ -31,6 +40,7 @@ const LocationAccess = ({ navigation }) => {
                 latitude: latitude,
                 longitude: longitude,
             })
+            await AsyncStorage.setItem("user_address", address[0].district + " " + address[0].city);
             setAddress(
                 `${address[0].name}, ${address[0].district}, ${address[0].city}`
             )
@@ -44,13 +54,14 @@ const LocationAccess = ({ navigation }) => {
         <SafeAreaView style={styles.area}>
             <StatusBar hidden={true} />
             <View style={styles.center}>
+                
                 <Image
                     source={illustrations.mapLocation}
                     resizeMode="contain"
                     style={styles.locationImage}
                 />
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Main')}
+                    onPress={() => navigation.replace('Main')}
                     style={styles.btn}
                 >
                     <Text style={styles.btnText}>Use Current Location</Text>
@@ -84,7 +95,7 @@ const LocationAccess = ({ navigation }) => {
                         </View>
                     </View>
                 </TouchableOpacity> */}
-                
+
                 {/* <TouchableOpacity style={styles.addButton}>
                     <View style={styles.buttonContent} color={COLORS.white}>
                         <Text

@@ -1,30 +1,58 @@
 import { View, StyleSheet, FlatList } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { COLORS } from '../constants'
 import { ScrollView } from 'react-native-virtualized-view'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TransactionHistoryData } from '../data/utils'
-import TransactionCard from '../components/TransactionCard'
 import Header from '../components/Header'
+import OrdDtlCard from '../components/OrdDtlCard'
+import GeneralService from '../services/general.service'
 
-const OrderDetail = ({ navigation }) => {
+const OrderDetail = ({ route, navigation }) => {
+
+  const { orderId } = route.params;
+  console.log(orderId);
+  const [isLoading, setIsLoading] = useState(false)
+  const [detailData, setDetailData] = useState([]);
+
+  useEffect(() => {
+    const getOrderDetail = async (id) => {
+      try {
+        setIsLoading(true);
+        const ordersData = await GeneralService.listOrdersDetailByOrderId(id);
+        const { data } = ordersData;
+        const { response } = data;
+        console.log(`detail-data=${JSON.stringify(response)}`);
+        setIsLoading(false);
+        setDetailData(response);
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+        setDetailData([]);
+      }
+    }
+
+    getOrderDetail(orderId);
+  }, [orderId, navigation]);
 
   return (
     <SafeAreaView style={styles.area}>
       <View style={styles.container}>
-        <Header title="Transaction History" />
+        <Header title="Order Detail" />
         <ScrollView>
           <FlatList
-            data={TransactionHistoryData}
+            data={detailData}
             keyExtractor={item => item.id}
             renderItem={({ item, index }) => (
-              <TransactionCard
-                image={item.image}
-                amount={item.amount}
+              <OrdDtlCard
+                image={item.prod_image}
+                amount={item.prod_price}
                 type={item.type}
                 price={item.price}
                 date={item.date}
-                name={item.name}
+                name={item.prod_name}
+                quantity={item.quantity}
+                totalAmt={item.order_amount}
               />
             )}
           />

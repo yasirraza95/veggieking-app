@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actionCreaters } from '../Redux';
 import { bindActionCreators } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 // import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 const initialState = {
@@ -33,10 +34,10 @@ const initialState = {
 }
 
 const Login = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const userActions = bindActionCreators(actionCreaters, dispatch);
-  const state = useSelector((state) => state.stateVals);
-  const { id, userType } = state;
+  // const dispatch = useDispatch();
+  // const userActions = bindActionCreators(actionCreaters, dispatch);
+  // const state = useSelector((state) => state.stateVals);
+  // const { id, userType } = state;
 
   const [error, setError] = useState()
   const [isLoading, setIsLoading] = useState(false)
@@ -48,16 +49,40 @@ const Login = ({ navigation }) => {
     setIsPasswordVisible(!isPasswordVisible);
   };
   // console.log(`id=${id}`);
-  console.log('id=', JSON.stringify(id));
-  useEffect(() => {
-    // console.log("calling");
-    const checkAuthentication = async () => {
-      if (id) {
+  // console.log('user-id=', JSON.stringify(userId));
+  // useEffect(() => {
+  //   // console.log("calling");
+
+  //   checkAuthentication();
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to run when the screen gains focus
+      checkAuthentication();
+
+      return () => {
+        // Code to run when the screen loses focus
+        console.log('login Screen blurred');
+      };
+    }, [])
+  );
+
+  const checkAuthentication = async () => {
+    let userId = await AsyncStorage.getItem("_id");
+    let userType = await AsyncStorage.getItem("user_type");
+    console.log(`login-type=${userType}`);
+
+    if (userId) {
+      console.log(userType);
+      if (userType == 'user') {
         navigation.replace('LocationAccess');
+        // navigation.replace('RiderOrders');
+      } else {
+        navigation.replace('RiderOrders');
       }
     }
-    checkAuthentication();
-  }, [id, navigation]);
+  }
 
   useEffect(() => {
     if (error) {
@@ -72,17 +97,37 @@ const Login = ({ navigation }) => {
       const response = await GeneralService.login(values);
       const { data } = response;
       const { access_token, user } = data;
-      const { id, user_type } = user;
-      // console.log(id);
+      const { id, user_type, first_name, last_name } = user;
+      console.log(user);
+
+
+      const cartResponse = await GeneralService.cartCounterByUserId(id);
+      const { data: cartData } = cartResponse;
+      const { response: cartNo } = cartData;
+      console.log(cartNo);
       // FIXME
       // userActions.logIn({
       //   accessToken: access_token,
       //   id: id,
       //   user_type: user_type,
       // });
-      AsyncStorage.setItem("accessToken", access_token);
-      AsyncStorage.setItem("_id", id);
-      AsyncStorage.setItem("user_type", user_type);
+
+      const keys = await AsyncStorage.getAllKeys();
+      await AsyncStorage.multiRemove(keys);
+
+      await AsyncStorage.setItem("accessToken", access_token);
+      await AsyncStorage.setItem("_id", String(id));
+      await AsyncStorage.setItem("user_type", user_type);
+      // await AsyncStorage.setItem("name", first_name + " " + last_name);
+      await AsyncStorage.setItem("user_name", first_name + " " + last_name);
+      await AsyncStorage.setItem("cart_counter", String(cartNo));
+      if (user_type == 'user') {
+        navigation.replace('LocationAccess');
+        // navigation.replace('RiderOrders');
+      } else {
+        navigation.replace('RiderOrders');
+      }
+
       // const { id, first_name, last_name, username, phone, email } = user;
 
       setIsLoading(false);
@@ -98,8 +143,8 @@ const Login = ({ navigation }) => {
       setIsEnable(true);
     }
   };
-  
-    const [ userInfo, setUserInfo ] = useState(null);
+
+  const [userInfo, setUserInfo] = useState(null);
   // useEffect(() => {
   //   GoogleSignin.configure({
   //     webClientId: '836571060958-mfbvkmvi0kbdm2170veivuus20u2u7ud.apps.googleusercontent.com',
@@ -125,117 +170,118 @@ const Login = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-    <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
-      <StatusBar style="light" />
-      <View style={commonStyles.header}>
-        <Text style={commonStyles.headerTitle}>Log In</Text>
-        <Text style={commonStyles.subHeaderTitle}>Please sign in to your existing account</Text>
-      </View>
-      <Animatable.View
-        animation="fadeInUpBig"
-        style={commonStyles.footer}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
       >
-        <Formik
-          initialValues={{ phone: '', password: '' }}
-          enableReinitialize={true}
-          validationSchema={validationSchema}
-          onSubmit={handleLogin}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-            <>
-              <Text style={commonStyles.inputHeader}>Phone No.</Text>
-              <Input
-                name="phone"
-                id="phone"
-                onChangeText={handleChange('phone')}
-                onBlur={handleBlur('phone')}
-                value={values.phone}
-                placeholder="03001234567"
-                placeholderTextColor={COLORS.black}
-                keyboardType="numeric"
-              />
-              {touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
-
-              <Text style={commonStyles.inputHeader} >Password</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Input
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  autoCapitalize="none"
-                  placeholder="*************"
-                  placeholderTextColor={COLORS.black}
-                  secureTextEntry={!isPasswordVisible}
-                  style={{ flex: 1, marginRight: 10 }}
-                />
-                <TouchableOpacity
-                  onPress={togglePasswordVisibility}
-                  style={{ padding: 0, marginLeft: -40 }}>
-                  <Ionicons
-                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                    size={24}
-                    color="black" />
-                </TouchableOpacity>
-              </View>
-                {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
-              <View
-                style={commonStyles.checkBoxContainer}
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
+            <StatusBar style="light" />
+            <View style={commonStyles.header}>
+              <Text style={commonStyles.headerTitle}>Log In</Text>
+              <Text style={commonStyles.subHeaderTitle}>Please sign in to your existing account</Text>
+            </View>
+            <Animatable.View
+              animation="fadeInUpBig"
+              style={commonStyles.footer}
+            >
+              <Formik
+                initialValues={{ phone: '', password: '' }}
+                enableReinitialize={true}
+                validationSchema={validationSchema}
+                onSubmit={handleLogin}
               >
+                {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                  <>
+                    <Text style={commonStyles.inputHeader}>Phone No.</Text>
+                    <Input
+                      name="phone"
+                      id="phone"
+                      onChangeText={handleChange('phone')}
+                      onBlur={handleBlur('phone')}
+                      value={values.phone}
+                      placeholder="03001234567"
+                      placeholderTextColor={COLORS.black}
+                      keyboardType="numeric"
+                    />
+                    {touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
+
+                    <Text style={commonStyles.inputHeader} >Password</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Input
+                        onChangeText={handleChange('password')}
+                        onBlur={handleBlur('password')}
+                        value={values.password}
+                        autoCapitalize="none"
+                        placeholder="*************"
+                        placeholderTextColor={COLORS.black}
+                        secureTextEntry={!isPasswordVisible}
+                        style={{ flex: 1, marginRight: 10 }}
+                      />
+                      <TouchableOpacity
+                        onPress={togglePasswordVisibility}
+                        style={{ padding: 0, marginLeft: -40 }}>
+                        <Ionicons
+                          name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                          size={24}
+                          color="black" />
+                      </TouchableOpacity>
+                    </View>
+                    {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
+                    <View
+                      style={commonStyles.checkBoxContainer}
+                    >
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate("ForgotPassword")}
+                      >
+                        <Text
+                          style={{ ...FONTS.body4, color: COLORS.primary }}
+                        >Forgot Password ?</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <Button
+                      title="Log In"
+                      isEnable={isEnable}
+                      isLoading={isLoading}
+                      filled
+                      onPress={handleSubmit}
+                      style={commonStyles.btn}
+                    />
+                  </>
+                )}
+              </Formik>
+              <View style={styles.hr} />
+              {/* <TouchableOpacity
+                style={styles.googleButton}
+                onPress={() => {
+                  signIn();
+                }}
+              >
+                <Image
+                  source={icons.google}
+                  resizeMode="contain"
+                  style={styles.gogleIcon} />
+                <Text
+                  style={styles.googleText}
+                >Login with Google</Text>
+              </TouchableOpacity> */}
+              <View
+                style={commonStyles.center}>
+                <Text
+                  style={{ ...FONTS.body4, color: COLORS.black }}
+                >Don't have an account?{" "}</Text>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("ForgotPassword")}
+                  onPress={() => navigation.navigate("Signup")}
                 >
                   <Text
                     style={{ ...FONTS.body4, color: COLORS.primary }}
-                  >Forgot Password ?</Text>
+                  >SIGN UP</Text>
                 </TouchableOpacity>
               </View>
-              <Button
-                title="Log In"
-                isEnable={isEnable}
-                isLoading={isLoading}
-                filled
-                onPress={handleSubmit}
-                style={commonStyles.btn}
-              />
-            </>
-          )}
-        </Formik>
-        <View style={styles.hr} />
-        <TouchableOpacity
-          style={styles.googleButton}
-          onPress={()=>{signIn();
-          }}
-          >
-          <Image
-            source={icons.google}
-            resizeMode="contain"
-            style={styles.gogleIcon} />
-          <Text
-            style={styles.googleText}
-          >Login with Google</Text>
-        </TouchableOpacity>
-        <View
-          style={commonStyles.center}>
-          <Text
-            style={{ ...FONTS.body4, color: COLORS.black }}
-          >Don't have an account?{" "}</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Signup")}
-          >
-            <Text
-              style={{ ...FONTS.body4, color: COLORS.primary }}
-            >SIGN UP</Text>
-          </TouchableOpacity>
-        </View>
-      </Animatable.View>
-    </View>
-    </ScrollView>
-    </KeyboardAvoidingView>
+            </Animatable.View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
 
   )

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS, SIZES, images, icons } from '../constants'
 import { commonStyles } from '../styles/CommonStyles'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { ScrollView } from 'react-native-virtualized-view'
 import { MaterialCommunityIcons, Octicons, Fontisto, AntDesign, Ionicons, Feather } from "@expo/vector-icons"
 import { recentKeywords } from '../data/keywords'
@@ -15,15 +15,30 @@ import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
-const RestaurantView1 = () => {
+const CategoryProducts = ({ route }) => {
 
+  const { catName, catId } = route.params;
+  const [cartCounter, setCartCounter] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [screenLoading, setScreenLoading] = useState(false);
   const [productsLoading, setProductsLoading] = useState(false);
   const [selectedStars, setSelectedStars] = useState(Array(5).fill(false));
   const [products, setProducts] = useState([]);
-  const [cartCounter, setCartCounter] = useState(0);
-  const [screenLoading, setScreenLoading] = useState(false);
   const navigation = useNavigation();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const cartCounter = async () => {
+        let cartCounter = await AsyncStorage.getItem("cart_counter");
+        console.log(`cart-counter=${cartCounter}`);
+        setCartCounter(cartCounter);
+      };
+
+      cartCounter();
+
+    }, [])
+  );
+
 
   const addCart = async (id) => {
     try {
@@ -31,6 +46,8 @@ const RestaurantView1 = () => {
       setScreenLoading(true);
 
       const timeout = 8000;
+
+      // const response = await GeneralService.addCart(userId, id);
 
       const response = await Promise.race([
         GeneralService.addCart(userId, id),
@@ -53,6 +70,8 @@ const RestaurantView1 = () => {
       }
 
     } catch (err) {
+      console.log(err?.response?.data);
+
       setScreenLoading(false);
     }
 
@@ -62,12 +81,25 @@ const RestaurantView1 = () => {
     const featuredProducts = async () => {
       try {
         setProductsLoading(true);
-        const response = await GeneralService.listAllProducts();
-        setProducts(response.data.response);
+        const timeout = 8000;
+
+        const response = await Promise.race([
+          GeneralService.listProductByCat(catId),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+
+        if (response) {
+          setProducts(response.data.response);
+        } else {
+          throw new Error('No response from the server');
+        }
+        // const response = await GeneralService.listProductByCat(catId);
+        // setProducts(response.data.response);
         setProductsLoading(false);
         console.error('Featured products fetched');
       } catch (error) {
         setProductsLoading(false);
+        setProducts([]);
         console.error('Error fetching featured:', error);
       }
     };
@@ -100,7 +132,7 @@ const RestaurantView1 = () => {
               style={{ height: 24, width: 24, tintColor: COLORS.black }}
             />
           </TouchableOpacity>
-          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>All Products</Text>
+          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>{catName.toUpperCase()}</Text>
         </View>
         <View style={{
           height: 45,
@@ -221,7 +253,7 @@ const RestaurantView1 = () => {
           ))
         }
       </View>
-    </View>
+    </View>;
 
     let response = products.length > 0 ? result : <View style={{ flex: 1 }}>
       <Text style={{
@@ -230,7 +262,9 @@ const RestaurantView1 = () => {
         fontFamily: 'regular'
       }}>No record found</Text></View>;
 
+
     response = productsLoading ? <ActivityIndicator size="large" color="blue" /> : result
+
     return (
       response
     )
@@ -476,6 +510,7 @@ const RestaurantView1 = () => {
           screenLoading ?
             <ActivityIndicator size="large" color="blue" /> : null
         }
+
         <ScrollView>
           {/* {renderRestaurantDetails()} */}
           {renderFoodsByCategories()}
@@ -530,4 +565,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default RestaurantView1
+export default CategoryProducts
