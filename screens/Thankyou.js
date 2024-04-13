@@ -11,27 +11,31 @@ const Thankyou = ({ navigation }) => {
             <StatusBar hidden={true} />
             <View style={styles.center}>
 
-                {/* <Image
-                    source={illustrations.mapLocation}
+               <Image
+                    source={illustrations.thnkyou}
                     resizeMode="contain"
                     style={styles.locationImage}
-                /> */}
-                {/* <TouchableOpacity
+                />
+                 <Text style={styles.thnkyou}>Thank You</Text>
+            <Text style={styles.bottomText}>
+                Order placed Successfully{"\n"}
+                Your Order Will Reach Soon
+            </Text>
+            <Text style={styles.bottomText}>
+                Order ID: 789
+            </Text>
+
+
+                <TouchableOpacity
                     style={styles.btn}
                 >
-                    <Text style={styles.btnText}>Use Current Location</Text>
-                    <View style={styles.iconContainer}>
-                        <Ionicons
-                            name="location-outline"
-                            size={20}
-                            color={COLORS.white}
-                        />
-                    </View>
-                </TouchableOpacity> */}
-
-                <Text style={styles.bottomText}>
-                    THANK YOU PAGE
+                    <Text style={styles.btnText}>Track Your Order</Text>
+                </TouchableOpacity>
+                <Text style={styles.contact}>For any query please contact us at{"\n"}
+                0300-1234567
                 </Text>
+
+
             </View>
         </SafeAreaView>
     )
@@ -102,5 +106,16 @@ const styles = StyleSheet.create({
         marginVertical: SIZES.padding * 2,
         textAlign: 'center',
     },
+    thnkyou: {
+        color: '#f44c00',
+        fontWeight: 'bold',
+        fontSize: 30,
+      },
+
+      contact: {
+        color: '#f44c00',
+        fontSize: 15,
+        textAlign: 'center'
+      }
 })
 export default Thankyou
