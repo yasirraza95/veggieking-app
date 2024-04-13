@@ -34,7 +34,7 @@ const PaymentMethod = ({ route }) => {
         if (response) {
           // setCategory(response.data.response);
           await AsyncStorage.setItem("cart_counter", "0");
-          navigation.navigate("Main");
+          navigation.navigate("Thankyou");
         } else {
           Alert.alert("Error", "No response from the server");
           throw new Error('No response from the server');

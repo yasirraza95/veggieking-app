@@ -10,13 +10,13 @@ const Thankyou = ({ navigation }) => {
         <SafeAreaView style={styles.area}>
             <StatusBar hidden={true} />
             <View style={styles.center}>
-                
-                <Image
+
+                {/* <Image
                     source={illustrations.mapLocation}
                     resizeMode="contain"
                     style={styles.locationImage}
-                />
-                <TouchableOpacity
+                /> */}
+                {/* <TouchableOpacity
                     style={styles.btn}
                 >
                     <Text style={styles.btnText}>Use Current Location</Text>
@@ -27,11 +27,10 @@ const Thankyou = ({ navigation }) => {
                             color={COLORS.white}
                         />
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <Text style={styles.bottomText}>
-                    VEGGIE KING WILL ACCESS YOUR LOCATION ONLY WHILE USING THE
-                    APP
+                    THANK YOU PAGE
                 </Text>
             </View>
         </SafeAreaView>
