@@ -100,7 +100,7 @@ const OngoingRoute = ({ navigation, index }) => {
             marginVertical: 18
           }}>
             <TouchableOpacity
-              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
+              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderStatus: item.status, orderNo: item.order_no, orderDate: item.created_at })}
               // onPress={() => navigate.navigate("TrackingOrders")}
               style={{
                 height: 38,
@@ -131,7 +131,7 @@ const OngoingRoute = ({ navigation, index }) => {
     }}>No record found</Text></View>;
 
   response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
-  
+
   return (
     response
   )

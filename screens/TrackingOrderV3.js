@@ -15,7 +15,7 @@ import GeneralService from '../services/general.service'
 const TrackingOrderV3 = ({ route, navigation }) => {
   const [loading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
-  const { orderId, orderNo, orderDate } = route.params;
+  const { orderId, orderNo, orderDate, orderStatus } = route.params;
 
   useEffect(() => {
     getOrderDetailById(orderId);
@@ -125,7 +125,7 @@ const TrackingOrderV3 = ({ route, navigation }) => {
         }}>
         </View>
 
-        <VerticalStepper status={"delivered"} />
+        <VerticalStepper status={orderStatus} />
 
       </View>
     </SafeAreaView>
