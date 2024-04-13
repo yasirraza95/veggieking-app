@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Image, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Switch } from 'react-native';
+import { View, Image, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { SIZES, illustrations, images } from '../constants'
 import GeneralService from '../services/general.service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const PaymentMethod = ({ route }) => {
   const [showStickyNote, setShowStickyNote] = useState(false);
@@ -13,15 +15,33 @@ const PaymentMethod = ({ route }) => {
     setShowStickyNote(contentOffset.y > 0);
   };
 
+  const navigation = useNavigation();
   const { userId, address, items, delivery, total } = route.params;
 
   const placeOrder = () => {
     const orderPlacement = async () => {
       try {
-        const response = await GeneralService.placeOrder(userId, address);      
+        const timeout = 8000;
+        const response = await Promise.race([
+          GeneralService.placeOrder(userId, address),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+        if (response) {
+          // setCategory(response.data.response);
+          await AsyncStorage.setItem("cart_counter", "0");
+          navigation.navigate("Main");
+        } else {
+          Alert.alert("Error", "No response from the server");
+          throw new Error('No response from the server');
+        }
+        // const response = await GeneralService.placeOrder(userId, address);
         console.log(response);
+
+
       } catch (err) {
-        console.log(err?.response?.data);
+        console.log(err);
+        Alert.alert("Error", "Error in order");
+        console.log("order-response");
       }
     }
     orderPlacement();
@@ -107,7 +127,9 @@ const PaymentMethod = ({ route }) => {
             </View>
             <View style={styles.editSection}>
               <Text style={styles.editText}>Delivery Address</Text>
-              <Text>{address}</Text>
+              <Text>
+                {address}
+              </Text>
               {/* <TouchableOpacity style={styles.editIcon}>
                 <Ionicons name="chevron-forward" size={24} color="#f44c00" />
               </TouchableOpacity> */}
