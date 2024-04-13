@@ -5,7 +5,7 @@ import { COLORS, FONTS, SIZES, images, icons } from '../constants'
 import { commonStyles } from '../styles/CommonStyles'
 import { useNavigation } from '@react-navigation/native'
 import { ScrollView } from 'react-native-virtualized-view'
-import { MaterialCommunityIcons,  Octicons, Fontisto, AntDesign, Ionicons } from "@expo/vector-icons"
+import { MaterialCommunityIcons, Octicons, Fontisto, AntDesign, Ionicons } from "@expo/vector-icons"
 import { recentKeywords } from '../data/keywords'
 import { popularBurgers } from '../data/foods'
 import { Modal } from 'react-native'
@@ -70,7 +70,7 @@ const renderRestaurantDetails = ()=>{
          style={{
           width: SIZES.width - 32,
           height: 150,
-          borderRadius: 30
+          borderRadius: 30,
          }}
        />
 

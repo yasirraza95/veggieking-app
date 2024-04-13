@@ -170,6 +170,21 @@ const HomeV2 = ({ navigation }) => {
                           width: '100%',
                         }} />
                     </View>
+                    <TouchableOpacity
+                    onPress={() => console.log("Add to cart")}
+                    style={{
+                      height: 30,
+                      width: 30,
+                      top: 65,
+                      borderRadius: 15,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: COLORS.primary,
+                      position: 'absolute', // absolute positioning
+                      right: 0 // positioned to the left
+                    }}>
+                    <AntDesign name="plus" size={12} color={COLORS.white} />
+                  </TouchableOpacity>
                     <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
                     <View style={{
                       marginTop: 4,
@@ -201,14 +216,11 @@ const HomeV2 = ({ navigation }) => {
           paddingHorizontal: 16
         }}>
           <Text style={{ ...FONTS.body2 }}>More Products</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
-            style={{ flexDirection: 'row', alignItems: 'center' }}
-          >
-            <Text style={{ fontSize: 16, fontFamily: 'regular' }}>See All</Text>
-            <View>
-              <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
-            </View>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 130 }}>
+    <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 0 }}>See All</Text>
+    <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
+</View>
+
           <TouchableOpacity onPress={() => {
             if (quantity > 2) {
               setQuantity(quantity - 1)
