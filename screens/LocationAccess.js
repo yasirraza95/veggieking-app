@@ -21,6 +21,9 @@ const LocationAccess = ({ navigation }) => {
     // Get user location
     useEffect(() => {
         const getPermissions = async () => {
+            let userType = await AsyncStorage.getItem("user_type");
+            console.log(`location-type=${userType}`);
+
             let { status } = await Location.requestForegroundPermissionsAsync()
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied')
@@ -58,7 +61,7 @@ const LocationAccess = ({ navigation }) => {
                     style={styles.locationImage}
                 />
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Main')}
+                    onPress={() => navigation.replace('Main')}
                     style={styles.btn}
                 >
                     <Text style={styles.btnText}>Use Current Location</Text>

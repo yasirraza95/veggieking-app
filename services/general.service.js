@@ -8,7 +8,7 @@ const login = (values) => {
         "Content-Type": "application/json",
     };
     return axios.post(
-        `${API_URL}/login/user`,
+        `${API_URL}/login-user`,
         {
             phone: values.phone,
             password: values.password,
@@ -122,6 +122,19 @@ const listCartByUserId = (id) => {
     );
 };
 
+const cartCounterByUserId = (id) => {
+    // console.log(`id=${id}`);
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/cart-counter/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const addCart = (userId, prodId) => {
     const headers = {
         "Content-Type": "application/json",
@@ -210,6 +223,42 @@ const listAllProducts = () => {
     );
 };
 
+const listProductByCat = (id) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-product-by-cat/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listFeaturedProducts = () => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-featured-product`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+const listAllCategories = () => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-categories`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const addProduct = (values) => {
     const headers = {
         "Content-Type": "application/json",
@@ -220,6 +269,22 @@ const addProduct = (values) => {
         image: values.image,
         price: values.price,
         type: values.type,
+        created_by: values.user_id,
+    },
+        {
+            headers: headers,
+        }
+    );
+};
+
+const addCategory = (values) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.post(
+        `${API_URL}/add-category`, {
+        name: values.name,
+        image: values.image,
         created_by: values.user_id,
     },
         {
@@ -261,18 +326,14 @@ const deleteProduct = (values) => {
     );
 };
 
-const placeOrder = (values) => {
+const placeOrder = (userId, address) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.post(
-        `${API_URL}/place-order/${values.user_id}`, {
-        name: values.name,
-        phone: values.phone,
-        email: values.email,
-        address: values.address,
-        latitude: values.latitude,
-        longitude: values.longitude,
+        `${API_URL}/place-order`, {
+        user_id: userId,
+        address: address,
     },
         {
             headers: headers,
@@ -340,12 +401,12 @@ const listOrdersDetailByOrderId = (id) => {
     );
 };
 
-const updateOrderStatus = (values) => {
+const updateOrderStatus = (orderId, status) => {
     const headers = {
         "Content-Type": "application/json",
     };
-    return axios.post(
-        `${API_URL}/order-status/${values.order_id}/${values.status}`,
+    return axios.put(
+        `${API_URL}/order-status/${orderId}/${status}`,
         {
             headers: headers,
         }
@@ -457,8 +518,8 @@ const sendNotification = () => {
 };
 
 const GeneralService = {
-    login, register, forgot, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, increaseQty, decreaseQty,
-    deleteCart, fetchProductByType, listAllProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
+    login, register, forgot, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
+    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listAllCategories, listFeaturedProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart
 };

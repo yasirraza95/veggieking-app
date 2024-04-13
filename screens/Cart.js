@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native'
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, icons } from '../constants'
@@ -18,6 +18,10 @@ const Cart = ({ navigation }) => {
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
   const [totalPrice, setTotalPrice] = useState(0)
+  const [itemNo, setItemNo] = useState(0)
+  const [cartCounter, setCartCounter] = useState(0);
+  const [inputText, setInputText] = useState('');
+  const [inputError, setInputError] = useState('');
 
   const fetchData = async () => {
     try {
@@ -28,8 +32,14 @@ const Cart = ({ navigation }) => {
       const totalPrice = res.reduce((accumulator, currentValue) => {
         return accumulator + (currentValue.quantity * currentValue.product_price);
       }, 0);
+
+      const numberOfItems = res.reduce((count, obj) => {
+        return count + 1;
+      }, 0);
+      setItemNo(numberOfItems);
       setTotalPrice(totalPrice);
       setCart(res);
+
     } catch (err) {
       console.log("Error");
       console.log(err);
@@ -37,11 +47,24 @@ const Cart = ({ navigation }) => {
     }
   }
 
-  useFocusEffect(() => {
-    // console.log("called");
-    fetchData();
+  // useFocusEffect(() => {
+  //   // console.log("called");
+  //   fetchData();
 
-  })
+  // })
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to run when the screen gains focus
+      fetchData();
+
+      // Cleanup function (optional)
+      return () => {
+        // Code to run when the screen loses focus
+        console.log('cart Screen blurred');
+      };
+    }, [])
+  );
 
   // useEffect(() => {
   //   console.log("fetched");
@@ -92,9 +115,17 @@ const Cart = ({ navigation }) => {
         const response = await GeneralService.deleteCart(userId, id);
         console.log(response.data.response);
 
+        let cartCounter = await AsyncStorage.getItem("cart_counter");
+        cartCounter = parseInt(cartCounter, 10);
+        cartCounter--;
+        console.log(cartCounter);
+        await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+        setCartCounter(cartCounter);
+
         fetchData();
 
       } catch (err) {
+        console.log("delete error");
         console.log(err?.response?.data);
       }
     }
@@ -102,6 +133,24 @@ const Cart = ({ navigation }) => {
     delCart();
     // setQuantity(quantity + 1);
   };
+
+  const handleInputChange = (text) => {
+    setInputText(text);
+  };
+
+  const placeOrder = () => {
+    const orderPlace = async () => {
+      if (inputText) {
+        setInputError("");
+        navigation.navigate("PaymentMethod", { total: totalPrice, delivery: 100, items: itemNo, address: inputText, userId: 1 });
+      } else {
+        setInputError("Please enter address");
+      }
+      console.log(inputText);
+    }
+
+    orderPlace();
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.blue }}>
@@ -245,11 +294,22 @@ const Cart = ({ navigation }) => {
               <Text style={cartStyles.body3}>Delivery Address</Text>
             </View>
             <Input
+              name="address"
+              id="address"
+              onChangeText={handleInputChange}
+              value={inputText}
+              placeholder="Delivery Address"
+              placeholderTextColor={COLORS.gray4}
+              keyboardType="text"
+            />
+            {inputError && <Text style={styles.error}>{inputError}</Text>}
+
+            {/* <Input
               id="Address"
-              placeholder="2118 Thornridge Cir. Syracuse"
+              placeholder="Delivery Address"
               placeholderTextColor={COLORS.gray4}
               editable={true}
-            />
+            /> */}
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 16 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -261,7 +321,9 @@ const Cart = ({ navigation }) => {
             <Button
               filled
               title="PLACE ORDER"
-              onPress={() => navigation.navigate("PaymentMethod")}
+              isEnable={true}
+              // onPress={() => navigation.navigate("PaymentMethod")}
+              onPress={() => placeOrder()}
               style={{ marginVertical: 2 }}
             />
           </Animatable.View>
@@ -272,5 +334,11 @@ const Cart = ({ navigation }) => {
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  error: {
+    color: "red"
+  },
+});
 
 export default Cart

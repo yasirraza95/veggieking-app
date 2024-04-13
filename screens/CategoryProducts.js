@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS, SIZES, images, icons } from '../constants'
 import { commonStyles } from '../styles/CommonStyles'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { ScrollView } from 'react-native-virtualized-view'
 import { MaterialCommunityIcons, Octicons, Fontisto, AntDesign, Ionicons, Feather } from "@expo/vector-icons"
 import { recentKeywords } from '../data/keywords'
@@ -15,26 +15,48 @@ import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
-const RestaurantView1 = () => {
+const CategoryProducts = ({ route }) => {
 
+  const { catName, catId } = route.params;
+  const [cartCounter, setCartCounter] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [productsLoading, setProductsLoading] = useState(false);
   const [selectedStars, setSelectedStars] = useState(Array(5).fill(false));
   const [products, setProducts] = useState([]);
-  const [cartCounter, setCartCounter] = useState(0);
   const navigation = useNavigation();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to run when the screen gains focus
+      const cartCounter = async () => {
+        let cartCounter = await AsyncStorage.getItem("cart_counter");
+        // let cartCounter = await AsyncStorage.getItem("cart_counter");
+        console.log(`cart-counter=${cartCounter}`);
+        setCartCounter(cartCounter);
+      };
+
+      cartCounter();
+
+      // Cleanup function (optional)
+      return () => {
+        // Code to run when the screen loses focus
+        console.log('home Screen blurred');
+      };
+    }, [])
+  );
+
 
   const addCart = async (id) => {
     try {
       let userId = await AsyncStorage.getItem("_id");
       const response = await GeneralService.addCart(userId, id);
+
       let cartCounter = await AsyncStorage.getItem("cart_counter");
       cartCounter = parseInt(cartCounter, 10);
       cartCounter++;
       await AsyncStorage.setItem("cart_counter", cartCounter.toString());
 
       setCartCounter(cartCounter);
-
       console.log(response);
       console.log(id);
     } catch (err) {
@@ -47,7 +69,7 @@ const RestaurantView1 = () => {
     const featuredProducts = async () => {
       try {
         setProductsLoading(true);
-        const response = await GeneralService.listAllProducts();
+        const response = await GeneralService.listProductByCat(catId);
         setProducts(response.data.response);
         setProductsLoading(false);
         console.error('Featured products fetched');
@@ -85,7 +107,7 @@ const RestaurantView1 = () => {
               style={{ height: 24, width: 24, tintColor: COLORS.black }}
             />
           </TouchableOpacity>
-          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>All Products</Text>
+          <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>{catName.toUpperCase()}</Text>
         </View>
         <View style={{
           height: 45,
@@ -503,4 +525,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default RestaurantView1
+export default CategoryProducts

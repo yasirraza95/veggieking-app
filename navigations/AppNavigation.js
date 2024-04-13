@@ -59,6 +59,8 @@ import Otp from '../screens/Otp';
 import OrderDetail from '../screens/OrderDetail';
 import { createStackNavigator } from '@react-navigation/stack';
 import TrackingOrderV3 from '../screens/TrackingOrderV3';
+import CategoryProducts from '../screens/CategoryProducts';
+// import { Toast } from '@react-native-toast-message';
 
 const Stack = createNativeStackNavigator()
 // const Stack = createStackNavigator()
@@ -98,6 +100,7 @@ const AppNavigation = () => {
                     isFirstLaunch ? 'HomeV2' : 'Login'
                 }
             >
+
                 <Stack.Screen name="Onboarding1" component={Onboarding1} />
                 <Stack.Screen name="Onboarding2" component={Onboarding2} />
                 <Stack.Screen name="Onboarding3" component={Onboarding3} />
@@ -121,6 +124,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="FoodByKeywords" component={FoodByKeywords} />
                 <Stack.Screen name="FoodDetails" component={FoodDetailsV1} />
                 <Stack.Screen name="RestaurantView" component={RestaurantView1} />
+                <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
                 <Stack.Screen name="Cart" component={Cart} />
                 <Stack.Screen name="EditCart" component={EditCart} />
                 <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
@@ -149,6 +153,8 @@ const AppNavigation = () => {
                 <Stack.Screen name="SubmitQuestion" component={SubmitQuestion} />
                 <Stack.Screen name="History" component={History} />
             </Stack.Navigator>
+            {/* <Toast ref={(ref) => Toast.setRef(ref)} /> */}
+
         </NavigationContainer>
     )
 }

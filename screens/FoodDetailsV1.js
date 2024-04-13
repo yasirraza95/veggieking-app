@@ -1,29 +1,70 @@
 import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, icons, images } from '../constants'
 import { commonStyles } from '../styles/CommonStyles'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { Feather, Ionicons, MaterialCommunityIcons, Fontisto, Octicons } from "@expo/vector-icons";
 import { ScrollView } from 'react-native-virtualized-view'
 import Button from "../components/Button"
 import { StatusBar } from 'expo-status-bar'
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+// import Toast from '@react-native-toast-message';
 
 const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili]
 const FoodDetailsV1 = ({ route }) => {
 
-  const addCart = async (id) => {
-    try {
-      let userId = await AsyncStorage.getItem("_id");
-      const response = await GeneralService.addCart(userId, id);
-      console.log(response);
-      console.log(id);
-    } catch (err) {
-      console.log(err);
-    }
+  const [cartCounter, setCartCounter] = useState(0);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to run when the screen gains focus
+      const cartCounter = async () => {
+        let cartCounter = await AsyncStorage.getItem("cart_counter");
+        // let cartCounter = await AsyncStorage.getItem("cart_counter");
+        console.log(`cart-counter=${cartCounter}`);
+        setCartCounter(cartCounter);
+      };
+
+      cartCounter();
+
+      // Cleanup function (optional)
+      return () => {
+        // Code to run when the screen loses focus
+        console.log('detail Screen blurred');
+      };
+    }, [])
+  );
+
+  const cartAddition = (id) => {
+    console.log(`id=${id}`);
+
+    const addCart = async () => {
+      try {
+        let userId = await AsyncStorage.getItem("_id");
+        const response = await GeneralService.addCart(userId, id);
+        // Toast.show({
+        //   type: 'success',
+        //   text1: 'Hello',
+        //   text2: 'This is some something 👋'
+        // });
+        console.log(response.data);
+        let cartCounter = await AsyncStorage.getItem("cart_counter");
+        cartCounter = parseInt(cartCounter, 10);
+        cartCounter++;
+        await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+        setCartCounter(cartCounter);
+      } catch (err) {
+        // Toast.show({
+        //   type: 'success',
+        //   text1: 'Hello',
+        //   text2: 'This is some something 👋'
+        // });
+        console.log(err?.response?.data?.response);
+      }
+    }
+    addCart();
   }
 
   const { id, name, image, price, minQty, type } = route.params;
@@ -74,7 +115,7 @@ const FoodDetailsV1 = ({ route }) => {
               <Text style={{
                 fontSize: 16,
                 color: COLORS.white
-              }}>0</Text>
+              }}>{cartCounter}</Text>
             </View>
             <Feather name="shopping-bag" size={24} color={COLORS.white} />
           </View>
@@ -147,7 +188,7 @@ const FoodDetailsV1 = ({ route }) => {
               marginBottom: 16,
             }}>
               <Text style={{ fontSize: 28, fontFamily: 'regular' }}>Rs. {price}/{type}</Text>
-              <View style={{
+              {/* <View style={{
                 backgroundColor: COLORS.blue,
                 width: 125,
                 height: 48,
@@ -188,11 +229,12 @@ const FoodDetailsV1 = ({ route }) => {
                 >
                   <Text style={{ color: COLORS.white }}>+</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
             <Button
               filled
-              onPress={() => addCart(item.id)}
+              onPress={() => cartAddition(id)}
+              isEnable={true}
               title="ADD TO CART"
             />
           </View>

@@ -1,4 +1,4 @@
-import { Dimensions, View, Text, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, FlatList } from
+import { Dimensions, View, Text, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, FlatList, ActivityIndicator, Alert } from
   'react-native'
 import React, { useState, useEffect } from 'react'
 import { COLORS, FONTS, SIZES, icons, images } from '../constants'
@@ -12,15 +12,17 @@ import restaurant7 from '../assets/images/restaurants/restaurant7.jpg';
 import restaurant8 from '../assets/images/restaurants/restaurant8.png';
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { categories } from '../data/categories'
 
 const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [userAddress, setUserAddress] = useState('');
+  const [cartCounter, setCartCounter] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [featuredLoading, setFeaturedLoading] = useState(false);
-  const [moreLoading, setMoreLoading] = useState(false);
-  const [featured, setFeatured] = useState([]);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+  const [featureLoading, setFeatureLoading] = useState(false);
+  const [category, setCategory] = useState([]);
   const [moreProd, setMoreProd] = useState([]);
 
   const navigate = useNavigation();
@@ -37,6 +39,14 @@ const HomeV2 = ({ navigation }) => {
     try {
       let userId = await AsyncStorage.getItem("_id");
       const response = await GeneralService.addCart(userId, id);
+
+      let cartCounter = await AsyncStorage.getItem("cart_counter");
+      cartCounter = parseInt(cartCounter, 10);
+      cartCounter++;
+      await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+
+      setCartCounter(cartCounter);
+
       console.log(response);
       console.log(id);
     } catch (err) {
@@ -45,42 +55,110 @@ const HomeV2 = ({ navigation }) => {
 
   }
 
-  useEffect(() => {
-    const featuredProducts = async () => {
-      try {
-        setFeaturedLoading(true);
-        const response = await GeneralService.listAllProducts();
-        setFeatured(response.data.response);
-        setFeaturedLoading(false);
-        console.error('Featured products fetched');
-      } catch (error) {
-        setFeaturedLoading(false);
-        console.error('Error fetching featured:', error);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to run when the screen gains focus
+      categories();
+      featureProducts();
+      // cartCounter();
+      fetchAddress();
 
-    const moreProducts = async () => {
-      try {
-        setMoreLoading(true);
-        const response = await GeneralService.listAllProducts();
+
+      // Cleanup function (optional)
+      return () => {
+        // Code to run when the screen loses focus
+        console.log('cart Screen blurred');
+      };
+    }, [])
+  );
+
+  const categories = async () => {
+    try {
+      setCategoryLoading(true);
+
+      const timeout = 8000;
+      const response = await Promise.race([
+        GeneralService.listAllCategories(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setCategory(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+
+      setCategoryLoading(false);
+    } catch (error) {
+      console.log(error);
+      setCategoryLoading(false);
+      setCategory([]);
+      Alert.alert("Error", "No response from server");
+    }
+  };
+
+  const featureProducts = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      const response = await Promise.race([
+        GeneralService.listFeaturedProducts(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
         setMoreProd(response.data.response);
-        setMoreLoading(false);
-        console.error('More products fetched');
-      } catch (error) {
-        setMoreLoading(false);
-        console.error('Error fetching more products:', error);
+      } else {
+        throw new Error('No response from the server');
       }
-    };
 
-    const fetchAddress = async () => {
-      let userAddress = await AsyncStorage.getItem("user_address");
-      console.log(userAddress);
-      setUserAddress(userAddress);
-    };
-    fetchAddress();
-    featuredProducts();
-    moreProducts();
+      setFeatureLoading(false);
+      console.error('More products fetched');
+    } catch (error) {
+      setFeatureLoading(false);
+      setMoreProd([]);
+    }
+  };
+
+  const fetchAddress = async () => {
+    let userAddress = await AsyncStorage.getItem("user_address");
+    // let cartCounter = await AsyncStorage.getItem("cart_counter");
+    console.log(userAddress);
+    setUserAddress(userAddress);
+  };
+
+
+  useEffect(() => {
+    // const cartCounter = async () => {
+    //   let cartCounter = await AsyncStorage.getItem("cart_counter");
+    //   // let cartCounter = await AsyncStorage.getItem("cart_counter");
+    //   console.log(`cart-counter=${cartCounter}`);
+    //   setCartCounter(cartCounter);
+    // };
+
+    // cartCounter();
   }, [navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to run when the screen gains focus
+      const cartCounter = async () => {
+        let cartCounter = await AsyncStorage.getItem("cart_counter");
+        // let cartCounter = await AsyncStorage.getItem("cart_counter");
+        console.log(`cart-counter=${cartCounter}`);
+        setCartCounter(cartCounter);
+      };
+
+      cartCounter();
+
+      // Cleanup function (optional)
+      return () => {
+        // Code to run when the screen loses focus
+        console.log('home Screen blurred');
+      };
+    }, [])
+  );
 
   const renderCarousel = () => {
     const width = Dimensions.get('window').width;
@@ -152,180 +230,180 @@ const HomeV2 = ({ navigation }) => {
     )
   }
 
-  const renderFeaturedProducts = () => {
-    return (
-      <>
-        <View>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginVertical: 8,
-            alignItems: 'center',
-          }}>
-            <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
-            <TouchableOpacity // onPress={()=> console.log("See all category")}
-              style={{ flexDirection: 'row', alignItems: 'center' }}
-            >
-            </TouchableOpacity>
-          </View>
-
-          <FlatList horizontal={true} data={featured} keyExtractor={item => item.id}
-            renderItem={({ item, index }) => {
-              return (
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
-                  >
-                    <View style={{
-                      height: 90,
-                      width: 90,
-                      borderRadius: 61,
-                      overflow: 'hidden',
-                      shadowColor: '#F1F1F1',
-                      margin: 5,
-                      shadowOffset: {
-                        width: 12,
-                        height: 12,
-                      },
-                      shadowOpacity: 0.15,
-                      shadowRadius: 10,
-                      elevation: 0.1,
-                      borderColor: COLORS.tertiaryGray,
-                      borderWidth: 2,
-                      backgroundColor: 'orange',
-                      borderColor: "#c65201",
-                    }}>
-                      <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover'
-                        style={{
-                          flex: 1,
-                          height: '100%',
-                          width: '100%',
-                        }} />
-                    </View>
-                    <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
-                    <View style={{
-                      marginTop: 4,
-                      marginBottom: 10,
-                    }}>
-                      <Text style={{ fontSize: 16, fontFamily: 'regular', textAlign: 'center' }}>Rs. {item.price}</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              )
-            }}
-          />
-        </View>
-      </>
-    )
-  }
-
-  const renderMoreProducts = () => {
-    const [quantity, setQuantity] = useState(1);
-
-    const numColumns = 2;
-    return (
-      <View style={{ flex: 1 }}>
+  const renderCategories = () => {
+    let result = <>
+      <View>
         <View style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginVertical: 8,
           alignItems: 'center',
-          paddingHorizontal: 16
         }}>
-          <Text style={{ ...FONTS.body2 }}>More Products</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
+          <Text style={{ ...FONTS.body2 }}>Categories</Text>
+          <TouchableOpacity // onPress={()=> console.log("See all category")}
             style={{ flexDirection: 'row', alignItems: 'center' }}
           >
-            <Text style={{ fontSize: 16, fontFamily: 'regular' }}>See All</Text>
-            <View>
-              <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {
-            if (quantity > 2) {
-              setQuantity(quantity - 1)
-            }
-          }}
-            style={{
-              width: 24,
-              height: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 12,
-              backgroundColor: 'rgba(255,255,255,0.2)'
-            }}
-          >
-            <Text style={{ color: COLORS.white }}>-</Text>
-          </TouchableOpacity>
-          <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-          <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
-            style={{
-              width: 24,
-              height: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 12,
-              backgroundColor: 'rgba(255,255,255,0.2)'
-            }}
-          >
-            <Text style={{ color: COLORS.white }}>+</Text>
           </TouchableOpacity>
         </View>
-        <FlatList data={moreProd} keyExtractor={item => item.id}
-          numColumns={numColumns}
-          contentContainerStyle={{ paddingHorizontal: 8 }}
-          style={{
-            marginBottom: "30%",
-          }}
+
+        <FlatList horizontal={true} data={category} keyExtractor={item => item.id}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
-                style={{
-                  flex: 1,
-                  margin: 8,
-                  borderColor: "#f78c47",
-                  borderWidth: 1,
-                  borderRadius: 20
-                }}
-              >
-                <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover' style={{
-                  width: '100%',
-                  height: 136,
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                }} />
-                <View style={{
-                  padding: 8,
-                  bottom: 10,
-                }}>
-
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <TouchableOpacity key={index} onPress={() => navigate.navigate("CategoryProducts", { catId: item.id, catName: item.name })}
+                >
                   <View style={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap-reverse',
-                    position: 'relative',
+                    height: 90,
+                    width: 90,
+                    borderRadius: 61,
+                    overflow: 'hidden',
+                    shadowColor: '#F1F1F1',
+                    margin: 5,
+                    shadowOffset: {
+                      width: 12,
+                      height: 12,
+                    },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 10,
+                    elevation: 0.1,
+                    borderColor: COLORS.tertiaryGray,
+                    borderWidth: 2,
+                    backgroundColor: 'orange',
+                    borderColor: "#c65201",
                   }}>
-                    {/* <Text style={{ textTransform: 'capitalize', }}>{item.name}</Text> */}
-                    <TouchableOpacity
-                      onPress={() => addCart(item.id)}
+                    <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover'
                       style={{
-                        height: 30,
-                        width: 30,
-                        borderRadius: 15,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: COLORS.primary,
-                        position: 'absolute', // absolute positioning
-                        right: 0 // positioned to the left
-                      }}>
-                      <AntDesign name="plus" size={12} color={COLORS.white} />
-                    </TouchableOpacity>
+                        flex: 1,
+                        height: '100%',
+                        width: '100%',
+                      }} />
                   </View>
-                  <Text style={{ fontSize: 18, fontFamily: 'regular', marginVertical: 6 }}>{item.name}</Text>
-                </View>
-              </TouchableOpacity>
+                  <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
+                </TouchableOpacity>
+              </View>
             )
           }}
         />
       </View>
+    </>
+
+    let response = categoryLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    return (
+      response
+    )
+  }
+
+  const renderFeatureProducts = () => {
+    const [quantity, setQuantity] = useState(1);
+
+    const numColumns = 2;
+    let result = <View style={{ flex: 1 }}>
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 8,
+        alignItems: 'center',
+        paddingHorizontal: 16
+      }}>
+        <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <Text style={{ fontSize: 16, fontFamily: 'regular' }}>See All</Text>
+          <View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          if (quantity > 2) {
+            setQuantity(quantity - 1)
+          }
+        }}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>-</Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
+        <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>+</Text>
+        </TouchableOpacity>
+      </View>
+      <FlatList data={moreProd} keyExtractor={item => item.id}
+        numColumns={numColumns}
+        contentContainerStyle={{ paddingHorizontal: 8 }}
+        style={{
+          marginBottom: "30%",
+        }}
+        renderItem={({ item, index }) => {
+          return (
+            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+              style={{
+                flex: 1,
+                margin: 8,
+                borderColor: "#f78c47",
+                borderWidth: 1,
+                borderRadius: 20
+              }}
+            >
+              <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover' style={{
+                width: '100%',
+                height: 136,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+              }} />
+              <View style={{
+                padding: 8,
+                bottom: 10,
+              }}>
+
+                <View style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap-reverse',
+                  position: 'relative',
+                }}>
+                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
+                  <TouchableOpacity
+                    onPress={() => addCart(item.id)}
+                    style={{
+                      height: 30,
+                      width: 30,
+                      borderRadius: 15,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: COLORS.primary,
+                      position: 'absolute', // absolute positioning
+                      right: 0 // positioned to the left
+                    }}>
+                    <AntDesign name="plus" size={12} color={COLORS.white} />
+                  </TouchableOpacity>
+                </View>
+                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
+              </View>
+            </TouchableOpacity>
+          )
+        }}
+      />
+    </View>;
+
+    let response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    return (
+      response
     );
   }
 
@@ -408,7 +486,7 @@ const HomeV2 = ({ navigation }) => {
                 <Text style={{
                   fontSize: 16,
                   color: COLORS.white
-                }}>0</Text>
+                }}>{cartCounter}</Text>
               </View>
               <Feather name="shopping-bag" size={24} color={COLORS.white} />
             </View>
@@ -417,8 +495,8 @@ const HomeV2 = ({ navigation }) => {
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {renderCarousel()}
-          {renderFeaturedProducts()}
-          {renderMoreProducts()}
+          {renderCategories()}
+          {renderFeatureProducts()}
         </ScrollView>
       </View>
       <CustomModal modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}

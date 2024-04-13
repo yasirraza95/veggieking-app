@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actionCreaters } from '../Redux';
 import { bindActionCreators } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 // import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 const initialState = {
@@ -49,24 +50,39 @@ const Login = ({ navigation }) => {
   };
   // console.log(`id=${id}`);
   // console.log('user-id=', JSON.stringify(userId));
-  useEffect(() => {
-    // console.log("calling");
+  // useEffect(() => {
+  //   // console.log("calling");
 
-    const checkAuthentication = async () => {
-      let userId = await AsyncStorage.getItem("_id");
-      let userType = await AsyncStorage.getItem("user_type");
-      if (userId) {
-        console.log(userType);
-        if(userType == 'user') {
-          navigation.replace('LocationAccess');
-          // navigation.replace('RiderOrders');
-        } else {
-          navigation.replace('RiderOrders');
-        }
+  //   checkAuthentication();
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to run when the screen gains focus
+      checkAuthentication();
+
+      return () => {
+        // Code to run when the screen loses focus
+        console.log('login Screen blurred');
+      };
+    }, [])
+  );
+
+  const checkAuthentication = async () => {
+    let userId = await AsyncStorage.getItem("_id");
+    let userType = await AsyncStorage.getItem("user_type");
+    console.log(`login-type=${userType}`);
+
+    if (userId) {
+      console.log(userType);
+      if (userType == 'user') {
+        navigation.replace('LocationAccess');
+        // navigation.replace('RiderOrders');
+      } else {
+        navigation.replace('RiderOrders');
       }
     }
-    checkAuthentication();
-  }, []);
+  }
 
   useEffect(() => {
     if (error) {
@@ -83,22 +99,33 @@ const Login = ({ navigation }) => {
       const { access_token, user } = data;
       const { id, user_type, first_name, last_name } = user;
       console.log(user);
+
+
+      const cartResponse = await GeneralService.cartCounterByUserId(id);
+      const { data: cartData } = cartResponse;
+      const { response: cartNo } = cartData;
+      console.log(cartNo);
       // FIXME
       // userActions.logIn({
       //   accessToken: access_token,
       //   id: id,
       //   user_type: user_type,
       // });
+
+      const keys = await AsyncStorage.getAllKeys();
+      await AsyncStorage.multiRemove(keys);
+
       await AsyncStorage.setItem("accessToken", access_token);
       await AsyncStorage.setItem("_id", String(id));
       await AsyncStorage.setItem("user_type", user_type);
       // await AsyncStorage.setItem("name", first_name + " " + last_name);
       await AsyncStorage.setItem("user_name", first_name + " " + last_name);
+      await AsyncStorage.setItem("cart_counter", String(cartNo));
       if (user_type == 'user') {
         navigation.replace('LocationAccess');
         // navigation.replace('RiderOrders');
       } else {
-        navigation.replace('MyOrders');
+        navigation.replace('RiderOrders');
       }
 
       // const { id, first_name, last_name, username, phone, email } = user;
