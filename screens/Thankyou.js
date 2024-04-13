@@ -17,7 +17,6 @@ const Thankyou = ({ navigation }) => {
                     style={styles.locationImage}
                 />
                 <TouchableOpacity
-                    onPress={() => navigation.replace('Thankyou')}
                     style={styles.btn}
                 >
                     <Text style={styles.btnText}>Use Current Location</Text>
