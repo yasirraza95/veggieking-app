@@ -1,4 +1,4 @@
-import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native'
+import { View, Image, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, icons, images } from '../constants'
@@ -16,24 +16,18 @@ const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili]
 const FoodDetailsV1 = ({ route }) => {
 
   const [cartCounter, setCartCounter] = useState(0);
+  const [screenLoading, setScreenLoading] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
-      // Code to run when the screen gains focus
       const cartCounter = async () => {
         let cartCounter = await AsyncStorage.getItem("cart_counter");
-        // let cartCounter = await AsyncStorage.getItem("cart_counter");
         console.log(`cart-counter=${cartCounter}`);
         setCartCounter(cartCounter);
       };
 
       cartCounter();
 
-      // Cleanup function (optional)
-      return () => {
-        // Code to run when the screen loses focus
-        console.log('detail Screen blurred');
-      };
     }, [])
   );
 
@@ -43,25 +37,29 @@ const FoodDetailsV1 = ({ route }) => {
     const addCart = async () => {
       try {
         let userId = await AsyncStorage.getItem("_id");
-        const response = await GeneralService.addCart(userId, id);
-        // Toast.show({
-        //   type: 'success',
-        //   text1: 'Hello',
-        //   text2: 'This is some something 👋'
-        // });
-        console.log(response.data);
-        let cartCounter = await AsyncStorage.getItem("cart_counter");
-        cartCounter = parseInt(cartCounter, 10);
-        cartCounter++;
-        await AsyncStorage.setItem("cart_counter", cartCounter.toString());
-        setCartCounter(cartCounter);
+        setScreenLoading(true);
+
+        const timeout = 8000;
+        const response = await Promise.race([
+          GeneralService.addCart(userId, id),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+
+        if (response) {
+          if (response.status == 200) {
+            let cartCounter = await AsyncStorage.getItem("cart_counter");
+            cartCounter = parseInt(cartCounter, 10);
+            cartCounter++;
+            await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+          }
+
+          setCartCounter(cartCounter);
+          setScreenLoading(false);
+        } else {
+          throw new Error('No response from the server');
+        }
       } catch (err) {
-        // Toast.show({
-        //   type: 'success',
-        //   text1: 'Hello',
-        //   text2: 'This is some something 👋'
-        // });
-        console.log(err?.response?.data?.response);
+        setScreenLoading(false);
       }
     }
     addCart();
@@ -188,48 +186,7 @@ const FoodDetailsV1 = ({ route }) => {
               marginBottom: 16,
             }}>
               <Text style={{ fontSize: 28, fontFamily: 'regular' }}>Rs. {price}/{type}</Text>
-              {/* <View style={{
-                backgroundColor: COLORS.blue,
-                width: 125,
-                height: 48,
-                borderRadius: 24,
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 12,
-                justifyContent: 'space-between'
-              }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (quantity > 1) {
-                      setQuantity(quantity - 1)
-                    }
-                  }}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    backgroundColor: 'rgba(255,255,255,0.2)'
-                  }}
-                >
-                  <Text style={{ color: COLORS.white }}>-</Text>
-                </TouchableOpacity>
-                <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-                <TouchableOpacity
-                  onPress={() => setQuantity(quantity + 1)}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    backgroundColor: 'rgba(255,255,255,0.2)'
-                  }}
-                >
-                  <Text style={{ color: COLORS.white }}>+</Text>
-                </TouchableOpacity>
-              </View> */}
+
             </View>
             <Button
               filled
@@ -247,6 +204,10 @@ const FoodDetailsV1 = ({ route }) => {
       <StatusBar hidden={true} />
       <View style={{ flex: 1, paddingHorizontal: 16 }}>
         {renderHeader()}
+        {
+          screenLoading ?
+            <ActivityIndicator size="large" color="blue" /> : null
+        }
         <ScrollView showsVerticalScrollIndicator={false}>
           {renderFoodDetails()}
         </ScrollView>

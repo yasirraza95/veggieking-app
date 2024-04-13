@@ -91,7 +91,6 @@ const OngoingRoute = ({ navigation, index }) => {
                 (item.status === "DELIVERED" ? COLORS.green :
                   (item.status === "PACKING" ? COLORS.blue :
                     (item.status === "CANCELLED" ? COLORS.red : COLORS.blue)))
-
             }}>{item.status}</Text>
           </View>
           <View style={{

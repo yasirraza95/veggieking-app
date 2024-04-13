@@ -20,6 +20,7 @@ const CategoryProducts = ({ route }) => {
   const { catName, catId } = route.params;
   const [cartCounter, setCartCounter] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [screenLoading, setScreenLoading] = useState(false);
   const [productsLoading, setProductsLoading] = useState(false);
   const [selectedStars, setSelectedStars] = useState(Array(5).fill(false));
   const [products, setProducts] = useState([]);
@@ -42,18 +43,36 @@ const CategoryProducts = ({ route }) => {
   const addCart = async (id) => {
     try {
       let userId = await AsyncStorage.getItem("_id");
-      const response = await GeneralService.addCart(userId, id);
+      setScreenLoading(true);
 
-      let cartCounter = await AsyncStorage.getItem("cart_counter");
-      cartCounter = parseInt(cartCounter, 10);
-      cartCounter++;
-      await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+      const timeout = 8000;
 
-      setCartCounter(cartCounter);
-      console.log(response);
-      console.log(id);
+      // const response = await GeneralService.addCart(userId, id);
+
+      const response = await Promise.race([
+        GeneralService.addCart(userId, id),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        if (response.status == 200) {
+          let cartCounter = await AsyncStorage.getItem("cart_counter");
+          cartCounter = parseInt(cartCounter, 10);
+          cartCounter++;
+          await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+        }
+
+        setCartCounter(cartCounter);
+        setScreenLoading(false);
+        // setCategory(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+
     } catch (err) {
-      console.log(err);
+      console.log(err?.response?.data);
+
+      setScreenLoading(false);
     }
 
   }
@@ -487,6 +506,11 @@ const CategoryProducts = ({ route }) => {
       <StatusBar hidden={true} />
       <View style={{ flex: 1, marginHorizontal: 16 }}>
         {renderHeader()}
+        {
+          screenLoading ?
+            <ActivityIndicator size="large" color="blue" /> : null
+        }
+
         <ScrollView>
           {/* {renderRestaurantDetails()} */}
           {renderFoodsByCategories()}

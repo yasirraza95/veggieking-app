@@ -326,7 +326,7 @@ const deleteProduct = (values) => {
     );
 };
 
-const placeOrder = (userId, address) => {
+const placeOrder = (userId, address, instruction) => {
     const headers = {
         "Content-Type": "application/json",
     };
@@ -334,6 +334,7 @@ const placeOrder = (userId, address) => {
         `${API_URL}/place-order`, {
         user_id: userId,
         address: address,
+        instruction: instruction,
     },
         {
             headers: headers,

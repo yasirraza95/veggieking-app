@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 const PaymentMethod = ({ route }) => {
+  const [instruction, setInstruction] = useState("");
   const [showStickyNote, setShowStickyNote] = useState(false);
   const [switchValue, setSwitchValue] = useState(false);
   const handleScroll = (event) => {
@@ -18,12 +19,16 @@ const PaymentMethod = ({ route }) => {
   const navigation = useNavigation();
   const { userId, address, items, delivery, total } = route.params;
 
+  const handleChangeText = (text) => {
+    setInstruction(text);
+  };
+
   const placeOrder = () => {
     const orderPlacement = async () => {
       try {
         const timeout = 8000;
         const response = await Promise.race([
-          GeneralService.placeOrder(userId, address),
+          GeneralService.placeOrder(userId, address, instruction),
           new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
         ]);
         if (response) {
@@ -144,7 +149,7 @@ const PaymentMethod = ({ route }) => {
             </View> */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Delivery Instructions</Text>
-              <TextInput style={styles.deliveryInstructionsInput} placeholder="Add delivery instructions" />
+              <TextInput style={styles.deliveryInstructionsInput} placeholder="Add delivery instructions" value={instruction} onChangeText={handleChangeText}/>
             </View>
           </View>
 
