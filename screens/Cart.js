@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, icons } from '../constants'
@@ -47,29 +47,12 @@ const Cart = ({ navigation }) => {
     }
   }
 
-  // useFocusEffect(() => {
-  //   // console.log("called");
-  //   fetchData();
-
-  // })
-
   useFocusEffect(
     React.useCallback(() => {
-      // Code to run when the screen gains focus
       fetchData();
 
-      // Cleanup function (optional)
-      return () => {
-        // Code to run when the screen loses focus
-        console.log('cart Screen blurred');
-      };
     }, [])
   );
-
-  // useEffect(() => {
-  //   console.log("fetched");
-  //   fetchData();
-  // }, [navigation]);
 
   const decreaseQuantity = (id) => {
     const decreaseQty = async () => {
@@ -176,11 +159,6 @@ const Cart = ({ navigation }) => {
             </TouchableOpacity>
             <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular', color: COLORS.white }}>Cart</Text>
           </View>
-          {/* <TouchableOpacity
-            onPress={() => console.log("Edit Items")}
-          >
-            <Text style={{ fontSize: 14, fontFamily: 'bold', textTransform: 'uppercase', color: COLORS.green }}>Done</Text>
-          </TouchableOpacity> */}
         </View>
 
         <FlatList
@@ -188,100 +166,110 @@ const Cart = ({ navigation }) => {
           // data={cartData}
           keyExtractor={item => item.id}
           renderItem={({ item, index }) => {
-            // console.log("index");
 
-            return (
-              <View key={index} style={cartStyles.cartItemContainer}>
-                <View style={{ marginRight: 2, width: 120 }}>
-                  <Image
-                    // source={images.food}
-                    source={{ uri: `https://api.veggieking.pk/resources/images/${item.product_image}` }}
-                    resizeMode='cover'
+            let result = <View key={index} style={cartStyles.cartItemContainer}>
+              <View style={{ marginRight: 2, width: 120 }}>
+                <Image
+                  // source={images.food}
+                  source={{ uri: `https://api.veggieking.pk/resources/images/${item.product_image}` }}
+                  resizeMode='cover'
+                  style={{
+                    height: 120,
+                    width: 120,
+                    borderRadius: 30,
+                  }}
+                />
+              </View>
+              <View style={{
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                height: "100%",
+                width: SIZES.width - 152,
+                paddingLeft: 10,
+                paddingRight: 6
+              }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text
                     style={{
-                      height: 120,
-                      width: 120,
-                      borderRadius: 30,
+                      fontSize: 13,
+                      color: COLORS.white,
+                      fontFamily: 'regular',
+                      textTransform: 'capitalize',
+                      marginRight: 20
+                    }}>{item.product_name}</Text>
+                  <TouchableOpacity
+                    // onPress={() => console.log("Close cart items")}
+                    onPress={() => deleteCart(item.prod_id)}
+                    style={{
+                      height: 26,
+                      width: 26,
+                      borderRadius: 13,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: COLORS.red,
+                      marginTop: 2
                     }}
-                  />
-                </View>
-                <View style={{
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  height: "100%",
-                  width: SIZES.width - 152,
-                  paddingLeft: 10,
-                  paddingRight: 6
-                }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text
+                  >
+                    <Image
+                      source={icons.close}
+                      resizeMode="contain"
                       style={{
-                        fontSize: 13,
-                        color: COLORS.white,
-                        fontFamily: 'regular',
-                        textTransform: 'capitalize',
-                        marginRight: 20
-                      }}>{item.product_name}</Text>
-                    <TouchableOpacity
-                      // onPress={() => console.log("Close cart items")}
-                      onPress={() => deleteCart(item.prod_id)}
-                      style={{
-                        height: 26,
-                        width: 26,
-                        borderRadius: 13,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: COLORS.red,
-                        marginTop: 2
+                        width: 12,
+                        width: 12,
+                        tintColor: COLORS.white
                       }}
-                    >
-                      <Image
-                        source={icons.close}
-                        resizeMode="contain"
-                        style={{
-                          width: 12,
-                          width: 12,
-                          tintColor: COLORS.white
-                        }}
-                      />
-                    </TouchableOpacity>
-                  </View>
+                    />
+                  </TouchableOpacity>
+                </View>
 
+                <Text style={{
+                  fontSize: 20,
+                  fontFamily: 'bold',
+                  color: COLORS.white,
+                  marginVertical: 6
+                }}>Rs. {item.product_price}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{
-                    fontSize: 20,
-                    fontFamily: 'bold',
+                    fontSize: 16,
                     color: COLORS.white,
-                    marginVertical: 6
-                  }}>Rs. {item.product_price}</Text>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    fontFamily: 'regular'
+                  }}>{item.product_type}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity
+                      onPress={() => decreaseQuantity(item.prod_id)}
+                      style={cartStyles.roundedBtn}
+                    >
+                      <Text style={cartStyles.body2}>-</Text>
+                    </TouchableOpacity>
                     <Text style={{
                       fontSize: 16,
+                      fontFamily: 'regular',
                       color: COLORS.white,
-                      fontFamily: 'regular'
-                    }}>{item.product_type}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <TouchableOpacity
-                        onPress={() => decreaseQuantity(item.prod_id)}
-                        style={cartStyles.roundedBtn}
-                      >
-                        <Text style={cartStyles.body2}>-</Text>
-                      </TouchableOpacity>
-                      <Text style={{
-                        fontSize: 16,
-                        fontFamily: 'regular',
-                        color: COLORS.white,
-                        marginHorizontal: 12
-                      }}>{item.quantity}</Text>
-                      <TouchableOpacity
-                        // id={item.id}
-                        onPress={() => increaseQuantity(item.prod_id)}
-                        style={cartStyles.roundedBtn}
-                      >
-                        <Text style={cartStyles.body2}>+</Text>
-                      </TouchableOpacity>
-                    </View>
+                      marginHorizontal: 12
+                    }}>{item.quantity}</Text>
+                    <TouchableOpacity
+                      // id={item.id}
+                      onPress={() => increaseQuantity(item.prod_id)}
+                      style={cartStyles.roundedBtn}
+                    >
+                      <Text style={cartStyles.body2}>+</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
+            </View>
+
+            let response = cart.length > 0 ? result : <View style={{ flex: 1 }}>
+              <Text style={{
+                color: COLORS.black,
+                fontSize: 14,
+                fontFamily: 'regular'
+              }}>No record found</Text></View>;
+
+            response = isLoading ? <ActivityIndicator size="large" color="white" /> : result
+
+            return (
+              response
             )
           }
           }

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, useWindowDimensions, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Image, useWindowDimensions, Alert, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, icons } from '../constants'
@@ -180,6 +180,8 @@ const OngoingRoute = ({ navigation, index }) => {
       fontFamily: 'regular'
     }}>No record found</Text></View>;
 
+  response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
+
   return (
     response
   )
@@ -309,6 +311,8 @@ const HistoryRoute = ({ navigation, index }) => {
       fontFamily: 'regular'
     }}>No record found</Text></View>;
 
+  response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
+  
   return (
     response
   )

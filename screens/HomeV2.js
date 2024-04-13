@@ -287,7 +287,14 @@ const HomeV2 = ({ navigation }) => {
       </View>
     </>
 
-    let response = categoryLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    let response = category.length > 0 ? result : <View style={{ flex: 1 }}>
+      <Text style={{
+        color: COLORS.black,
+        fontSize: 14,
+        fontFamily: 'regular'
+      }}>No record found</Text></View>;
+
+    response = categoryLoading ? <ActivityIndicator size="large" color="blue" /> : result
     return (
       response
     )
@@ -401,7 +408,14 @@ const HomeV2 = ({ navigation }) => {
       />
     </View>;
 
-    let response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
+      <Text style={{
+        color: COLORS.black,
+        fontSize: 14,
+        fontFamily: 'regular'
+      }}>No record found</Text></View>;
+
+    response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
     return (
       response
     );

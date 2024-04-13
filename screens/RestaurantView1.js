@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS, SIZES, images, icons } from '../constants'
@@ -155,61 +155,69 @@ const RestaurantView1 = () => {
 
   const renderFoodsByCategories = () => {
     const navigation = useNavigation()
-
-    return (
-      <View>
-        {/* <Text style={{ ...FONTS.body3, marginBottom: 12 }}>Burger (10) </Text> */}
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            width: SIZES.width - 32,
-          }}
-        >
-          {
-            products.map((item, index) => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
-                key={index}
-                style={{
-                  flexDirection: 'column',
-                  paddingHorizontal: 2,
-                  paddingVertical: 4,
-                  height: "auto",
-                  width: 160,
-                  borderWidth: 1,
-                  borderColor: COLORS.gray6,
-                  borderRadius: 15,
-                  marginRight: "auto",
-                  marginBottom: 16
-                }}>
-                <Image
-                  source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }}
-                  resizeMode='cover'
-                  style={{ width: "100%", height: 84, borderRadius: 15 }}
-                />
-                <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
-                {/* <Text style={{ fontSize: 13, fontFamily: "regular", marginVertical: 4 }}>{item.restaurant}</Text> */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
-                  <TouchableOpacity
-                    onPress={() => addCart(item.id)}
-                    style={{
-                      height: 30,
-                      width: 30,
-                      borderRadius: 15,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: COLORS.primary
-                    }}>
-                    <AntDesign name="plus" size={12} color={COLORS.white} />
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            ))
-          }
-        </View>
+    let result = <View>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          width: SIZES.width - 32,
+        }}
+      >
+        {
+          products.map((item, index) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+              key={index}
+              style={{
+                flexDirection: 'column',
+                paddingHorizontal: 2,
+                paddingVertical: 4,
+                height: "auto",
+                width: 160,
+                borderWidth: 1,
+                borderColor: COLORS.gray6,
+                borderRadius: 15,
+                marginRight: "auto",
+                marginBottom: 16
+              }}>
+              <Image
+                source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }}
+                resizeMode='cover'
+                style={{ width: "100%", height: 84, borderRadius: 15 }}
+              />
+              <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
+              {/* <Text style={{ fontSize: 13, fontFamily: "regular", marginVertical: 4 }}>{item.restaurant}</Text> */}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
+                <TouchableOpacity
+                  onPress={() => addCart(item.id)}
+                  style={{
+                    height: 30,
+                    width: 30,
+                    borderRadius: 15,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: COLORS.primary
+                  }}>
+                  <AntDesign name="plus" size={12} color={COLORS.white} />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          ))
+        }
       </View>
+    </View>
+
+    let response = products.length > 0 ? result : <View style={{ flex: 1 }}>
+      <Text style={{
+        color: COLORS.black,
+        fontSize: 14,
+        fontFamily: 'regular'
+      }}>No record found</Text></View>;
+
+    response = productsLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    return (
+      response
     )
   }
 
