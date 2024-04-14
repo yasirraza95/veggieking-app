@@ -32,9 +32,11 @@ const PaymentMethod = ({ route }) => {
           new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
         ]);
         if (response) {
+          let orderNumber = response.data.response;
+          console.log(response.data.response);
           // setCategory(response.data.response);
           await AsyncStorage.setItem("cart_counter", "0");
-          navigation.navigate("Thankyou");
+          navigation.replace("Thankyou", { orderNo: orderNumber });
         } else {
           Alert.alert("Error", "No response from the server");
           throw new Error('No response from the server');
@@ -149,7 +151,7 @@ const PaymentMethod = ({ route }) => {
             </View> */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Delivery Instructions</Text>
-              <TextInput style={styles.deliveryInstructionsInput} placeholder="Add delivery instructions" value={instruction} onChangeText={handleChangeText}/>
+              <TextInput style={styles.deliveryInstructionsInput} placeholder="Add delivery instructions" value={instruction} onChangeText={handleChangeText} />
             </View>
           </View>
 

@@ -196,7 +196,7 @@ const RestaurantView1 = () => {
                 marginBottom: 16
               }}>
               <Image
-                source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }}
+                source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
                 resizeMode='cover'
                 style={{ width: "100%", height: 84, borderRadius: 15 }}
               />

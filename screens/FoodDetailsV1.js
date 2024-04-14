@@ -155,7 +155,7 @@ const FoodDetailsV1 = ({ route }) => {
               color={isFavourite ? COLORS.primary : COLORS.white} />
           </TouchableOpacity>
           <Image
-            source={{ uri: `https://api.veggieking.pk/resources/images/${image}` }}
+            source={{ uri: `https://api.veggieking.pk/public/upload/${image}` }}
             resizeMode='contain'
             style={{
               width: SIZES.width - 32,

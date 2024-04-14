@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { actionCreaters, bindActionCreators } from '../Redux';
 import GeneralService from '../services/general.service'
 import { ProfileSchema } from '../schema/index';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 // import Input from '../components/Input'
 
 const PersonalProfile = () => {
@@ -164,52 +165,52 @@ const PersonalProfile = () => {
       //   )}
       // </Formik>
       <View style={{ flexDirection: 'column' }}>
-      <View style={styles.container}>
+        <View style={styles.container}>
           <TouchableOpacity
-              style={styles.subContainer}
+            style={styles.subContainer}
           >
-              <View style={styles.subLeftContainer}>
-                  <View style={styles.rounded}>
-                      <Feather name="user" size={24} color={COLORS.primary} />
-                  </View>
-                  <View style={{ flexDirection: 'column' }}>
-                      <Text style={styles.boldBody}>Full Name</Text>
-                      <Text style={styles.textBody}>Vishal Khadok</Text>
-                  </View>
+            <View style={styles.subLeftContainer}>
+              <View style={styles.rounded}>
+                <Feather name="user" size={24} color={COLORS.primary} />
               </View>
+              <View style={{ flexDirection: 'column' }}>
+                <Text style={styles.boldBody}>Full Name</Text>
+                <Text style={styles.textBody}>Vishal Khadok</Text>
+              </View>
+            </View>
 
           </TouchableOpacity>
           <TouchableOpacity
-              style={styles.subContainer}
+            style={styles.subContainer}
           >
-              <View style={styles.subLeftContainer}>
-                  <View style={styles.rounded}>
-                      <MaterialCommunityIcons name="email-outline" size={24} color="#413DFB" />
-                  </View>
-                  <View style={{ flexDirection: 'column' }}>
-                      <Text style={styles.boldBody}>Email</Text>
-                      <Text style={styles.textBody}>hello@gmail.com</Text>
-                  </View>
+            <View style={styles.subLeftContainer}>
+              <View style={styles.rounded}>
+                <MaterialCommunityIcons name="email-outline" size={24} color="#413DFB" />
               </View>
+              <View style={{ flexDirection: 'column' }}>
+                <Text style={styles.boldBody}>Email</Text>
+                <Text style={styles.textBody}>hello@gmail.com</Text>
+              </View>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
-              style={styles.subContainer}
+            style={styles.subContainer}
           >
-              <View style={styles.subLeftContainer}>
-                  <View style={styles.rounded}>
-                      <Feather name="phone" size={24} color="#369BFF" />
-                  </View>
-                  <View style={{ flexDirection: 'column' }}>
-                      <Text style={styles.boldBody}>Phone Number</Text>
-                      <Text style={styles.textBody}>408-278-248</Text>
-                  </View>
+            <View style={styles.subLeftContainer}>
+              <View style={styles.rounded}>
+                <Feather name="phone" size={24} color="#369BFF" />
               </View>
+              <View style={{ flexDirection: 'column' }}>
+                <Text style={styles.boldBody}>Phone Number</Text>
+                <Text style={styles.textBody}>408-278-248</Text>
+              </View>
+            </View>
           </TouchableOpacity>
+        </View>
       </View>
-  </View>
     );
   };
-  
+
 
   return (
     <SafeAreaView

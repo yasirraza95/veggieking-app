@@ -171,7 +171,7 @@ const Cart = ({ navigation }) => {
               <View style={{ marginRight: 2, width: 120 }}>
                 <Image
                   // source={images.food}
-                  source={{ uri: `https://api.veggieking.pk/resources/images/${item.product_image}` }}
+                  source={{ uri: `https://api.veggieking.pk/public/upload/${item.product_image}` }}
                   resizeMode='cover'
                   style={{
                     height: 120,

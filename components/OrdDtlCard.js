@@ -8,7 +8,7 @@ const OrdDtlCard = ({ image, name, date, type, amount, quantity, totalAmt }) => 
         <TouchableOpacity style={styles.container}>
             <View style={{ flexDirection: "row" }}>
                 <Image
-                    source={{ uri: `https://api.veggieking.pk/resources/images/${image}` }}
+                    source={{ uri: `https://api.veggieking.pk/public/upload/${image}` }}
                     resizeMode="contain"
                     style={styles.carImage}
                 />

@@ -4,38 +4,36 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS, SIZES, illustrations } from '../constants'
 import { Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
-const Thankyou = ({ navigation }) => {
-
+const Thankyou = ({ navigation, route }) => {
+    const { orderNo } = route.params;
     return (
         <SafeAreaView style={styles.area}>
             <StatusBar hidden={true} />
             <View style={styles.center}>
 
-               <Image
+                <Image
                     source={illustrations.thnkyou}
                     resizeMode="contain"
                     style={styles.locationImage}
                 />
-                 <Text style={styles.thnkyou}>Thank You</Text>
-            <Text style={styles.bottomText}>
-                Order placed Successfully{"\n"}
-                Your Order Will Reach Soon
-            </Text>
-            <Text style={styles.bottomText}>
-                Order ID: 789
-            </Text>
-
+                <Text style={styles.thnkyou}>Thank You</Text>
+                <Text style={styles.bottomText}>
+                    Order placed Successfully{"\n"}
+                    Your Order Will Reach Soon
+                </Text>
+                <Text style={styles.bottomText}>
+                    Order ID: {orderNo}
+                </Text>
 
                 <TouchableOpacity
                     style={styles.btn}
+                    onPress={() => navigation.replace("Main")}
                 >
-                    <Text style={styles.btnText}>Track Your Order</Text>
+                    <Text style={styles.btnText}>Dashboard</Text>
                 </TouchableOpacity>
                 <Text style={styles.contact}>For any query please contact us at{"\n"}
-                0300-1234567
+                    0300-1234567
                 </Text>
-
-
             </View>
         </SafeAreaView>
     )
@@ -110,12 +108,12 @@ const styles = StyleSheet.create({
         color: '#f44c00',
         fontWeight: 'bold',
         fontSize: 30,
-      },
+    },
 
-      contact: {
+    contact: {
         color: '#f44c00',
         fontSize: 15,
         textAlign: 'center'
-      }
+    }
 })
 export default Thankyou

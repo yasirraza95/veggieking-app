@@ -284,7 +284,7 @@ const HomeV2 = ({ navigation }) => {
                     backgroundColor: 'orange',
                     borderColor: "#c65201",
                   }}>
-                    <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover'
+                    <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover'
                       style={{
                         flex: 1,
                         height: '100%',
@@ -381,7 +381,7 @@ const HomeV2 = ({ navigation }) => {
                 borderRadius: 20
               }}
             >
-              <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover' style={{
+              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
                 width: '100%',
                 height: 136,
                 borderTopLeftRadius: 20,

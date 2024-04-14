@@ -3,7 +3,7 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { COLORS } from '../constants'
 import { HomeV1, Profile, Search, Card, Notifications, Menu, MyOrders, Message, PersonalProfile, Cart } from '../screens'
-import { Ionicons, SimpleLineIcons} from '@expo/vector-icons'
+import { Ionicons, SimpleLineIcons } from '@expo/vector-icons'
 import DrawerNavigation from './DrawerNavigation'
 
 const Tab = createBottomTabNavigator()
@@ -47,14 +47,14 @@ const BottomTabNavigation = () => {
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
-                            <Ionicons 
-                            name="gift-outline" 
-                            size={24} 
-                            color={
-                                focused
-                                    ? COLORS.primary
-                                    : COLORS.black
-                            }
+                            <Ionicons
+                                name="gift-outline"
+                                size={24}
+                                color={
+                                    focused
+                                        ? COLORS.primary
+                                        : COLORS.black
+                                }
                             />
                         )
                     },
@@ -81,7 +81,7 @@ const BottomTabNavigation = () => {
                                     borderColor: COLORS.white,
                                 }}
                             >
-                               <Ionicons name="search-outline" size={24} color={COLORS.white} />
+                                <Ionicons name="search-outline" size={24} color={COLORS.white} />
                             </View>
                         )
                     },
@@ -94,12 +94,12 @@ const BottomTabNavigation = () => {
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
-                            <Ionicons 
-                            name={ focused ? "cart-sharp" : "cart-outline"}
-                            size={24} 
-                            color={
-                                focused ? COLORS.primary : COLORS.black
-                            }
+                            <Ionicons
+                                name={focused ? "cart-sharp" : "cart-outline"}
+                                size={24}
+                                color={
+                                    focused ? COLORS.primary : COLORS.black
+                                }
                             />
                         )
                     },
@@ -113,12 +113,12 @@ const BottomTabNavigation = () => {
                     tabBarIcon: ({ focused }) => {
                         return (
                             <Ionicons
-                            name="person-outline"
-                            size={24}
-                            color={
-                                focused ? COLORS.primary : COLORS.black
-                            }
-                        />
+                                name="person-outline"
+                                size={24}
+                                color={
+                                    focused ? COLORS.primary : COLORS.black
+                                }
+                            />
                         )
                     },
                 }}
