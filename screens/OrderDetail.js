@@ -1,4 +1,4 @@
-import { View, StyleSheet, FlatList } from 'react-native'
+import { View, StyleSheet,Text, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { COLORS } from '../constants'
 import { ScrollView } from 'react-native-virtualized-view'
@@ -39,6 +39,11 @@ const OrderDetail = ({ route, navigation }) => {
     <SafeAreaView style={styles.area}>
       <View style={styles.container}>
         <Header title="Order Detail" />
+        {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+  <Text style={{ fontSize: 18, fontWeight: 'bold', marginRight: 10 }}>Order Detail</Text>
+</View> */}
+
+
         <ScrollView>
           <FlatList
             data={detailData}

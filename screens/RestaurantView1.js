@@ -227,7 +227,8 @@ const RestaurantView1 = () => {
       <Text style={{
         color: COLORS.black,
         fontSize: 14,
-        fontFamily: 'regular'
+        fontFamily: 'regular',
+        textAlign: 'center'
       }}>No record found</Text></View>;
 
     response = productsLoading ? <ActivityIndicator size="large" color="blue" /> : result

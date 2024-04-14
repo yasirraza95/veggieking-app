@@ -51,82 +51,88 @@ const OngoingRoute = ({ navigation, index }) => {
   }
 
   // console.log(ongoingData.length);
-  let result = <View style={{ flex: 1 }}>
-    <FlatList
-      data={ongoingData}
-      keyExtractor={item => item.id}
-      renderItem={({ item, index }) => (
-        <View style={{ flexDirection: 'column' }}>
-          <View style={{
-            borderBottomColor: COLORS.gray,
-            borderBottomWidth: 1,
-            marginVertical: 12,
-            paddingBottom: 4
-          }}>
-          </View>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
-          }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ marginLeft: 12 }}>
-                <Text style={{
-                  fontSize: 14,
-                  fontWeight: 'bold'
-                }}>Order ID: {item.order_no}</Text>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 4
-                }}>
-                  <Text style={{ fontSize: 14, fontFamily: 'bold' }}>Rs. {item.bill}</Text>
-                  <Text style={{ fontSize: 12, fontFamily: 'regular' }}> | {item.created_at}</Text>
+  let result = (
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={ongoingData}
+        keyExtractor={item => item.id}
+        renderItem={({ item, index }) => (
+          <View style={{ flexDirection: 'column' }}>
+            <View style={{
+              borderBottomColor: COLORS.gray,
+              borderBottomWidth: 1,
+              marginVertical: 12,
+              paddingBottom: 4,
+            }}>
+            </View>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ marginLeft: 12 }}>
+                  <Text style={{
+                    fontSize: 14,
+                    fontWeight: 'bold'
+                  }}>Order ID: {item.order_no}</Text>
+                  <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 4
+                  }}>
+                    <Text style={{ fontSize: 14, fontFamily: 'bold' }}>Rs. {item.bill}</Text>
+                    <Text style={{ fontSize: 12, fontFamily: 'regular' }}> | {item.created_at}</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-            <Text style={{
-              fontSize: 14,
-              fontFamily: 'bold',
-              color: item.status === "PENDING" ? COLORS.yellow :
-                (item.status === "DELIVERED" ? COLORS.green :
-                  (item.status === "PACKING" ? COLORS.blue :
-                    (item.status === "CANCELLED" ? COLORS.red : COLORS.blue)))
-            }}>{item.status}</Text>
-          </View>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginVertical: 18
-          }}>
-            <TouchableOpacity
-              onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderStatus: item.status, orderNo: item.order_no, orderDate: item.created_at })}
-              // onPress={() => navigate.navigate("TrackingOrders")}
-              style={{
-                height: 38,
-                width: 140,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: COLORS.primary,
-                borderRadius: 8
-              }}
-            >
               <Text style={{
-                color: COLORS.white,
                 fontSize: 14,
-                fontFamily: 'regular'
-              }}>Track Order</Text>
-            </TouchableOpacity>
+                fontFamily: 'bold',
+                color: item.status === "PENDING" ? COLORS.yellow :
+                  (item.status === "DELIVERED" ? COLORS.green :
+                    (item.status === "PACKING" ? COLORS.blue :
+                      (item.status === "CANCELLED" ? COLORS.red : COLORS.blue)))
+              }}>{item.status}</Text>
+            </View>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginVertical: 18
+            }}>
+              <TouchableOpacity
+                onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderStatus: item.status, orderNo: item.order_no, orderDate: item.created_at })}
+                // onPress={() => navigate.navigate("TrackingOrders")}
+                style={{
+                  height: 38,
+                  width: 140,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: COLORS.primary,
+                  borderRadius: 8
+                }}
+              >
+                <Text style={{
+                  color: COLORS.white,
+                  fontSize: 14,
+                  fontFamily: 'regular'
+                }}>Track Order</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      )}
-    />
-  </View>;
+        )}
+      />
+      {/* Add padding to the bottom to accommodate bottom content */}
+      <View style={{ height: 100 }}></View>
+    </View>
+  );
+  
 
   let response = ongoingData.length > 0 ? result : <View style={{ flex: 1 }}>
     <Text style={{
       color: COLORS.black,
       fontSize: 14,
-      fontFamily: 'regular'
+      fontFamily: 'regular',
+      textAlign: 'center'
     }}>No record found</Text></View>;
 
   response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
@@ -255,7 +261,8 @@ const HistoryRoute = ({ navigation, index }) => {
     <Text style={{
       color: COLORS.black,
       fontSize: 14,
-      fontFamily: 'regular'
+      fontFamily: 'regular',
+      textAlign: 'center'
     }}>No record found</Text></View>;
 
   response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
