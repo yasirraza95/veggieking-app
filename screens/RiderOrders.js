@@ -177,7 +177,8 @@ const OngoingRoute = ({ navigation, index }) => {
     <Text style={{
       color: COLORS.black,
       fontSize: 14,
-      fontFamily: 'regular'
+      fontFamily: 'regular',
+      textAlign: 'center'
     }}>No record found</Text></View>;
 
   response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
@@ -248,7 +249,7 @@ const HistoryRoute = ({ navigation, index }) => {
             </View>
             <View style={{
               flexDirection: 'row',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ marginLeft: 12 }}>
@@ -308,7 +309,8 @@ const HistoryRoute = ({ navigation, index }) => {
     <Text style={{
       color: COLORS.black,
       fontSize: 14,
-      fontFamily: 'regular'
+      fontFamily: 'regular',
+      textAlign: 'center'
     }}>No record found</Text></View>;
 
   response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;

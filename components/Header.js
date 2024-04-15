@@ -2,22 +2,23 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { COLORS, icons } from '../constants'
+import { commonStyles } from '../styles/CommonStyles'
 
 const Header = ({ title }) => {
     const navigation = useNavigation();
 
   return (
-    <View style={styles.headerContainer}>
+<View style={styles.headerContainer}>
     <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={styles.headerIcon}>
+        style={commonStyles.header1Icon}>
         <Image
             source={icons.arrowLeft}
             resizeMode='contain'
             style={styles.arrowLeft}
         />
     </TouchableOpacity>
-    <Text style={styles.title}>{title}</Text>
+    <Text style={[styles.title, styles.leftTitle]}>{title}</Text>
     {/* <TouchableOpacity style={styles.headerIcon}>
         <Image
             source={icons.more}
@@ -26,40 +27,36 @@ const Header = ({ title }) => {
         />
     </TouchableOpacity> */}
 </View>
+
   )
 }
 
 const styles = StyleSheet.create({
     headerContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: "100%",
-        marginBottom: 12,
-        alignItems: "center"
-    },
-    headerIcon: {
-        height: 50,
-        width: 50,
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 999,
-        backgroundColor: COLORS.gray
-    },
-    arrowLeft: {
-        height: 24,
-        width: 24,
-        tintColor: COLORS.black
-    },
-    moreIcon: {
-        height: 24,
-        width: 24,
-        tintColor: COLORS.black
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        justifyContent: 'space-between', // Add this to push the title to the left
     },
     title: {
-        fontSize: 16,
-        fontFamily: "bold",
-        color: COLORS.black
-    }
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginRight: 'auto', // Adjust to push the title to the left
+    },
+    leftTitle: {
+        marginLeft: 10, // Additional margin to create space between the back button and the title
+    },
+    headerIcon: {
+        marginRight: 10,
+    },
+    arrowLeft: {
+        width: 20,
+        height: 20,
+    },
+    moreIcon: {
+        width: 20,
+        height: 20,
+    },
 })
 
 export default Header

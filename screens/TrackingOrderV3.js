@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { images, icons, SIZES, COLORS, FONTS } from '../constants'
+import { images, icons, SIZES, COLORS, FONTS, illustrations } from '../constants'
 import { orderList } from '../data/utils'
 import { TouchableOpacity } from 'react-native'
 import RBSheet from "react-native-raw-bottom-sheet"
@@ -127,6 +127,13 @@ const TrackingOrderV3 = ({ route, navigation }) => {
 
         <VerticalStepper status={orderStatus} />
 
+        <Image 
+  source={illustrations.deliverd}
+  // source={illustrations.packing}
+  // source={illustrations.received}
+  style={[styles.locationImage, { alignSelf: 'center' }]}
+/>
+
       </View>
     </SafeAreaView>
   )
@@ -189,7 +196,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center'
-  }
+  },
+  locationImage: {
+    height: SIZES.width * 0.7,
+    width: SIZES.width * 0.7,
+},
 })
 
 export default TrackingOrderV3

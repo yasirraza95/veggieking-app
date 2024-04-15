@@ -178,7 +178,8 @@ const FoodDetailsV1 = ({ route }) => {
             backgroundColor: COLORS.tertiaryGray,
             borderRadius: 24,
             paddingHorizontal: 10,
-            paddingVertical: 16
+            paddingVertical: 16,
+            marginTop: 300
           }}>
             <View style={{
               flexDirection: 'row',
