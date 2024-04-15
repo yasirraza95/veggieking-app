@@ -18,6 +18,7 @@ import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { categories } from '../data/categories'
+import MyLoader from './MyLoader'
 
 const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -379,24 +380,25 @@ const renderFeatureProducts = () => {
       }}
       renderItem={({ item, index }) => {
         return (
-          <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
-            id: item.id, name: item.name,
-            image: item.image, price: item.price, minQty: 1, type: "kg"
-          })}
-            style={{
-              flex: 1,
-              margin: 8,
-              borderColor: "#f78c47",
-              borderWidth: 1,
-              borderRadius: 20
-            }}
-          >
-            <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover' style={{
-              width: '100%',
-              height: 136,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-            }} />
+      <TouchableOpacity key={index} onPress={()=> navigate.navigate("FoodDetails", { id: item.id, name: item.name,
+        image: item.image, price: item.price, minQty: 1, type: "kg" })}
+        style={{
+                flex: 1,
+                margin: 8,
+                borderColor: "#f78c47",
+                borderWidth: 1,
+                borderRadius: 20
+              }}
+        >
+
+        {/* <MyLoader/> */}
+
+        <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
+                width: '100%',
+                height: 136,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+              }} />
 
             <TouchableOpacity onPress={() => addCart(item.id)}
               style={{
