@@ -1,54 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useState, useEffect } from 'react'
-import {
-    Onboarding1,
-    Onboarding2,
-    Onboarding3,
-    Signup,
-    Verification,
-    Login,
-    StartUpScreen,
-    ForgotPassword,
-    ResetPassword,
-    Onboarding4,
-    LocationAccess,
-    HomeV1,
-    FoodDetailsV1,
-    FoodDetailsV2,
-    RestaurantView1,
-    RestaurantView2,
-    FoodByKeywords,
-    Cart,
-    EditCart,
-    PaymentMethod,
-    PaymentMethodNoCard,
-    AddPaymentCard,
-    PaymentSuccess,
-    TrackingOrderV1,
-    Message,
-    Menu,
-    PersonalProfile,
-    EditProfile,
-    Address,
-    AddNewAddress,
-    Call,
-    TrackingOrderV2,
-    Chat,
-    VideoCall,
-    OpenShops,
-    AddReview,
-    CancelOrders,
-    Profile,
-    TransactionHistory,
-    Faqs,
-    Settings,
-    SubmitQuestion,
-    History,
-    HomeV3,
-    HomeV2,
-    MyOrders,
-    RiderOrders
+import {Onboarding1, Onboarding2, Onboarding3, Signup, Verification, Login, StartUpScreen, ForgotPassword, ResetPassword, Onboarding4,
+    LocationAccess, HomeV1, FoodDetailsV1, FoodDetailsV2, RestaurantView1, RestaurantView2, FoodByKeywords, Cart, EditCart, PaymentMethod,
+    PaymentMethodNoCard, AddPaymentCard, PaymentSuccess, TrackingOrderV1, Message, Menu, PersonalProfile, EditProfile, Address, AddNewAddress,
+    Call, TrackingOrderV2, Chat, VideoCall, OpenShops, AddReview, CancelOrders, Profile, TransactionHistory, Faqs, Settings, SubmitQuestion,
+    History, HomeV3, HomeV2, MyOrders, RiderOrders
 } from '../screens'
 import LocationSearch from '../screens/LocationSearch';
 import { NavigationContainer } from '@react-navigation/native'
@@ -97,11 +54,13 @@ const AppNavigation = () => {
         <NavigationContainer>
             <Stack.Navigator
                 screenOptions={{ headerShown: false }}
+                // initialRouteName={
+                //     isFirstLaunch ? 'HomeV2' : 'Login'
+                // }
                 initialRouteName={
-                    isFirstLaunch ? 'HomeV2' : 'Login'
+                    'Login'
                 }
             >
-
                 <Stack.Screen name="Onboarding1" component={Onboarding1} />
                 <Stack.Screen name="Onboarding2" component={Onboarding2} />
                 <Stack.Screen name="Onboarding3" component={Onboarding3} />
@@ -119,7 +78,6 @@ const AppNavigation = () => {
                 <Stack.Screen name="HomeV1" component={HomeV1} />
                 <Stack.Screen name="HomeV2" component={HomeV2} />
                 <Stack.Screen name="HomeV3" component={HomeV3} />
-
                 <Stack.Screen name="Main" component={BottomTabNavigation} />
                 <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
                 <Stack.Screen name="FoodByKeywords" component={FoodByKeywords} />

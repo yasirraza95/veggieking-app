@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar'
 import { Feather, Ionicons, MaterialCommunityIcons, Fontisto, Octicons } from "@expo/vector-icons"
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Notifications } from 'expo';
 
 const OngoingRoute = ({ navigation, index }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,6 +29,31 @@ const OngoingRoute = ({ navigation, index }) => {
       fetchData();
     }, [])
   );
+
+  const handleNotification = async () => {
+    // Request permission to send notifications (required for iOS)
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      return alert('Permission to send notifications is required!');
+    }
+
+    // Schedule the notification
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Notification Title',
+        body: 'Notification Body',
+        data: { dataKey: 'dataValue' }, // Optional data payload
+      },
+      trigger: { seconds: 1 }, // Schedule the notification to be shown immediately (1 second)
+    });
+    alert('Notification scheduled!');
+  };
+
 
   const fetchData = async () => {
     userId = await AsyncStorage.getItem("_id");
@@ -314,7 +340,7 @@ const HistoryRoute = ({ navigation, index }) => {
     }}>No record found</Text></View>;
 
   response = isLoading ? <ActivityIndicator size="large" color="blue" /> : response;
-  
+
   return (
     response
   )

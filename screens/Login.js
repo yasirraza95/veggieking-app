@@ -51,8 +51,6 @@ const Login = ({ navigation }) => {
   // console.log(`id=${id}`);
   // console.log('user-id=', JSON.stringify(userId));
   // useEffect(() => {
-  //   // console.log("calling");
-
   //   checkAuthentication();
   // }, []);
 
@@ -97,7 +95,7 @@ const Login = ({ navigation }) => {
       const response = await GeneralService.login(values);
       const { data } = response;
       const { access_token, user } = data;
-      const { id, user_type, first_name, last_name } = user;
+      const { id, user_type, first_name, last_name, address, phone, email } = user;
       console.log(user);
 
 
@@ -120,6 +118,9 @@ const Login = ({ navigation }) => {
       await AsyncStorage.setItem("user_type", user_type);
       // await AsyncStorage.setItem("name", first_name + " " + last_name);
       await AsyncStorage.setItem("user_name", first_name + " " + last_name);
+      await AsyncStorage.setItem("user_address", address);
+      await AsyncStorage.setItem("user_phone", phone);
+      await AsyncStorage.setItem("user_email", email);
       await AsyncStorage.setItem("cart_counter", String(cartNo));
       if (user_type == 'user') {
         navigation.replace('LocationAccess');

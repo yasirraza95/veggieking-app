@@ -290,141 +290,143 @@ const HomeV2 = ({ navigation }) => {
                     backgroundColor: 'orange',
                     borderColor: "#c65201",
                   }}>
-              <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover'
-                style={{
-        flex: 1,
-        height: '100%',
-        width: '100%',
-      }} />
-            </View >
-  <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
-          </TouchableOpacity >
-        </View >
-        )
-        }}
-/>
-    </View >
-  </>
+                    <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover'
+                      style={{
+                        flex: 1,
+                        height: '100%',
+                        width: '100%',
+                      }} />
+                  </View >
+                  <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
+                </TouchableOpacity >
+              </View >
+            )
+          }}
+        />
+      </View >
+    </>
 
-  let response = category.length > 0 ? result : <View style={{ flex: 1 }}>
-    <Text style={{
-      color: COLORS.black,
-      fontSize: 14,
-      fontFamily: 'regular',
-      textAlign: 'center'
-    }}>No record found</Text></View>;
+    let response = category.length > 0 ? result : <View style={{ flex: 1 }}>
+      <Text style={{
+        color: COLORS.black,
+        fontSize: 14,
+        fontFamily: 'regular',
+        textAlign: 'center'
+      }}>No record found</Text></View>;
 
-response = categoryLoading ?
-  <ActivityIndicator size="large" color="blue" /> : result
-return (
-  response
-)
+    response = categoryLoading ?
+      <ActivityIndicator size="large" color="blue" /> : result
+    return (
+      response
+    )
   }
 
-const renderFeatureProducts = () => {
-  const [quantity, setQuantity] = useState(1);
+  const renderFeatureProducts = () => {
+    const [quantity, setQuantity] = useState(1);
 
-  const numColumns = 2;
-  let result = <View style={{ flex: 1 }}>
-    <View style={{
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginVertical: 8,
-      alignItems: 'center',
-      paddingHorizontal: 16
-    }}>
-      <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
-      <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
-        style={{ flexDirection: 'row', alignItems: 'center' }}
-      >
-        <Text style={{ fontSize: 16, fontFamily: 'regular' }}>See All</Text>
-        <View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => {
-        if (quantity > 2) {
-          setQuantity(quantity - 1)
-        }
-      }}
-        style={{
-          width: 24,
-          height: 24,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 12,
-          backgroundColor: 'rgba(255,255,255,0.2)'
+    const numColumns = 2;
+    let result = <View style={{ flex: 1 }}>
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 8,
+        alignItems: 'center',
+        paddingHorizontal: 16
+      }}>
+        <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <Text style={{ fontSize: 16, fontFamily: 'regular' }}>See All</Text>
+          <View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          if (quantity > 2) {
+            setQuantity(quantity - 1)
+          }
         }}
-      >
-        <Text style={{ color: COLORS.white }}>-</Text>
-      </TouchableOpacity>
-      <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-      <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>-</Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
+        <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>+</Text>
+        </TouchableOpacity>
+      </View>
+      <FlatList data={moreProd} keyExtractor={item => item.id}
+        numColumns={numColumns}
+        contentContainerStyle={{ paddingHorizontal: 8 }}
         style={{
-          width: 24,
-          height: 24,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 12,
-          backgroundColor: 'rgba(255,255,255,0.2)'
+          marginBottom: "30%",
         }}
-      >
-        <Text style={{ color: COLORS.white }}>+</Text>
-      </TouchableOpacity>
-    </View>
-    <FlatList data={moreProd} keyExtractor={item => item.id}
-      numColumns={numColumns}
-      contentContainerStyle={{ paddingHorizontal: 8 }}
-      style={{
-        marginBottom: "30%",
-      }}
-      renderItem={({ item, index }) => {
-        return (
-      <TouchableOpacity key={index} onPress={()=> navigate.navigate("FoodDetails", { id: item.id, name: item.name,
-        image: item.image, price: item.price, minQty: 1, type: "kg" })}
-        style={{
+        renderItem={({ item, index }) => {
+          return (
+            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
+              id: item.id, name: item.name,
+              image: item.image, price: item.price, minQty: 1, type: "kg"
+            })}
+              style={{
                 flex: 1,
                 margin: 8,
                 borderColor: "#f78c47",
                 borderWidth: 1,
                 borderRadius: 20
               }}
-        >
+            >
 
-        {/* <MyLoader/> */}
+              {/* <MyLoader/> */}
 
-        <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
+              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
                 width: '100%',
                 height: 136,
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
               }} />
 
-            <TouchableOpacity onPress={() => addCart(item.id)}
-              style={{
-                height: 30,
-                width: 30,
-                borderRadius: 15,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: COLORS.primary,
-                position: 'absolute',
-                right: 0
-              }}>
-              <AntDesign name="plus" size={12} color={COLORS.white} />
-            </TouchableOpacity>
-            <View style={{
-              padding: 8,
-              // bottom: 10,
-            }}>
-
+              <TouchableOpacity onPress={() => addCart(item.id)}
+                style={{
+                  height: 30,
+                  width: 30,
+                  borderRadius: 15,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: COLORS.primary,
+                  position: 'absolute',
+                  right: 0
+                }}>
+                <AntDesign name="plus" size={12} color={COLORS.white} />
+              </TouchableOpacity>
               <View style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap-reverse',
-                position: 'relative',
+                padding: 8,
+                // bottom: 10,
               }}>
-                <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
-                {/* <TouchableOpacity onPress={()=> addCart(item.id)}
+
+                <View style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap-reverse',
+                  position: 'relative',
+                }}>
+                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
+                  {/* <TouchableOpacity onPress={()=> addCart(item.id)}
               style={{
                       height: 30,
                       width: 30,
@@ -437,134 +439,134 @@ const renderFeatureProducts = () => {
                     }}>
               <AntDesign name="plus" size={12} color={COLORS.white} />
             </TouchableOpacity> */}
+                </View>
+                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
               </View>
-              <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-            </View>
-          </TouchableOpacity>
-        )
-      }}
-    />
-  </View>;
+            </TouchableOpacity>
+          )
+        }}
+      />
+    </View>;
 
-  let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
-    <Text style={{
-      color: COLORS.black,
-      fontSize: 14,
-      fontFamily: 'regular',
-      textAlign: 'center'
-    }}>No record found</Text></View>;
+    let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
+      <Text style={{
+        color: COLORS.black,
+        fontSize: 14,
+        fontFamily: 'regular',
+        textAlign: 'center'
+      }}>No record found</Text></View>;
 
-  response = featureLoading ?
-    <ActivityIndicator size="large" color="blue" /> : result
+    response = featureLoading ?
+      <ActivityIndicator size="large" color="blue" /> : result
+    return (
+      response
+    );
+  }
+
   return (
-    response
-  );
-}
-
-return (
-  <SafeAreaView style={styles.area}>
-    <View style={{ flex: 1, marginHorizontal: 16 }}>
-      <StatusBar hidden={true} />
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: "space-between",
-        alignItems: 'center',
-        marginTop: 20,
-      }}>
+    <SafeAreaView style={styles.area}>
+      <View style={{ flex: 1, marginHorizontal: 16 }}>
+        <StatusBar hidden={true} />
         <View style={{
           flexDirection: 'row',
-          alignItems: 'center'
+          justifyContent: "space-between",
+          alignItems: 'center',
+          marginTop: 20,
         }}>
-          <TouchableOpacity onPress={() => navigation.openDrawer()}
-            style={{
-              height: 45,
-              width: 45,
-              borderRadius: 22.5,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: COLORS.secondaryGray
-            }}>
-            <Image source={icons.menu} style={{
-              height: 24,
-              width: 24,
-            }} />
-          </TouchableOpacity>
           <View style={{
-            flexDirection: 'column',
-            marginLeft: 12
+            flexDirection: 'row',
+            alignItems: 'center'
           }}>
-            <Text style={{
-              fontSize: 12,
-              fontWeight: 'bold',
-              color: COLORS.primary
-            }}>Address</Text>
+            <TouchableOpacity onPress={() => navigation.openDrawer()}
+              style={{
+                height: 45,
+                width: 45,
+                borderRadius: 22.5,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: COLORS.secondaryGray
+              }}>
+              <Image source={icons.menu} style={{
+                height: 24,
+                width: 24,
+              }} />
+            </TouchableOpacity>
             <View style={{
-              flexDirection: 'row',
-              alignItems: 'center'
+              flexDirection: 'column',
+              marginLeft: 12
             }}>
               <Text style={{
-                fontSize: 14,
-                fontWeight: 'regular'
-              }}>{userAddress ?? "N/A"}</Text>
-              {/*
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: COLORS.primary
+              }}>Address</Text>
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}>
+                <Text style={{
+                  fontSize: 14,
+                  fontWeight: 'regular'
+                }}>{userAddress ?? "N/A"}</Text>
+                {/*
               <Image source={icons.arrowDown2} style={{
                   height: 12,
                   width: 12,
                   marginLeft: 4
                 }} /> */}
+              </View>
+            </View>
+          </View>
+
+          {/* cart counter */}
+          <View style={{
+            height: 45,
+            width: 45,
+            borderRadius: 22.5,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: COLORS.tertiaryBlack
+          }}>
+            <View>
+              <View style={{
+                position: 'absolute',
+                top: -16,
+                left: 12,
+                backgroundColor: COLORS.primary,
+                height: 25,
+                width: 25,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 12.5,
+                zIndex: 999
+              }}>
+                <Text style={{
+                  fontSize: 16,
+                  color: COLORS.white
+                }}>{cartCounter}</Text>
+              </View>
+              <Feather name="shopping-bag" size={24} color={COLORS.white} />
             </View>
           </View>
         </View>
 
-        {/* cart counter */}
-        <View style={{
-          height: 45,
-          width: 45,
-          borderRadius: 22.5,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: COLORS.tertiaryBlack
-        }}>
-          <View>
-            <View style={{
-              position: 'absolute',
-              top: -16,
-              left: 12,
-              backgroundColor: COLORS.primary,
-              height: 25,
-              width: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 12.5,
-              zIndex: 999
-            }}>
-              <Text style={{
-                fontSize: 16,
-                color: COLORS.white
-              }}>{cartCounter}</Text>
-            </View>
-            <Feather name="shopping-bag" size={24} color={COLORS.white} />
-          </View>
-        </View>
+        {
+          screenLoading ?
+            <ActivityIndicator size="large" color="blue" /> : null
+        }
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+
+          {renderCarousel()}
+          {renderCategories()}
+          {renderFeatureProducts()}
+        </ScrollView>
       </View>
-
-      {
-        screenLoading ?
-          <ActivityIndicator size="large" color="blue" /> : null
-      }
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-
-        {renderCarousel()}
-        {renderCategories()}
-        {renderFeatureProducts()}
-      </ScrollView>
-    </View>
-    <CustomModal modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}
-      code="#1243CD2" />
-  </SafeAreaView>
-)
-  }
+      <CustomModal modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}
+        code="#1243CD2" />
+    </SafeAreaView>
+  )
+}
 
 const styles = StyleSheet.create({
   area: {

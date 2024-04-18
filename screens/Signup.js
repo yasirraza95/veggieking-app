@@ -113,8 +113,8 @@ const Signup = ({ navigation }) => {
                                     <>
                                         <Text style={commonStyles.inputHeader}>Name</Text>
                                         <Input
-                                            name="name"
                                             id="name"
+                                            name="name"
                                             autoCapitalize="words"
                                             onChangeText={handleChange('name')}
                                             onBlur={handleBlur('name')}
@@ -199,6 +199,7 @@ const Signup = ({ navigation }) => {
         </SafeAreaView>
     )
 }
+
 const styles = StyleSheet.create({
     error: {
         color: "red"

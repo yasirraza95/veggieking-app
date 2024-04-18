@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Veggie King",
-    "slug": "Veggie King",
+    "slug": "veggie-king",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -34,6 +34,11 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "002b12fb-ac0a-4585-9e7d-ca74199fca30"
+      }
+    }
   }
 }

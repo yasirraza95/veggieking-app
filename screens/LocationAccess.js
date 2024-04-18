@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as Location from 'expo-location'
 import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useFocusEffect } from '@react-navigation/core'
 
 const LocationAccess = ({ navigation }) => {
     const arrayGPS = []
@@ -17,6 +18,38 @@ const LocationAccess = ({ navigation }) => {
     // const prefetchImage = async () => {
     //     await Image.prefetch(illustrations.mapLocation);
     // };
+
+    const checkAuthentication = async () => {
+        let userId = await AsyncStorage.getItem("_id");
+        let userType = await AsyncStorage.getItem("user_type");
+        console.log(`login-type=${userType}`);
+
+        if (userId) {
+            console.log(userType);
+            if (userType == 'user') {
+                // navigation.replace('Main');
+                // navigation.replace('RiderOrders');
+            } else {
+                navigation.replace('RiderOrders');
+            }
+        }
+    }
+
+    // useEffect(() => {
+    //     checkAuthentication();
+    // }, [])
+
+    useFocusEffect(
+        React.useCallback(() => {
+            // Code to run when the screen gains focus
+            checkAuthentication();
+
+            return () => {
+                // Code to run when the screen loses focus
+                console.log('location Screen blurred');
+            };
+        }, [])
+    );
 
     // Get user location
     useEffect(() => {
@@ -54,7 +87,7 @@ const LocationAccess = ({ navigation }) => {
         <SafeAreaView style={styles.area}>
             <StatusBar hidden={true} />
             <View style={styles.center}>
-                
+
                 <Image
                     source={illustrations.mapLocation}
                     resizeMode="contain"

@@ -25,14 +25,16 @@ const PersonalProfile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   const getProfile = async () => {
     try {
-      let accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await GeneralService.showProfile(accessToken);
-      setName(response.data.name);
-      setEmail(response.data.email);
-      setPhone(response.data.phone);
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await GeneralService.getUserById(userId);
+      setName(response.data.response.first_name + " " + response.data.response.last_name);
+      setEmail(response.data.response.email);
+      setPhone(response.data.response.phone);
+      setAddress(response.data.response.address);
 
     } catch (err) {
       console.log(err);
@@ -175,7 +177,7 @@ const PersonalProfile = () => {
               </View>
               <View style={{ flexDirection: 'column' }}>
                 <Text style={styles.boldBody}>Full Name</Text>
-                <Text style={styles.textBody}>Vishal Khadok</Text>
+                <Text style={styles.textBody}>{name}</Text>
               </View>
             </View>
 
@@ -189,7 +191,7 @@ const PersonalProfile = () => {
               </View>
               <View style={{ flexDirection: 'column' }}>
                 <Text style={styles.boldBody}>Email</Text>
-                <Text style={styles.textBody}>hello@gmail.com</Text>
+                <Text style={styles.textBody}>{email}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -202,7 +204,20 @@ const PersonalProfile = () => {
               </View>
               <View style={{ flexDirection: 'column' }}>
                 <Text style={styles.boldBody}>Phone Number</Text>
-                <Text style={styles.textBody}>408-278-248</Text>
+                <Text style={styles.textBody}>{phone}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.subContainer}
+          >
+            <View style={styles.subLeftContainer}>
+              <View style={styles.rounded}>
+                <Feather name="map-pin" size={24} color="#369BFF" />
+              </View>
+              <View style={{ flexDirection: 'column' }}>
+                <Text style={styles.boldBody}>Address</Text>
+                <Text style={styles.textBody}>{address}</Text>
               </View>
             </View>
           </TouchableOpacity>

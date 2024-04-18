@@ -366,6 +366,18 @@ const listOrdersByUserIdandStatus = (status, userId) => {
     );
 };
 
+const getUserById = (id) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/user/${id}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const listOrdersByUserIdOngoing = (userId) => {
     const headers = {
         "Content-Type": "application/json",
@@ -521,7 +533,7 @@ const sendNotification = () => {
 const GeneralService = {
     login, register, forgot, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
     deleteCart, fetchProductByType, listAllProducts, listProductByCat, listAllCategories, listFeaturedProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
-    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider,
+    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart
 };
 export default GeneralService;
