@@ -223,17 +223,17 @@ const Cart = ({ navigation }) => {
                 </View>
 
                 <Text style={{
-                  fontSize: 20,
-                  fontFamily: 'bold',
+                  fontSize: 16,
+                  fontFamily: 'regular',
                   color: COLORS.white,
                   marginVertical: 6
-                }}>Rs. {item.product_price}</Text>
+                }}>Rs. {item.product_price} / {item.product_scale}</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{
-                    fontSize: 16,
+                    fontSize: 20,
                     color: COLORS.white,
-                    fontFamily: 'regular'
-                  }}>{item.product_type}</Text>
+                    fontFamily: 'bold'
+                  }}>Rs. {item.product_price * item.quantity}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity
                       onPress={() => decreaseQuantity(item.prod_id)}
@@ -294,14 +294,7 @@ const Cart = ({ navigation }) => {
             />
             {inputError && <Text style={styles.error}>{inputError}</Text>}
 
-            {/* <Input
-              id="Address"
-              placeholder="Delivery Address"
-              placeholderTextColor={COLORS.gray4}
-              editable={true}
-            /> */}
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 16 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={cartStyles.body3}>Total:</Text>
                 <Text style={{ fontSize: 24, fontFamily: "bold", color: COLORS.black, marginLeft: 12 }}>Rs. {totalPrice}</Text>
@@ -314,7 +307,7 @@ const Cart = ({ navigation }) => {
               isEnable={true}
               // onPress={() => navigation.navigate("PaymentMethod")}
               onPress={() => placeOrder()}
-              style={{ marginVertical: 2 }}
+              style={{ marginVertical: 0 }}
             />
           </Animatable.View>
         )

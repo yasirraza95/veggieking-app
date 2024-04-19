@@ -246,7 +246,7 @@ const HomeV2 = ({ navigation }) => {
     )
   }
 
-  const renderCategories = () => {
+  const renderCategoriesOld = () => {
     let result = <>
       <View>
         <View style={{
@@ -256,13 +256,13 @@ const HomeV2 = ({ navigation }) => {
           alignItems: 'center',
         }}>
           <Text style={{ ...FONTS.body2 }}>Categories</Text>
-          <TouchableOpacity // onPress={()=> console.log("See all category")}
-            style={{ flexDirection: 'row', alignItems: 'center' }}
-          >
-          </TouchableOpacity>
         </View>
 
-        <FlatList horizontal={true} data={category} keyExtractor={item => item.id}
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          horizontal={true}
+          data={category}
+          keyExtractor={item => item.id}
           renderItem={({ item, index }) => {
             return (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -290,7 +290,7 @@ const HomeV2 = ({ navigation }) => {
                     backgroundColor: 'orange',
                     borderColor: "#c65201",
                   }}>
-                    <Image source={{ uri: `https://api.veggieking.pk/resources/images/${item.image}` }} resizeMode='cover'
+                    <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover'
                       style={{
                         flex: 1,
                         height: '100%',
@@ -321,7 +321,88 @@ const HomeV2 = ({ navigation }) => {
     )
   }
 
-  const renderFeatureProducts = () => {
+  const renderCategories = () => {
+    const numColumns = 3;
+
+    let result = <>
+      <View>
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginVertical: 8,
+          alignItems: 'center',
+        }}>
+          <Text style={{ ...FONTS.body2 }}>Categories</Text>
+        </View>
+
+        <FlatList
+          // showsHorizontalScrollIndicator={false}
+          // horizontal={true}
+          numColumns={numColumns}
+          contentContainerStyle={{ paddingHorizontal: 8 }}
+          data={category}
+          keyExtractor={item => item.id}
+          renderItem={({ item, index }) => {
+            return (
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <TouchableOpacity key={index} onPress={() => navigate.navigate("CategoryProducts", {
+                  catId: item.id, catName:
+                    item.name
+                })}
+                >
+                  <View style={{
+                    height: 90,
+                    width: 90,
+                    borderRadius: 61,
+                    overflow: 'hidden',
+                    shadowColor: '#F1F1F1',
+                    margin: 5,
+                    shadowOffset: {
+                      width: 12,
+                      height: 12,
+                    },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 10,
+                    elevation: 0.1,
+                    borderColor: COLORS.tertiaryGray,
+                    borderWidth: 2,
+                    backgroundColor: 'orange',
+                    borderColor: "#c65201",
+                  }}>
+                    <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover'
+                      style={{
+                        flex: 1,
+                        height: '100%',
+                        width: '100%',
+                      }} />
+                  </View >
+                  <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
+                </TouchableOpacity >
+              </View >
+            )
+          }}
+        />
+      </View >
+    </>
+
+    let response = category.length > 0 ? result : <View style={{ flex: 1 }}>
+      <Text style={{
+        color: COLORS.black,
+        fontSize: 14,
+        fontFamily: 'regular',
+        textAlign: 'center'
+      }}>No record found</Text></View>;
+
+    response = categoryLoading ?
+      <ActivityIndicator size="large" color="blue" /> : result
+    return (
+      response
+    )
+  }
+
+
+
+  const renderFeatureProductsOld = () => {
     const [quantity, setQuantity] = useState(1);
 
     const numColumns = 2;
@@ -331,17 +412,19 @@ const HomeV2 = ({ navigation }) => {
         justifyContent: 'space-between',
         marginVertical: 8,
         alignItems: 'center',
-        paddingHorizontal: 16
+        // paddingHorizontal: 16
       }}>
+
         <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
         <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
-          style={{ flexDirection: 'row', alignItems: 'center' }}
+          style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
         >
-          <Text style={{ fontSize: 16, fontFamily: 'regular' }}>See All</Text>
+          <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 4 }}>See All</Text>
           <View>
             <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
           </View>
         </TouchableOpacity>
+
         <TouchableOpacity onPress={() => {
           if (quantity > 2) {
             setQuantity(quantity - 1)
@@ -372,8 +455,10 @@ const HomeV2 = ({ navigation }) => {
           <Text style={{ color: COLORS.white }}>+</Text>
         </TouchableOpacity>
       </View>
-      <FlatList data={moreProd} keyExtractor={item => item.id}
-        numColumns={numColumns}
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal={true}
+        data={moreProd} keyExtractor={item => item.id}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         style={{
           marginBottom: "30%",
@@ -385,21 +470,24 @@ const HomeV2 = ({ navigation }) => {
               image: item.image, price: item.price, minQty: 1, type: "kg"
             })}
               style={{
-                flex: 1,
-                margin: 8,
-                borderColor: "#f78c47",
+                flexDirection: 'column',
+                paddingHorizontal: 2,
+                paddingVertical: 4,
+                height: "auto",
+                width: 160,
                 borderWidth: 1,
-                borderRadius: 20
+                borderColor: "#f78c47",
+                borderRadius: 20,
+                marginRight: 6,
+                marginLeft: 0,
+                marginBottom: 16
               }}
             >
-
-              {/* <MyLoader/> */}
-
               <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
-                width: '100%',
-                height: 136,
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
+                width: '100%',
+                height: 84,
               }} />
 
               <TouchableOpacity onPress={() => addCart(item.id)}
@@ -439,6 +527,142 @@ const HomeV2 = ({ navigation }) => {
                     }}>
               <AntDesign name="plus" size={12} color={COLORS.white} />
             </TouchableOpacity> */}
+                </View>
+                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
+              </View>
+            </TouchableOpacity>
+          )
+        }}
+      />
+    </View>;
+
+    let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
+      <Text style={{
+        color: COLORS.black,
+        fontSize: 14,
+        fontFamily: 'regular',
+        textAlign: 'center'
+      }}>No record found</Text></View>;
+
+    response = featureLoading ?
+      <ActivityIndicator size="large" color="blue" /> : result
+    return (
+      response
+    );
+  }
+
+  const renderFeatureProducts = () => {
+    const [quantity, setQuantity] = useState(1);
+
+    const numColumns = 2;
+    let result = <View style={{ flex: 1 }}>
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 8,
+        alignItems: 'center',
+        // paddingHorizontal: 16
+      }}>
+
+        <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
+          style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
+        >
+          <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 4 }}>See All</Text>
+          <View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => {
+          if (quantity > 2) {
+            setQuantity(quantity - 1)
+          }
+        }}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>-</Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
+        <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>+</Text>
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal={true}
+        data={moreProd} keyExtractor={item => item.id}
+        contentContainerStyle={{ paddingHorizontal: 8 }}
+        style={{
+          marginBottom: "30%",
+        }}
+        renderItem={({ item, index }) => {
+          return (
+            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
+              id: item.id, name: item.name,
+              image: item.image, price: item.price, minQty: 1, type: "kg"
+            })}
+              style={{
+                flexDirection: 'column',
+                paddingHorizontal: 2,
+                paddingVertical: 4,
+                height: "auto",
+                width: 160,
+                borderWidth: 1,
+                borderColor: "#f78c47",
+                borderRadius: 20,
+                marginRight: 6,
+                marginLeft: 0,
+                marginBottom: 16
+              }}
+            >
+              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                width: '100%',
+                height: 84,
+              }} />
+
+              <TouchableOpacity onPress={() => addCart(item.id)}
+                style={{
+                  height: 30,
+                  width: 30,
+                  borderRadius: 15,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: COLORS.primary,
+                  position: 'absolute',
+                  right: 0
+                }}>
+                <AntDesign name="plus" size={12} color={COLORS.white} />
+              </TouchableOpacity>
+              <View style={{
+                padding: 8,
+                // bottom: 10,
+              }}>
+
+                <View style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap-reverse',
+                  position: 'relative',
+                }}>
+                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
                 </View>
                 <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
               </View>
@@ -558,6 +782,7 @@ const HomeV2 = ({ navigation }) => {
         <ScrollView showsVerticalScrollIndicator={false}>
 
           {renderCarousel()}
+          {/* {renderCategoriesOld()} */}
           {renderCategories()}
           {renderFeatureProducts()}
         </ScrollView>

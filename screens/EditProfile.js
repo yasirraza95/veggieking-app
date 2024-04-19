@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
 import { COLORS, SIZES, icons, images } from "../constants"
 import { useNavigation } from '@react-navigation/native'
@@ -69,7 +69,7 @@ const EditProfile = () => {
                 throw new Error('No response from the server');
             }
         } catch (err) {
-            console.log(err);
+            // console.log(err);
 
             Alert.alert("Error", "No response from server");
 
@@ -99,25 +99,37 @@ const EditProfile = () => {
     }, []);
 
     const updateProfile = async (values) => {
-        console.log("called");
+        // console.log(values);
         try {
+            let userId = await AsyncStorage.getItem("_id");
+
             setIsLoading(true);
             setIsEnable(false);
-            console.log(values);
-            const response = await GeneralService.register(values);
-            console.log('SignUp response:', response);
+            // console.log(values);
+            const timeout = 8000;
+            const response = await Promise.race([
+                GeneralService.updateUserById(values.name, values.address, values.phone, values.email, userId),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+            ]);
+
+            if (response) {
+                Alert.alert('Success', 'Information updated successfully');
+            } else {
+                throw new Error('No response from the server');
+            }
+            // const response = await GeneralService.updateUserById(values.name, values.address, values.phone, values.email, userId);
+            // console.log('SignUp response:', response);
             setIsLoading(false);
             setIsEnable(true);
             // Alert.alert('Success', 'User registered successfully');
-            Alert.alert('Success', 'User registered successfully', [{ text: 'OK', onPress: handleAlertOK }]);
         } catch (err) {
-            console.log(err);
+            // console.log(err);
             setIsLoading(false);
             setIsEnable(true);
             setEmailError("");
             setPhoneError("");
             if (err?.response?.status === 422) {
-                console.log(err?.response?.data);
+                // console.log(err?.response?.data);
                 if (err?.response?.data?.email) {
                     setEmailError(err?.response?.data?.email[0]);
                 }

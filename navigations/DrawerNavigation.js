@@ -8,7 +8,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import { COLORS, images } from "../constants";
-import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory } from "../screens";
+import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory, PersonalProfile } from "../screens";
 import Otp from "../screens/Otp";
 import Logout from "../screens/Logout";
 import { useEffect, useState } from "react";
@@ -113,7 +113,7 @@ const DrawerNavigation = () => {
             <Ionicons name="briefcase-outline" size={24} color={COLORS.black} />
           )
         }}
-        component={HomeV2}
+        component={PersonalProfile}
       />
       <Drawer.Screen
         name="Orders"
