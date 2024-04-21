@@ -118,7 +118,7 @@ const Login = ({ navigation }) => {
       await AsyncStorage.setItem("user_type", user_type);
       // await AsyncStorage.setItem("name", first_name + " " + last_name);
       await AsyncStorage.setItem("user_name", first_name + " " + last_name);
-      await AsyncStorage.setItem("user_address", address);
+      // await AsyncStorage.setItem("user_address", address);
       await AsyncStorage.setItem("user_phone", phone);
       await AsyncStorage.setItem("user_email", email);
       await AsyncStorage.setItem("cart_counter", String(cartNo));

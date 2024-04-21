@@ -15,7 +15,7 @@ import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
-const CategoryProducts = ({ route }) => {
+const CategoryProductsOld = ({ route }) => {
   const { catName, catId } = route.params;
   const [cartCounter, setCartCounter] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -66,7 +66,7 @@ const CategoryProducts = ({ route }) => {
 
       if (response) {
         getCartCounter();
-        // fetchProducts();
+        fetchProducts();
         setScreenLoading(false);
       } else {
         throw new Error('No response from the server');
@@ -89,7 +89,7 @@ const CategoryProducts = ({ route }) => {
 
       if (response) {
         getCartCounter();
-        // fetchProducts();
+        fetchProducts();
         setScreenLoading(false);
       } else {
         throw new Error('No response from the server');
@@ -105,7 +105,7 @@ const CategoryProducts = ({ route }) => {
       const timeout = 8000;
       const userId = await AsyncStorage.getItem("_id");
       const response = await Promise.race([
-        GeneralService.listProductByCat(catId),
+        GeneralService.listProductByCatCart(catId, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
@@ -259,7 +259,7 @@ const CategoryProducts = ({ route }) => {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
 
-                {/* {
+                {
                   item.quantity_added >= 1 && (
                     <>
                       <TouchableOpacity
@@ -284,7 +284,7 @@ const CategoryProducts = ({ route }) => {
                       }}>{item.quantity_added}</Text>
                     </>
                   )
-                } */}
+                }
                 {/* <AntDesign name="plus" size={12} color={COLORS.white} /> */}
                 <TouchableOpacity
                   onPress={() => addCart(item.id)}

@@ -25,6 +25,21 @@ const RestaurantView1 = () => {
   const [screenLoading, setScreenLoading] = useState(false);
   const navigation = useNavigation();
 
+  const getCartCounter = async () => {
+    try {
+      let userId = await AsyncStorage.getItem("_id");
+      const cartResponse = await GeneralService.cartCounterByUserId(userId);
+      const { data: cartData } = cartResponse;
+      console.log(`home-data=${cartData}`);
+      const { response: cartNo } = cartData;
+      setCartCounter(cartNo);
+
+    } catch (err) {
+      console.log(err);
+      setCartCounter(0);
+    }
+  }
+
   const addCart = async (id) => {
     try {
       let userId = await AsyncStorage.getItem("_id");
@@ -38,14 +53,15 @@ const RestaurantView1 = () => {
       ]);
 
       if (response) {
-        if (response.status == 200) {
-          let cartCounter = await AsyncStorage.getItem("cart_counter");
-          cartCounter = parseInt(cartCounter, 10);
-          cartCounter++;
-          await AsyncStorage.setItem("cart_counter", cartCounter.toString());
-        }
+        // if (response.status == 200) {
+        //   let cartCounter = await AsyncStorage.getItem("cart_counter");
+        //   cartCounter = parseInt(cartCounter, 10);
+        //   cartCounter++;
+        //   await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+        // }
 
-        setCartCounter(cartCounter);
+        getCartCounter();
+        // setCartCounter(cartCounter);
         setScreenLoading(false);
         // setCategory(response.data.response);
       } else {

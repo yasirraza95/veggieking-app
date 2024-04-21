@@ -8,6 +8,7 @@ import { LogBox } from 'react-native'
 import { Provider } from 'react-redux'
 import { store } from './Redux/store'
 
+
 LogBox.ignoreAllLogs();
 
 SplashScreen.preventAutoHideAsync()
@@ -28,7 +29,9 @@ export default function App() {
   return (
     <SafeAreaProvider onLayout={onLayoutRootView}>
       <Provider store={store}>
-        <AppNavigation />
+        {/* <ToastProvider> */}
+          <AppNavigation />
+        {/* </ToastProvider> */}
       </Provider>
 
     </SafeAreaProvider>

@@ -53,12 +53,28 @@ const forgot = (values) => {
     );
 };
 
-const checkForgotToken = (values) => {
+const forgotOtp = (email) => {
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.post(
-        `${API_URL}/check-forgot/${values.token}`,
+        `${API_URL}/forgot`,
+        {
+            email: email,
+        },
+        {
+            headers: headers,
+        }
+    );
+};
+
+const checkForgotToken = (token, email) => {
+    // console.log(token, email);
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/check-forgot/${token}/${email}`,
         {
             headers: headers,
         }
@@ -235,6 +251,18 @@ const listProductByCat = (id) => {
     );
 };
 
+const listProductByCatCart = (id, userId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-product-by-cat-cart/${id}/${userId}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const listFeaturedProducts = () => {
     const headers = {
         "Content-Type": "application/json",
@@ -385,6 +413,21 @@ const updateUserById = (name, address, phone, email, userId) => {
     return axios.put(
         `${API_URL}/user/${userId}`, {
         name: name, address: address, phone: phone, email: email, updated_by: userId
+    },
+        {
+            headers: headers,
+        }
+    );
+};
+
+const updatePassword = (token, email, password) => {
+  console.log(token, email, password);
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.put(
+        `${API_URL}/update-password`, {
+        token:token, email:email, password:password
     },
         {
             headers: headers,
@@ -544,10 +587,24 @@ const sendNotification = () => {
     );
 };
 
+const getCharges = () => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/get-charges`,
+        {
+            headers: headers,
+        }
+    );
+};
+
+
+
 const GeneralService = {
-    login, register, forgot, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
-    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listAllCategories, listFeaturedProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
-    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, updateUserById,
-    listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart
+    login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
+    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listAllCategories, listFeaturedProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
+    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, updateUserById,updatePassword,
+    listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart, getCharges
 };
 export default GeneralService;

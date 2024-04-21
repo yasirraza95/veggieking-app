@@ -22,10 +22,10 @@ const LocationAccess = ({ navigation }) => {
     const checkAuthentication = async () => {
         let userId = await AsyncStorage.getItem("_id");
         let userType = await AsyncStorage.getItem("user_type");
-        console.log(`login-type=${userType}`);
+        // console.log(`login-type=${userType}`);
 
         if (userId) {
-            console.log(userType);
+            // console.log(userType);
             if (userType == 'user') {
                 // navigation.replace('Main');
                 // navigation.replace('RiderOrders');
@@ -46,7 +46,7 @@ const LocationAccess = ({ navigation }) => {
 
             return () => {
                 // Code to run when the screen loses focus
-                console.log('location Screen blurred');
+                // console.log('location Screen blurred');
             };
         }, [])
     );
@@ -55,7 +55,7 @@ const LocationAccess = ({ navigation }) => {
     useEffect(() => {
         const getPermissions = async () => {
             let userType = await AsyncStorage.getItem("user_type");
-            console.log(`location-type=${userType}`);
+            // console.log(`location-type=${userType}`);
 
             let { status } = await Location.requestForegroundPermissionsAsync()
             if (status !== 'granted') {
@@ -73,7 +73,9 @@ const LocationAccess = ({ navigation }) => {
                 latitude: latitude,
                 longitude: longitude,
             })
+            // console.log(address[0]);
             await AsyncStorage.setItem("user_address", address[0].district + " " + address[0].city);
+            await AsyncStorage.setItem("user_delivery_address", address[0].district + " " + address[0].city);
             setAddress(
                 `${address[0].name}, ${address[0].district}, ${address[0].city}`
             )

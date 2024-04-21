@@ -35,7 +35,7 @@ const PaymentMethod = ({ route }) => {
           let orderNumber = response.data.response;
           console.log(response.data.response);
           // setCategory(response.data.response);
-          await AsyncStorage.setItem("cart_counter", "0");
+          await AsyncStorage.setItem("cart_counter", String(0));
           navigation.replace("Thankyou", { orderNo: orderNumber });
         } else {
           Alert.alert("Error", "No response from the server");

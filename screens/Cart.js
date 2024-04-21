@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, icons } from '../constants'
@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import GeneralService from '../services/general.service'
 import { useFocusEffect } from '@react-navigation/native'
+import { listCart } from '../utils/sqlite';
 
 const Cart = ({ navigation }) => {
   const [quantity, setQuantity] = useState(1);
@@ -22,10 +23,61 @@ const Cart = ({ navigation }) => {
   const [cartCounter, setCartCounter] = useState(0);
   const [inputText, setInputText] = useState('');
   const [inputError, setInputError] = useState('');
+  const [deliveryCharges, setDeliveryCharges] = useState(0);
+
+  const getCartCounter = async () => {
+    try {
+      let userId = await AsyncStorage.getItem("_id");
+      const cartResponse = await GeneralService.cartCounterByUserId(userId);
+      const { data: cartData } = cartResponse;
+      console.log(`home-data=${cartData}`);
+      const { response: cartNo } = cartData;
+      setCartCounter(cartNo);
+
+    } catch (err) {
+      console.log(err);
+      setCartCounter(0);
+    }
+  }
+
+  // const { response, status } = await listCart('user_id');
+  // console.log(response, status);
+
+
+  const fetchDataNew = async () => {
+    try {
+      let userId = await AsyncStorage.getItem("_id");
+      let userAddress = await AsyncStorage.getItem("user_address");
+      setInputText(userAddress);
+      const response = await listCart(userId);
+      const { response: res } = response;
+
+      console.log(`success-cart=${res}`);
+      // const { data } = response;
+      // const { response: res } = data;
+      const totalPrice = res.reduce((accumulator, currentValue) => {
+        return accumulator + (currentValue.quantity * currentValue.product_price);
+      }, 0);
+
+      const numberOfItems = res.reduce((count, obj) => {
+        return count + 1;
+      }, 0);
+      setItemNo(numberOfItems);
+      setTotalPrice(totalPrice);
+      setCart(res);
+
+    } catch (err) {
+      // console.log("Error");
+      console.log(err);
+      setCart([]);
+    }
+  }
 
   const fetchData = async () => {
     try {
       let userId = await AsyncStorage.getItem("_id");
+      let userAddress = await AsyncStorage.getItem("user_address");
+      setInputText(userAddress);
       const response = await GeneralService.listCartByUserId(userId);
       const { data } = response;
       const { response: res } = data;
@@ -47,9 +99,49 @@ const Cart = ({ navigation }) => {
     }
   }
 
+
+  const fetchDataOld2 = async () => {
+    try {
+      let userId = await AsyncStorage.getItem("_id");
+      let userAddress = await AsyncStorage.getItem("user_address");
+      setInputText(userAddress);
+      const response = await GeneralService.listCartByUserId(userId);
+      const { data } = response;
+      const { response: res } = data;
+      const totalPrice = res.reduce((accumulator, currentValue) => {
+        return accumulator + (currentValue.quantity * currentValue.product_price);
+      }, 0);
+
+      const numberOfItems = res.reduce((count, obj) => {
+        return count + 1;
+      }, 0);
+      setItemNo(numberOfItems);
+      setTotalPrice(totalPrice);
+      setCart(res);
+
+    } catch (err) {
+      console.log("Error");
+      console.log(err);
+      setCart([]);
+    }
+  }
+
+  const fetchDeliveryCharges = async () => {
+    try {
+      const response = await GeneralService.getCharges();
+      const { data } = response;
+      const { response: res } = data;
+      // console.log(res);
+      setDeliveryCharges(res.price);
+    } catch (err) {
+      setDeliveryCharges(0);
+    }
+  }
+
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
+      fetchDeliveryCharges();
 
     }, [])
   );
@@ -96,15 +188,15 @@ const Cart = ({ navigation }) => {
       try {
         let userId = await AsyncStorage.getItem("_id");
         const response = await GeneralService.deleteCart(userId, id);
-        console.log(response.data.response);
+        // console.log(response.data.response);
 
-        let cartCounter = await AsyncStorage.getItem("cart_counter");
-        cartCounter = parseInt(cartCounter, 10);
-        cartCounter--;
-        console.log(cartCounter);
-        await AsyncStorage.setItem("cart_counter", cartCounter.toString());
-        setCartCounter(cartCounter);
-
+        // let cartCounter = await AsyncStorage.getItem("cart_counter");
+        // cartCounter = parseInt(cartCounter, 10);
+        // cartCounter--;
+        // console.log(cartCounter);
+        // await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+        // setCartCounter(cartCounter);
+        getCartCounter();
         fetchData();
 
       } catch (err) {
@@ -125,14 +217,19 @@ const Cart = ({ navigation }) => {
     const orderPlace = async () => {
       if (inputText) {
         setInputError("");
-        navigation.navigate("PaymentMethod", { total: totalPrice, delivery: 100, items: itemNo, address: inputText, userId: 1 });
+        navigation.navigate("PaymentMethod", { total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText, userId: 1 });
       } else {
         setInputError("Please enter address");
       }
       console.log(inputText);
     }
 
-    orderPlace();
+    if (totalPrice >= 1000) {
+      orderPlace();
+    } else {
+      Alert.alert("Price Alert", "Minimum order is Rs 1000");
+    }
+
   }
 
   return (
@@ -227,7 +324,7 @@ const Cart = ({ navigation }) => {
                   fontFamily: 'regular',
                   color: COLORS.white,
                   marginVertical: 6
-                }}>Rs. {item.product_price} / {item.product_scale}</Text>
+                }}>Rs. {item.product_price}</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{
                     fontSize: 20,

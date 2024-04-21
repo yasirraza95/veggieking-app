@@ -127,12 +127,15 @@ const TrackingOrderV3 = ({ route, navigation }) => {
 
         <VerticalStepper status={orderStatus} />
 
-        <Image 
-  source={illustrations.deliverd}
-  // source={illustrations.packing}
-  // source={illustrations.received}
-  style={[styles.locationImage, { alignSelf: 'center' }]}
-/>
+        <Image
+          // source={illustrations.deliverd}
+          // source={illustrations.packing}
+          source={orderStatus === "PENDING" ? illustrations.received :
+            (orderStatus === "DELIVERED" ? illustrations.deliverd :
+              (orderStatus === "PACKING" ? illustrations.packing :
+                (orderStatus === "CANCELLED" ? COLORS.red : illustrations.deliverd)))}
+          style={[styles.locationImage, { alignSelf: 'center' }]}
+        />
 
       </View>
     </SafeAreaView>
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
   locationImage: {
     height: SIZES.width * 0.7,
     width: SIZES.width * 0.7,
-},
+  },
 })
 
 export default TrackingOrderV3

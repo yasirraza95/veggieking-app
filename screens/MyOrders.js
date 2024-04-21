@@ -40,7 +40,7 @@ const OngoingRoute = ({ navigation, index }) => {
       const ordersData = await GeneralService.listOrdersByUserIdOngoing(id);
       const { data } = ordersData;
       const { response } = data;
-      console.log(`ongoing-data=${JSON.stringify(response)}`);
+      // console.log(`ongoing-data=${JSON.stringify(response)}`);
       setIsLoading(false);
       setOngoingData(response);
     } catch (err) {
@@ -125,7 +125,7 @@ const OngoingRoute = ({ navigation, index }) => {
       <View style={{ height: 100 }}></View>
     </View>
   );
-  
+
 
   let response = ongoingData.length > 0 ? result : <View style={{ flex: 1 }}>
     <Text style={{
@@ -307,15 +307,30 @@ const MyOrders = ({ navigation }) => {
     const navigation = useNavigation()
     const [cartCounter, setCartCounter] = useState(0);
 
+    const getCartCounter = async () => {
+      try {
+        let userId = await AsyncStorage.getItem("_id");
+        const cartResponse = await GeneralService.cartCounterByUserId(userId);
+        const { data: cartData } = cartResponse;
+        console.log(`home-data=${cartData}`);
+        const { response: cartNo } = cartData;
+        setCartCounter(cartNo);
+  
+      } catch (err) {
+        console.log(err);
+        setCartCounter(0);
+      }
+    }
+
     useFocusEffect(
       React.useCallback(() => {
-        const cartCounter = async () => {
-          let cartCounter = await AsyncStorage.getItem("cart_counter");
-          console.log(`cart-counter=${cartCounter}`);
-          setCartCounter(cartCounter);
-        };
+        // const cartCounter = async () => {
+        //   let cartCounter = await AsyncStorage.getItem("cart_counter");
+        //   console.log(`cart-counter=${cartCounter}`);
+        //   setCartCounter(cartCounter);
+        // };
 
-        cartCounter();
+        getCartCounter();
       }, [])
     );
 

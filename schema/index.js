@@ -5,6 +5,11 @@ export const validationSchema = Yup.object().shape({
   password: Yup.string().required('Enter Password'),
 });
 
+export const passwordSchema = Yup.object().shape({
+  password: Yup.string().required('Enter Password'),
+  confirm_password: Yup.string().required("Please enter the Password again").oneOf([Yup.ref("password"), null], "Passwords must match"),
+});
+
 export const signInSchema = Yup.object({
   name: Yup.string().min(2, "Min 5 characters required").max(50, "Max 50 characters allowed").required("Enter Full Name"),
   address: Yup.string().required('Enter Address'),
