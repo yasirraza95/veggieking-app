@@ -67,7 +67,7 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCart = async (id) => {
+  const addCartNew = async (id) => {
     try {
       let userId = await AsyncStorage.getItem("_id");
 
@@ -81,7 +81,7 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCartOld = async (id) => {
+  const addCart = async (id) => {
     try {
       // addToCart(userId, id, 1, 500);
       let userId = await AsyncStorage.getItem("_id");
@@ -101,6 +101,8 @@ const HomeV2 = ({ navigation }) => {
         // cartCounter++;
         // await AsyncStorage.setItem("cart_counter", cartCounter.toString());
         //  setCartCounter(cartNo);
+      showToast('Added to cart');
+
         getCartCounter();
         setScreenLoading(false);
         // setCategory(response.data.response);
