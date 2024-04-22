@@ -20,6 +20,8 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { categories } from '../data/categories'
 import MyLoader from './MyLoader'
 import { addToCart, syncProducts } from '../utils/sqlite';
+import { ToastAndroid } from 'react-native';
+
 
 const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,6 +48,10 @@ const HomeV2 = ({ navigation }) => {
     setSearchQuery(text);
   };
 
+  const showToast = (message) => {
+    ToastAndroid.show(message, ToastAndroid.SHORT);
+  };
+
   const getCartCounter = async () => {
     try {
       let userId = await AsyncStorage.getItem("_id");
@@ -68,6 +74,7 @@ const HomeV2 = ({ navigation }) => {
       console.log("cart addition");
       const response = await addToCart(userId, id);
       console.log(response);
+      showToast('Added to cart');
 
     } catch (err) {
       console.log(err);
