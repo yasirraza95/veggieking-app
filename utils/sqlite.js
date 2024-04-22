@@ -14,9 +14,22 @@ db.transaction(tx => {
     );
 });
 
+// db.transaction(tx => {
+//     tx.executeSql(
+//         'DROP TABLE IF EXISTS products',
+//         [],
+//         () => {
+//             console.log('Products table dropped');
+//             // After dropping the table, create a new one
+//             // createProductsTable(tx);
+//         },
+//         (_, error) => console.error('Error dropping products table:', error)
+//     );
+// });
+
 db.transaction(tx => {
     tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, catId INTEGER, name STRING, image STRING price INTEGER)',
+        'CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, catId INTEGER, name STRING, image STRING, price INTEGER)',
         [],
         () => console.log('Products table created'),
         (_, error) => console.error('Error creating products table:', error)
@@ -29,26 +42,40 @@ export const syncProducts = async (serverProducts) => {
         await db.transaction(async (tx) => {
             for (const product of serverProducts) {
                 const { id, catId, name, price, image } = product;
-                console.log(id, catId, name, price, image);
+                console.log(product);
                 // Check if the product with the same ID already exists in the local table
-                const [existingProduct] = await tx.executeSql(
-                    'SELECT * FROM products WHERE id = ?',
-                    [id]
-                );
+                // const [existingProduct] = await tx.executeSql(
+                //     'SELECT * FROM products WHERE id = ?',
+                //     [id]
+                // );
 
-                if (existingProduct.rows.length > 0) {
-                    // Product already exists, update its name, image, and price
-                    await tx.executeSql(
-                        'UPDATE products SET name = ?, image = ?, price = ? WHERE id = ?',
-                        [name, image, price, id]
-                    );
-                } else {
-                    // Product does not exist, insert it into the local table
-                    await tx.executeSql(
-                        'INSERT INTO products (id, catId, name, price, image) VALUES (?, ?, ?, ?, ?)',
-                        [id, catId, name, price, image]
-                    );
-                }
+                tx.executeSql(
+                    'SELECT * FROM items WHERE id = ?',
+                    [id],
+                    (_, { rows }) => {
+                        if (rows.length > 0) {
+                            console.log("asdsdd");
+                            tx.executeSql(
+                                'UPDATE items SET catId = ?, name = ?, image = ?, price = ? WHERE id = ?',
+                                [name, catId, image, price, id],
+                                (_, { rows }) => {
+                                    console.log("Products updated");
+                                },
+                                (_, error) => console.error('Error adding item to products:', error)
+                            );
+                        } else {
+                            tx.executeSql(
+                                'INSERT INTO items (id, catId, name, price, image) VALUES (?, ?, ?, ?, ?)',
+                                [id, catId, name, price, image],
+                                (_, { rows }) => {
+                                    console.log("Products added");
+                                },
+                                (_, error) => console.error('Error adding item to products:', error)
+                            );
+                        }
+                    },
+                    (_, error) => console.error('Error adding item to products:', error)
+                );
             }
         });
 
@@ -117,32 +144,46 @@ export const listCart = async () => {
 
 
             try {
-                await tx.executeSql('SELECT * FROM cart', [], (_, result) => {
+                await tx.executeSql('SELECT * FROM items', [], (_, result) => {
                     const { rows } = result;
-                    // console.log(`success-results=${JSON.stringify(rows.length)}`);
+                    console.log(`success-results=${JSON.stringify(rows)}`);
 
-                    for (let i = 0; i < result.rows.length; i++) {
-                        const row = result.rows.item(i);
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows._array[i];
+                        console.log(`row=${JSON.stringify(row.id)}`);
                         // Retrieve product details for each cart item
-                        const [product] = tx.executeSql(
-                            'SELECT * FROM products WHERE id = ?',
-                            [row.prodId]
-                        );
-                        if (product.rows.length > 0) {
-                            // Product found, add details to cart item
-                            const productDetails = product.rows.item(0);
-                            cartItems.push({
-                                id: row.id,
-                                prodId: row.prodId,
-                                quantity: row.quantity,
-                                product_name: productDetails.name,
-                                product_image: productDetails.image,
-                                product_price: productDetails.price,
-                            });
-                        }
+                        tx.executeSql('SELECT * FROM items', [], (_, result) => {
+                            console.log(`products=${JSON.stringify(result)}`);
+                            // const { rows } = result;
+                            // console.log(`success-results=${JSON.stringify(rows)}`);
+
+                            for (let i = 0; i < rows.length; i++) {
+                                const row = rows._array[i];
+                                console.log(`row=${JSON.stringify(row.id)}`);
+                                //     // Retrieve product details for each cart item
+                                // await tx.executeSql(
+                                //     'SELECT * FROM products WHERE id = ?',
+                                //     [row.prodId]
+                                // );
+                                //     if (product.rows.length > 0) {
+                                //         // Product found, add details to cart item
+                                //         const productDetails = product.rows.item(0);
+                                //         cartItems.push({
+                                //             id: row.id,
+                                //             prodId: row.prodId,
+                                //             quantity: row.quantity,
+                                //             product_name: productDetails.name,
+                                //             product_image: productDetails.image,
+                                //             product_price: productDetails.price,
+                                //         });
+                                //     }
+                            }
+                        }, (_, error) => {
+                            console.error('Error executing products SQL:', error);
+                        });
                     }
                 }, (_, error) => {
-                    console.error('Error executing SQL:', error);
+                    console.error('Error executing cart SQL:', error);
                 });
             } catch (err) {
                 console.log(err);
