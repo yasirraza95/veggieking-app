@@ -70,10 +70,7 @@ const HomeV2 = ({ navigation }) => {
 
   const addCartNew = async (id) => {
     try {
-      let userId = await AsyncStorage.getItem("_id");
-
-      console.log("cart addition");
-      const response = await addToCart(userId, id);
+      const response = await addToCart(id);
       console.log(response);
       showToast('Added to cart');
 
@@ -102,7 +99,7 @@ const HomeV2 = ({ navigation }) => {
         // cartCounter++;
         // await AsyncStorage.setItem("cart_counter", cartCounter.toString());
         //  setCartCounter(cartNo);
-      showToast('Added to cart');
+        showToast('Added to cart');
 
         getCartCounter();
         setScreenLoading(false);
@@ -114,15 +111,13 @@ const HomeV2 = ({ navigation }) => {
     } catch (err) {
       setScreenLoading(false);
     }
-
   }
-
 
   const fetchAllProducts = async () => {
     const response = await GeneralService.listAllProducts();
     // console.log(`all-products=${JSON.stringify(response.data.response)}`);
     const { response: res } = await syncProducts(response.data.response);
-    console.log(`sync-status=${res}`);
+    // console.log(`sync-status=${res}`);
   }
 
   useFocusEffect(

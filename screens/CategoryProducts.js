@@ -30,7 +30,7 @@ const CategoryProducts = ({ route }) => {
       let userId = await AsyncStorage.getItem("_id");
       const cartResponse = await GeneralService.cartCounterByUserId(userId);
       const { data: cartData } = cartResponse;
-      console.log(`home-data=${cartData}`);
+      // console.log(`home-data=${cartData}`);
       const { response: cartNo } = cartData;
       setCartCounter(cartNo);
 
