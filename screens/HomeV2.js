@@ -21,6 +21,7 @@ import { categories } from '../data/categories'
 import MyLoader from './MyLoader'
 import { addToCart, syncProducts, cartCounting } from '../utils/sqlite';
 import { ToastAndroid } from 'react-native';
+import { cartStyles } from '../styles/CartStyles'
 
 
 const HomeV2 = ({ navigation }) => {
@@ -450,59 +451,61 @@ const HomeV2 = ({ navigation }) => {
         </View>
 
         <View>
-          <FlatList
-            alignItems="center"
-            // justifyContent="center"
-            numColumns={numColumns}
-            contentContainerStyle={{ paddingHorizontal: 8 }}
-            data={category}
-            keyExtractor={item => item.id}
-            renderItem={({ item, index }) => {
-              return (
-                <View style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  justifyContent: 'center'
-                }}>
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => navigate.navigate("CategoryProducts", {
-                      catId: item.id, catName: item.name
-                    })}
-                  >
-                    <View style={{
-                      height: 90,
-                      width: 90,
-                      borderRadius: 61,
-                      overflow: 'hidden',
-                      shadowColor: '#F1F1F1',
-                      margin: 5,
-                      shadowOffset: {
-                        width: 12,
-                        height: 12,
-                      },
-                      shadowOpacity: 0.15,
-                      shadowRadius: 10,
-                      elevation: 0.1,
-                      borderColor: COLORS.tertiaryGray,
-                      borderWidth: 2,
-                      backgroundColor: 'orange',
-                      borderColor: "#c65201",
-                    }}>
-                      <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover'
-                        style={{
-                          flex: 1,
-                          height: '100%',
-                          width: '100%',
-                        }} />
-                    </View >
-                    <Text style={{ fontSize: 16, fontFamily: 'bold', marginBottom: 15, textAlign: 'center' }}>{item.name}</Text>
-                  </TouchableOpacity >
-                </View >
-              )
+
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 8 }}>
+  {category.map((item, index) => {
+    // Define an array of border colors
+    const borderColors = ['#FF6347', '#6A5ACD', '#32CD32', '#FFD700', '#20B2AA', '#9370DB', '#FF8C00', '#00CED1', '#8A2BE2', '#ADFF2F'];
+    // Use modulo operator to ensure the index is within the range of borderColors array
+    const borderColorIndex = index % borderColors.length;
+
+    return (
+      <TouchableOpacity
+        key={index}
+        onPress={() => navigate.navigate("CategoryProducts", {
+          catId: item.id, catName: item.name
+        })}
+        style={{
+          alignItems: 'center',
+          marginBottom: 15,
+        }}
+      >
+        <View style={{
+          height: 90,
+          width: 90,
+          borderRadius: 45,
+          overflow: 'hidden',
+          shadowColor: '#F1F1F1',
+          shadowOffset: {
+            width: 2,
+            height: 2,
+          },
+          shadowOpacity: 0.5,
+          shadowRadius: 5,
+          elevation: 5,
+          borderWidth: 2, // Add borderWidth
+          borderColor: borderColors[borderColorIndex], // Assign different borderColor
+          backgroundColor: 'orange',
+        }}>
+          <Image
+            source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+            resizeMode='cover'
+            style={{
+              flex: 1,
+              height: '100%',
+              width: '100%',
             }}
           />
         </View>
+        <Text style={{ fontSize: 16, fontFamily: 'bold', textAlign: 'center', marginTop: 5 }}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  })}
+</View>
+
+
+</View>
+
       </View >
     </>
 
@@ -546,35 +549,27 @@ const HomeV2 = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {
-          if (quantity > 2) {
-            setQuantity(quantity - 1)
-          }
-        }}
-          style={{
-            width: 24,
-            height: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.2)'
-          }}
-        >
-          <Text style={{ color: COLORS.white }}>-</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-        <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
-          style={{
-            width: 24,
-            height: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.2)'
-          }}
-        >
-          <Text style={{ color: COLORS.white }}>+</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity
+                      onPress={() => decreaseQuantity(item.prod_id)}
+                      style={cartStyles.roundedBtn}
+                    >
+                      <Text style={cartStyles.body2}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={{
+                      fontSize: 16,
+                      fontFamily: 'regular',
+                      color: COLORS.white,
+                      marginHorizontal: 12
+                    }}>{item.quantity}</Text>
+                    <TouchableOpacity
+                      // id={item.id}
+                      onPress={() => increaseQuantity(item.prod_id)}
+                      style={cartStyles.roundedBtn}
+                    >
+                      <Text style={cartStyles.body2}>+</Text>
+                    </TouchableOpacity>
+                  </View>
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
@@ -824,7 +819,41 @@ const HomeV2 = ({ navigation }) => {
   const renderVegetables = () => {
     const [quantity, setQuantity] = useState(1);
     const width = Dimensions.get('window').width;
-
+    const decreaseQuantity = (id) => {
+      const decreaseQty = async () => {
+        try {
+          let userId = await AsyncStorage.getItem("_id");
+          const response = await GeneralService.decreaseQty(userId, id);
+          console.log(response.data.response);
+  
+          fetchData();
+  
+        } catch (err) {
+          console.log(err?.response?.data);
+        }
+      }
+  
+      decreaseQty();
+    };
+  
+    const increaseQuantity = (id) => {
+      const increaseQty = async () => {
+        try {
+          let userId = await AsyncStorage.getItem("_id");
+          const response = await GeneralService.increaseQty(userId, id);
+          console.log(response.data.response);
+  
+          fetchData();
+  
+        } catch (err) {
+          console.log(err?.response?.data);
+        }
+      }
+  
+      increaseQty();
+      // setQuantity(quantity + 1);
+    };
+    
     const numColumns = 2;
     let result = <View style={{ flex: 1 }}>
       <View style={{
@@ -844,35 +873,15 @@ const HomeV2 = ({ navigation }) => {
           </View>
         </TouchableOpacity> */}
 
-        <TouchableOpacity onPress={() => {
-          if (quantity > 2) {
-            setQuantity(quantity - 1)
-          }
-        }}
-          style={{
-            width: 24,
-            height: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.2)'
-          }}
-        >
-          <Text style={{ color: COLORS.white }}>-</Text>
-        </TouchableOpacity>
+       
         <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-        <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
-          style={{
-            width: 24,
-            height: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.2)'
-          }}
-        >
-          <Text style={{ color: COLORS.white }}>+</Text>
-        </TouchableOpacity>
+         <TouchableOpacity
+                      // id={item.id}
+                      onPress={() => increaseQuantity(item.prod_id)}
+                      style={cartStyles.roundedBtn}
+                    >
+                      <Text style={cartStyles.body2}>+</Text>
+                    </TouchableOpacity>
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
@@ -884,71 +893,61 @@ const HomeV2 = ({ navigation }) => {
         // }}
         renderItem={({ item, index }) => {
           return (
-            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
+            <TouchableOpacity
+            key={item.id}
+            onPress={() => navigate.navigate("FoodDetails", {
               id: item.id, name: item.name,
               image: item.image, price: item.price, minQty: 1, type: "kg"
             })}
+            style={{
+              flexDirection: 'column',
+              paddingHorizontal: 2,
+              paddingVertical: 4,
+              height: "auto",
+              width: 200, // Set a fixed width for the TouchableOpacity
+              borderWidth: 1,
+              borderColor: "#f78c47",
+              borderRadius: 20,
+              marginRight: 6,
+              marginLeft: 0,
+              marginBottom: 16,
+              position: 'relative', // To enable absolute positioning inside TouchableOpacity
+            }}
+          >
+            <Image
+              source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+              resizeMode='cover'
               style={{
-                flexDirection: 'column',
-                paddingHorizontal: 2,
-                paddingVertical: 4,
-                height: "auto",
-                width: 160,
-                borderWidth: 1,
-                borderColor: "#f78c47",
-                borderRadius: 20,
-                marginRight: 6,
-                marginLeft: 0,
-                marginBottom: 16
-              }}
-            >
-              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
-                width: '100%',
-                height: 84,
-              }} />
-
-              {/* <TouchableOpacity onPress={() => addCart(item.id)}
-                style={{
-                  height: 30,
-                  width: 30,
-                  borderRadius: 15,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: COLORS.primary,
-                  position: 'absolute',
-                  right: 0
-                }}>
-                <AntDesign name="plus" size={12} color={COLORS.white} />
-              </TouchableOpacity> */}
+                width: '100%', // Ensure the image takes the full width of the container
+                height: 84, // Keep the height consistent
+              }}
+            />
+            
+            <View style={{
+              padding: 8,
+            }}>
               <View style={{
-                padding: 8,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}>
-                <View style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap-reverse',
-                  position: 'relative',
-                }}>
-                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
+                <Text style={{ fontSize: 18, textTransform: 'capitalize' }}>{item.name}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                  <TouchableOpacity onPress={() => decreaseQuantity(item.prod_id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                    <Text style={cartStyles.body2}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 8 }}>{item.quantity}</Text>
+                  <TouchableOpacity onPress={() => increaseQuantity(item.prod_id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                    <Text style={cartStyles.body2}>+</Text>
+                  </TouchableOpacity>
                 </View>
-                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-                <TouchableOpacity onPress={() => addCart(item.id)}
-                  style={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: COLORS.primary,
-                    position: 'absolute',
-                    right: 0,
-                    // end: 0
-                  }}>
-                  <AntDesign name="plus" size={12} color={COLORS.white} />
-                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+              <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
+            </View>
+          </TouchableOpacity>
+          
           )
         }}
       />
@@ -1032,71 +1031,89 @@ const HomeV2 = ({ navigation }) => {
         }}
         renderItem={({ item, index }) => {
           return (
-            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
-              id: item.id, name: item.name,
-              image: item.image, price: item.price, minQty: 1, type: "kg"
-            })}
+            <TouchableOpacity
+            key={index}
+            onPress={() =>
+              navigate.navigate("FoodDetails", {
+                id: item.id,
+                name: item.name,
+                image: item.image,
+                price: item.price,
+                minQty: 1,
+                type: "kg",
+              })
+            }
+            style={{
+              flexDirection: "column",
+              paddingHorizontal: 2,
+              paddingVertical: 4,
+              height: "auto",
+              width: 200, // Set a fixed width for consistent image size
+              borderWidth: 1,
+              borderColor: "#f78c47",
+              borderRadius: 20,
+              marginRight: 6,
+              marginLeft: 0,
+              marginBottom: 16,
+            }}
+          >
+            <Image
+              source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+              resizeMode="cover"
               style={{
-                flexDirection: 'column',
-                paddingHorizontal: 2,
-                paddingVertical: 4,
-                height: "auto",
-                width: 160,
-                borderWidth: 1,
-                borderColor: "#f78c47",
-                borderRadius: 20,
-                marginRight: 6,
-                marginLeft: 0,
-                marginBottom: 16
-              }}
-            >
-              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
-                width: '100%',
-                height: 84,
-              }} />
-
-              {/* <TouchableOpacity onPress={() => addCart(item.id)}
+                width: "100%", // Ensure the image takes the full width of the container
+                height: 84, // Keep the height consistent
+              }}
+            />
+          
+            <View style={{ padding: 8 }}>
+              <View
                 style={{
-                  height: 30,
-                  width: 30,
-                  borderRadius: 15,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: COLORS.primary,
-                  position: 'absolute',
-                  right: 0
-                }}>
-                <AntDesign name="plus" size={12} color={COLORS.white} />
-              </TouchableOpacity> */}
-              <View style={{
-                padding: 8,
-              }}>
-                <View style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap-reverse',
-                  position: 'relative',
-                }}>
-                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: 18, textTransform: "capitalize" }}>
+                  {item.name}
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <TouchableOpacity
+                    onPress={() => decreaseQuantity(item.prod_id)}
+                    style={[
+                      cartStyles.roundedBtn,
+                      { backgroundColor: "#f44c00" },
+                    ]}
+                  >
+                    <Text style={cartStyles.body2}>-</Text>
+                  </TouchableOpacity>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: "regular",
+                      marginHorizontal: 8,
+                    }}
+                  >
+                    {item.quantity}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => increaseQuantity(item.prod_id)}
+                    style={[
+                      cartStyles.roundedBtn,
+                      { backgroundColor: "#f44c00" },
+                    ]}
+                  >
+                    <Text style={cartStyles.body2}>+</Text>
+                  </TouchableOpacity>
                 </View>
-                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-                <TouchableOpacity onPress={() => addCart(item.id)}
-                  style={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: COLORS.primary,
-                    position: 'absolute',
-                    right: 0,
-                    // end: 0
-                  }}>
-                  <AntDesign name="plus" size={12} color={COLORS.white} />
-                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+              <Text style={{ fontFamily: "regular", marginVertical: 3 }}>
+                Rs. {item.price}
+              </Text>
+            </View>
+          </TouchableOpacity>          
           )
         }}
       />
