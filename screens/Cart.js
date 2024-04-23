@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator, Alert, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, icons } from '../constants'
@@ -12,7 +12,7 @@ import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import GeneralService from '../services/general.service'
 import { useFocusEffect } from '@react-navigation/native'
-import { listCart, addToCart, deleteToCart } from '../utils/sqlite';
+import { listCart, addToCart, increaseQty, deleteToCart, clearCart } from '../utils/sqlite';
 
 const Cart = ({ navigation }) => {
   const [quantity, setQuantity] = useState(1);
@@ -40,6 +40,10 @@ const Cart = ({ navigation }) => {
     }
   }
 
+  const showToast = (message) => {
+    ToastAndroid.show(message, ToastAndroid.SHORT);
+  };
+
   // const { response, status } = await listCart('user_id');
   // console.log(response, status);
 
@@ -51,6 +55,7 @@ const Cart = ({ navigation }) => {
       let userAddress = await AsyncStorage.getItem("user_address");
       setInputText(userAddress);
       const response = await listCart();
+      // await clearCart();
       console.log(response);
       // const { response: res } = response;
 
@@ -174,6 +179,7 @@ const Cart = ({ navigation }) => {
         const response = await addToCart(id);
         console.log(response);
         fetchData();
+        showToast("Quantity increased");
         // showToast('Added to cart');
       } catch (err) {
         console.log(err);
@@ -188,9 +194,10 @@ const Cart = ({ navigation }) => {
     console.log(id);
     const decreaseQty = async () => {
       try {
-        const response = await deleteToCart(id);
+        const response = await increaseQty(id);
         console.log(response);
         fetchData();
+        showToast("Quantity decreased");
         // showToast('Added to cart');
       } catch (err) {
         console.log(err);
@@ -224,6 +231,24 @@ const Cart = ({ navigation }) => {
     console.log(id);
     const delCart = async () => {
       try {
+        const response = await deleteToCart(id);
+        fetchData();
+        showToast("Item removed");
+
+      } catch (err) {
+        console.log("delete error");
+        console.log(err?.response?.data);
+      }
+    }
+
+    delCart();
+    // setQuantity(quantity + 1);
+  };
+
+  const deleteCartOld = (id) => {
+    console.log(id);
+    const delCart = async () => {
+      try {
         let userId = await AsyncStorage.getItem("_id");
         const response = await GeneralService.deleteCart(userId, id);
         // console.log(response.data.response);
@@ -234,7 +259,7 @@ const Cart = ({ navigation }) => {
         // console.log(cartCounter);
         // await AsyncStorage.setItem("cart_counter", cartCounter.toString());
         // setCartCounter(cartCounter);
-        getCartCounter();
+        // getCartCounter();
         fetchData();
 
       } catch (err) {
@@ -250,19 +275,20 @@ const Cart = ({ navigation }) => {
   const handleInputChange = (text) => {
     setInputText(text);
   };
-
+// TODO address moved to payment method page
   const placeOrder = () => {
     const orderPlace = async () => {
       if (inputText) {
         setInputError("");
+        // await clearCart();
         navigation.navigate("PaymentMethod", { total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText, userId: 1 });
       } else {
         setInputError("Please enter address");
       }
       console.log(inputText);
     }
-
-    if (totalPrice >= 1000) {
+// TODO
+    if (totalPrice >= 1) {
       orderPlace();
     } else {
       Alert.alert("Price Alert", "Minimum order is Rs 1000");
@@ -298,6 +324,7 @@ const Cart = ({ navigation }) => {
 
         <FlatList
           data={cart}
+          showsVerticalScrollIndicator={false}
           // data={cartData}
           keyExtractor={item => item.id}
           renderItem={({ item, index }) => {

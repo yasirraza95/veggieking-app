@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { categories } from '../data/categories'
 import MyLoader from './MyLoader'
-import { addToCart, syncProducts } from '../utils/sqlite';
+import { addToCart, syncProducts, cartCounting } from '../utils/sqlite';
 import { ToastAndroid } from 'react-native';
 
 
@@ -54,6 +54,18 @@ const HomeV2 = ({ navigation }) => {
 
   const getCartCounter = async () => {
     try {
+      const response = await cartCounting();
+      console.log(`counter=${response}`);
+      setCartCounter(response);
+
+    } catch (err) {
+      console.log(err);
+      setCartCounter(0);
+    }
+  }
+
+  const getCartCounterOld = async () => {
+    try {
       let userId = await AsyncStorage.getItem("_id");
       const cartResponse = await GeneralService.cartCounterByUserId(userId);
       const { data: cartData } = cartResponse;
@@ -67,10 +79,10 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCartNew = async (id) => {
+  const addCart = async (id) => {
     try {
       const response = await addToCart(id);
-      console.log(response);
+      // console.log(response);
       showToast('Added to cart');
 
     } catch (err) {
@@ -78,7 +90,7 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCart = async (id) => {
+  const addCartOld = async (id) => {
     try {
       // addToCart(userId, id, 1, 500);
       let userId = await AsyncStorage.getItem("_id");
@@ -119,10 +131,14 @@ const HomeV2 = ({ navigation }) => {
     // console.log(`sync-status=${res}`);
   }
 
+  useEffect(() => {
+    fetchAllProducts();
+
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
       // Code to run when the screen gains focus
-      fetchAllProducts();
       categories();
       // featureProducts();
       // cartCounter();
@@ -134,7 +150,7 @@ const HomeV2 = ({ navigation }) => {
         // fetchAllProducts();
 
         // Code to run when the screen loses focus
-        console.log('cart Screen blurred');
+        // console.log('cart Screen blurred');
       };
     }, [])
   );
@@ -181,7 +197,7 @@ const HomeV2 = ({ navigation }) => {
       }
 
       setFeatureLoading(false);
-      console.error('More products fetched');
+      // console.error('More products fetched');
     } catch (error) {
       setFeatureLoading(false);
       setMoreProd([]);
@@ -205,7 +221,7 @@ const HomeV2 = ({ navigation }) => {
       }
 
       setFeatureLoading(false);
-      console.error('More products fetched');
+      // console.error('More products fetched');
     } catch (error) {
       setFeatureLoading(false);
       setVegetables([]);
@@ -229,7 +245,7 @@ const HomeV2 = ({ navigation }) => {
       }
 
       setFeatureLoading(false);
-      console.error('More products fetched');
+      // console.error('More products fetched');
     } catch (error) {
       setFeatureLoading(false);
       setFruits([]);
@@ -253,7 +269,7 @@ const HomeV2 = ({ navigation }) => {
       }
 
       setProdCatLoading(false);
-      console.error('More products fetched');
+      // console.error('More products fetched');
     } catch (error) {
       setProdCatLoading(false);
       setProdCategory([]);

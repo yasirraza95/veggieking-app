@@ -6,6 +6,7 @@ import { SIZES, illustrations, images } from '../constants'
 import GeneralService from '../services/general.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { listCart } from '../utils/sqlite';
 
 const PaymentMethod = ({ route }) => {
   const [instruction, setInstruction] = useState("");
@@ -24,6 +25,39 @@ const PaymentMethod = ({ route }) => {
   };
 
   const placeOrder = () => {
+    const orderPlacement = async () => {
+      try {
+        const response = listCart();
+        console.log(response);
+
+        // const timeout = 8000;
+        // const response = await Promise.race([
+        //   GeneralService.placeOrder(userId, address, instruction),
+        //   new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        // ]);
+        // if (response) {
+        //   let orderNumber = response.data.response;
+        //   console.log(response.data.response);
+        //   await AsyncStorage.setItem("cart_counter", String(0));
+        //   navigation.replace("Thankyou", { orderNo: orderNumber });
+        // } else {
+        //   Alert.alert("Error", "No response from the server");
+        //   throw new Error('No response from the server');
+        // }
+        // console.log(response);
+
+
+      } catch (err) {
+        console.log(err);
+        Alert.alert("Error", "Error in order");
+        console.log("order-response");
+      }
+    }
+    orderPlacement();
+  }
+
+
+  const placeOrderOld = () => {
     const orderPlacement = async () => {
       try {
         const timeout = 8000;

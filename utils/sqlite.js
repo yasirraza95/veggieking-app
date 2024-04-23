@@ -1,5 +1,5 @@
 import { openDatabase } from 'expo-sqlite';
-const db = openDatabase('veggieking.db');
+const db = openDatabase('app.db');
 
 if (!db) {
     console.error('Failed to open database');
@@ -42,7 +42,7 @@ export const syncProducts = async (serverProducts) => {
         await db.transaction(async (tx) => {
             for (const product of serverProducts) {
                 const { id, catId, name, price, image } = product;
-                console.log(product);
+                // console.log(product);
                 tx.executeSql(
                     'SELECT * FROM items WHERE id = ?',
                     [id],
@@ -117,7 +117,6 @@ export const decreaseQty = (prodId) => {
 };
 
 export const addToCart = (prodId) => {
-    // console.log(`id=${prodId}`);
     db.transaction(
         tx => {
             tx.executeSql(
@@ -125,7 +124,6 @@ export const addToCart = (prodId) => {
                 [prodId],
                 (_, { rows }) => {
                     if (rows.length > 0) {
-                        // Product already exists in the cart, increase quantity
                         const quantity = rows.item(0).quantity;
                         const newQty = quantity + 1;
                         tx.executeSql(
@@ -135,7 +133,6 @@ export const addToCart = (prodId) => {
                             (_, error) => console.error('Error updating quantity:', error)
                         );
                     } else {
-                        // Product not in cart, insert new entry
                         tx.executeSql(
                             'INSERT INTO cart (prodId, quantity) VALUES (?, ?)',
                             [prodId, 1],
@@ -152,7 +149,43 @@ export const addToCart = (prodId) => {
 };
 
 export const deleteToCart = (prodId) => {
-    // console.log(`id=${prodId}`);
+    db.transaction(
+        tx => {
+            tx.executeSql(
+                'SELECT * FROM cart WHERE prodId = ?',
+                [prodId],
+                (_, { rows }) => {
+                    tx.executeSql(
+                        'DELETE FROM cart WHERE prodId = ?',
+                        [prodId],
+                        () => console.log('Cart deleted'),
+                        (_, error) => console.error('Error deleting cart:', error)
+                    );
+                },
+                (_, error) => console.error('Error checking cart:', error)
+            );
+        },
+        error => console.error('Transaction error:', error)
+    );
+};
+
+export const clearCart = () => {
+    db.transaction(
+        tx => {
+            tx.executeSql(
+                'DELETE FROM cart',
+                [],
+                (_, { rows }) => {
+                    console.log("cart cleared");
+                },
+                (_, error) => console.error('Error clearing cart:', error)
+            );
+        },
+        error => console.error('Transaction error:', error)
+    );
+};
+
+export const increaseQty = (prodId) => {
     db.transaction(
         tx => {
             tx.executeSql(
@@ -160,7 +193,6 @@ export const deleteToCart = (prodId) => {
                 [prodId],
                 (_, { rows }) => {
                     if (rows.length > 0) {
-                        // Product already exists in the cart, increase quantity
                         const quantity = rows.item(0).quantity;
                         if (quantity >= 2) {
                             const newQty = quantity - 1;
@@ -205,17 +237,17 @@ export const listCart = async () => {
                                     productPrice: row.price,
                                 });
                             }
-                            resolve(cartItems); // Resolve with cartItems array
+                            resolve(cartItems);
                         },
                         (_, error) => {
                             console.error('Error executing SQL:', error);
-                            reject(error); // Reject promise if there's an error
+                            reject(error);
                         }
                     );
                 },
                 (error) => {
                     console.error('Transaction error:', error);
-                    reject(error); // Reject promise if there's a transaction error
+                    reject(error);
                 }
             );
         });
@@ -225,5 +257,37 @@ export const listCart = async () => {
     }
 };
 
+export const cartCounting = async () => {
+    try {
+        return new Promise((resolve, reject) => {
+            const cartItems = [];
+            db.transaction(
+                (tx) => {
+                    tx.executeSql(
+                        'SELECT COUNT(prodId) AS cart_count FROM cart',
+                        [],
+                        (_, result) => {
+                            console.log(result);
+                            const { rows } = result;
+                            const cartCount = rows.item(0).cart_count;
+                            resolve(cartCount);
+                        },
+                        (_, error) => {
+                            console.error('Error executing SQL:', error);
+                            reject(error);
+                        }
+                    );
+                },
+                (error) => {
+                    console.error('Transaction error:', error);
+                    reject(error);
+                }
+            );
+        });
+    } catch (error) {
+        console.error('Error in cartCounter:', error);
+        throw error;
+    }
+};
 
-// Other functions...
+
