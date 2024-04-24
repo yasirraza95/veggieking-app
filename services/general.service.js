@@ -167,6 +167,7 @@ const addCart = (userId, prodId) => {
 };
 
 const increaseQty = (userId, prodId) => {
+    console.log(userId, prodId);
     const headers = {
         "Content-Type": "application/json",
     };
@@ -421,13 +422,13 @@ const updateUserById = (name, address, phone, email, userId) => {
 };
 
 const updatePassword = (token, email, password) => {
-  console.log(token, email, password);
+    console.log(token, email, password);
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.put(
         `${API_URL}/update-password`, {
-        token:token, email:email, password:password
+        token: token, email: email, password: password
     },
         {
             headers: headers,
@@ -604,7 +605,7 @@ const getCharges = () => {
 const GeneralService = {
     login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
     deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listAllCategories, listFeaturedProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
-    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, updateUserById,updatePassword,
+    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, updateUserById, updatePassword,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart, getCharges
 };
 export default GeneralService;

@@ -53,7 +53,7 @@ const HomeV2 = ({ navigation }) => {
     ToastAndroid.show(message, ToastAndroid.SHORT);
   };
 
-  const getCartCounter = async () => {
+  const getCartCounterNew = async () => {
     try {
       const response = await cartCounting();
       console.log(`counter=${response}`);
@@ -65,7 +65,62 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (type, prodId) => {
+    const decreaseQnty = async () => {
+      try {
+        // setScreenLoading(true);
+
+        if (type == "fruits") {
+          const updatedProducts = fruits.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setFruits(updatedProducts);
+        } else if (type == "vegetables") {
+          const updatedProducts = vegetables.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setVegetables(updatedProducts);
+          console.log(updatedProducts);
+        }
+
+        const timeout = 2000;
+        let userId = await AsyncStorage.getItem("_id");
+        const response = await Promise.race([
+          GeneralService.decreaseQty(userId, prodId),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+
+        if (response) {
+
+          console.log(response);
+          showToast('Quantity decreased');
+
+          getCartCounter();
+          // setScreenLoading(false);
+        } else {
+          throw new Error('No response from the server');
+        }
+      } catch (err) {
+        console.log(err?.response?.data);
+      }
+    }
+
+    decreaseQnty();
+  };
+
+  const decreaseQuantityNew = (id) => {
     const decreaseQnty = async () => {
       try {
         console.log(id);
@@ -84,6 +139,34 @@ const HomeV2 = ({ navigation }) => {
   };
 
   const increaseQuantity = (id) => {
+    console.log(id);
+    const increaseQty = async () => {
+      try {
+        let userId = await AsyncStorage.getItem("_id");
+        // let userId = 1;
+        const response = await GeneralService.increaseQty(userId, id);
+        const { data: cartData } = response;
+        // console.log(`home-data=${cartData}`);
+        const { response: cartNo } = cartData;
+        setCartCounter(cartNo);
+
+
+        // const response = await addToCart(id);
+        // console.log(response.data.response);
+        // getCartCounter();
+
+        // fetchData();
+
+      } catch (err) {
+        console.log(err?.response?.data);
+      }
+    }
+
+    increaseQty();
+    // setQuantity(quantity + 1);
+  };
+
+  const increaseQuantityNew = (id) => {
     const increaseQty = async () => {
       try {
         // let userId = await AsyncStorage.getItem("_id");
@@ -102,7 +185,7 @@ const HomeV2 = ({ navigation }) => {
     // setQuantity(quantity + 1);
   };
 
-  const getCartCounterOld = async () => {
+  const getCartCounter = async () => {
     try {
       let userId = await AsyncStorage.getItem("_id");
       const cartResponse = await GeneralService.cartCounterByUserId(userId);
@@ -117,7 +200,7 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCart = async (id) => {
+  const addCartNew = async (id) => {
     try {
       console.log("adding");
       const response = await addToCart(id);
@@ -129,37 +212,55 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCartOld = async (id) => {
+  const addCart = async (type, prodId) => {
     try {
-      // addToCart(userId, id, 1, 500);
+      // setScreenLoading(true);
+
+      if (type == "fruits") {
+        const updatedProducts = fruits.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setFruits(updatedProducts);
+      } else if (type == "vegetables") {
+        const updatedProducts = vegetables.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setVegetables(updatedProducts);
+        console.log(updatedProducts);
+      }
+
+      const timeout = 2000;
       let userId = await AsyncStorage.getItem("_id");
-      setScreenLoading(true);
-
-      const timeout = 8000;
-
       const response = await Promise.race([
-        GeneralService.addCart(userId, id),
+        GeneralService.addCart(userId, prodId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
       if (response) {
 
-        // let cartCounter = await AsyncStorage.getItem("cart_counter");
-        // cartCounter = parseInt(cartCounter, 10);
-        // cartCounter++;
-        // await AsyncStorage.setItem("cart_counter", cartCounter.toString());
-        //  setCartCounter(cartNo);
+        console.log(response);
         showToast('Added to cart');
 
         getCartCounter();
-        setScreenLoading(false);
-        // setCategory(response.data.response);
+        // setScreenLoading(false);
       } else {
         throw new Error('No response from the server');
       }
 
     } catch (err) {
-      setScreenLoading(false);
+      // setScreenLoading(false);
     }
   }
 
@@ -171,7 +272,9 @@ const HomeV2 = ({ navigation }) => {
   }
 
   useEffect(() => {
-    fetchAllProducts();
+    // fetchAllProducts();
+    fetchVegetables();
+    fetchFruits();
 
   }, []);
 
@@ -182,8 +285,8 @@ const HomeV2 = ({ navigation }) => {
       // featureProducts();
       // cartCounter();
       fetchAddress();
-      fetchVegetables();
-      fetchFruits();
+      // fetchVegetables();
+      // fetchFruits();
       // Cleanup function (optional)
       return () => {
         // fetchAllProducts();
@@ -243,14 +346,16 @@ const HomeV2 = ({ navigation }) => {
     }
   };
 
-  
+
   const fetchVegetables = async () => {
     try {
       setFeatureLoading(true);
 
+      let userId = await AsyncStorage.getItem("_id");
+      console.log(`user-id=${userId}`);
       const timeout = 8000;
       const response = await Promise.race([
-        GeneralService.listProductByCat(2),
+        GeneralService.listProductByCatCart(2, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
@@ -628,7 +733,7 @@ const HomeV2 = ({ navigation }) => {
           }}>{item.quantity}</Text>
           <TouchableOpacity
             // id={item.id}
-            onPress={() => increaseQuantity(item.prod_id)}
+            onPress={() => addCart(item.id)}
             style={cartStyles.roundedBtn}
           >
             <Text style={cartStyles.body2}>+</Text>
@@ -946,14 +1051,18 @@ const HomeV2 = ({ navigation }) => {
                 }}>
                   <Text style={{ fontSize: 18, textTransform: 'capitalize' }}>{item.name}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    {item.quantity_added >= 1 && (
+                      <>
+                        <TouchableOpacity
+                          onPress={() => decreaseQuantity("vegetables", item.id)}
+                          style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                          <Text style={cartStyles.body2}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 8 }}>{item.quantity_added}</Text>
+                      </>
+                    )}
                     <TouchableOpacity
-                      onPress={() => decreaseQuantity(item.id)}
-                      style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-                      <Text style={cartStyles.body2}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 8 }}>{item.quantity}</Text>
-                    <TouchableOpacity
-                      onPress={() => increaseQuantity(item.id)}
+                      onPress={() => addCart("vegetables", item.id)}
                       style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
                       <Text style={cartStyles.body2}>+</Text>
                     </TouchableOpacity>
@@ -1094,26 +1203,17 @@ const HomeV2 = ({ navigation }) => {
                     {item.name}
                   </Text>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    {item.quantity_added >= 1 && (
+                      <>
+                        <TouchableOpacity onPress={() => decreaseQuantity("fruits", item.id)}
+                          style={[cartStyles.roundedBtn, { backgroundColor: "#f44c00" }]}
+                        >
+                          <Text style={cartStyles.body2}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 16, fontFamily: "regular", marginHorizontal: 8 }}>{item.quantity_added}</Text>
+                      </>)}
                     <TouchableOpacity
-                      onPress={() => decreaseQuantity(item.id)}
-                      style={[
-                        cartStyles.roundedBtn,
-                        { backgroundColor: "#f44c00" },
-                      ]}
-                    >
-                      <Text style={cartStyles.body2}>-</Text>
-                    </TouchableOpacity>
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontFamily: "regular",
-                        marginHorizontal: 8,
-                      }}
-                    >
-                      {item.quantity}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => increaseQuantity(item.id)}
+                      onPress={() => addCart("fruits", item.id)}
                       style={[
                         cartStyles.roundedBtn,
                         { backgroundColor: "#f44c00" },

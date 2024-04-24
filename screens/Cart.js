@@ -81,6 +81,7 @@ const Cart = ({ navigation }) => {
   const fetchData = async () => {
     try {
       let userId = await AsyncStorage.getItem("_id");
+      console.log(`user-id=${userId}`);
       let userAddress = await AsyncStorage.getItem("user_address");
       setInputText(userAddress);
       const response = await GeneralService.listCartByUserId(userId);
@@ -147,7 +148,6 @@ const Cart = ({ navigation }) => {
     React.useCallback(() => {
       fetchData();
       fetchDeliveryCharges();
-
     }, [])
   );
 
@@ -287,14 +287,14 @@ const Cart = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           // data={cartData}
           keyExtractor={item => item.id}
-          ListHeaderComponent={() => (
-            <View style={styles.bannerContainer}>
-              <Text style={styles.bannerText}>Get Rs.50 Discount</Text>
-              <Text style={styles.bannerDescription}>
-                Rs.50 Discount on orders above Rs.2500
-              </Text>
-            </View>
-          )}
+          // ListHeaderComponent={() => (
+          //   <View style={styles.bannerContainer}>
+          //     <Text style={styles.bannerText}>Get Rs.50 Discount</Text>
+          //     <Text style={styles.bannerDescription}>
+          //       Rs.50 Discount on orders above Rs.2500
+          //     </Text>
+          //   </View>
+          // )}
           renderItem={({ item, index }) => {
 
             let result = <View key={index} style={cartStyles.cartItemContainer}>
