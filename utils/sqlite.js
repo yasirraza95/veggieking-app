@@ -1,18 +1,35 @@
 import { openDatabase } from 'expo-sqlite';
-const db = openDatabase('app.db');
+// import { AsyncStorage } from '@react-native-async-storage/async-storage';
+
+const db = openDatabase('app1.db');
 
 if (!db) {
     console.error('Failed to open database');
 }
 
-db.transaction(tx => {
-    tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS cart (id INTEGER PRIMARY KEY AUTOINCREMENT, prodId INTEGER, quantity INTEGER)',
-        [],
-        () => console.log('Cart table created'),
-        (_, error) => console.error('Error creating cart table:', error)
-    );
-});
+const TABLES_CREATED_FLAG_KEY = 'TABLES_CREATED_FLAG';
+
+// AsyncStorage.getItem(TABLES_CREATED_FLAG_KEY)
+//   .then((value) => {
+//     if (!value) {
+//       // If the flag doesn't exist, create the tables and set the flag
+//       createTables();
+//       AsyncStorage.setItem(TABLES_CREATED_FLAG_KEY, 'true');
+//     }
+//   })
+//   .catch((error) => console.error('Error checking tables creation status:', error));
+
+
+const createTables = () => {
+    db.transaction(tx => {
+        tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS cart (id INTEGER PRIMARY KEY AUTOINCREMENT, prodId INTEGER, quantity INTEGER); CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, catId INTEGER, name STRING, image STRING, price INTEGER)',
+            [],
+            () => console.log('Cart table created'),
+            (_, error) => console.error('Error creating cart table:', error)
+        );
+    });
+}
 
 // db.transaction(tx => {
 //     tx.executeSql(
@@ -27,48 +44,15 @@ db.transaction(tx => {
 //     );
 // });
 
-db.transaction(tx => {
-    tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, catId INTEGER, name STRING, image STRING, price INTEGER)',
-        [],
-        () => console.log('Products table created'),
-        (_, error) => console.error('Error creating products table:', error)
-    );
-});
-
 export const syncProducts = async (serverProducts) => {
     try {
         // console.log("syncing");
         await db.transaction(async (tx) => {
             for (const product of serverProducts) {
                 const { id, catId, name, price, image } = product;
-                // console.log(product);
-                tx.executeSql(
-                    'SELECT * FROM items WHERE id = ?',
-                    [id],
-                    (_, { rows }) => {
-                        if (rows.length > 0) {
-                            // console.log("asdsdd");
-                            tx.executeSql(
-                                'UPDATE items SET catId = ?, name = ?, image = ?, price = ? WHERE id = ?',
-                                [catId, name, image, price, id],
-                                (_, { rows }) => {
-                                    // console.log("Products updated");
-                                },
-                                (_, error) => console.error('Error adding item to products:', error)
-                            );
-                        } else {
-                            tx.executeSql(
-                                'INSERT INTO items (id, catId, name, price, image) VALUES (?, ?, ?, ?, ?)',
-                                [id, catId, name, price, image],
-                                (_, { rows }) => {
-                                    console.log("Products added");
-                                },
-                                (_, error) => console.error('Error adding item to products:', error)
-                            );
-                        }
-                    },
-                    (_, error) => console.error('Error adding item to products:', error)
+                await tx.executeSql(
+                    'INSERT OR REPLACE INTO items (id, catId, name, price, image) VALUES (?, ?, ?, ?, ?)',
+                    [id, catId, name, price, image]
                 );
             }
         });
@@ -83,6 +67,7 @@ export const syncProducts = async (serverProducts) => {
 };
 
 export const decreaseQty = (prodId) => {
+    // console.log(prodId);
     db.transaction(
         tx => {
             tx.executeSql(
@@ -92,21 +77,15 @@ export const decreaseQty = (prodId) => {
                     if (rows.length > 0) {
                         // Product already exists in the cart, increase quantity
                         const quantity = rows.item(0).quantity;
-                        const newQty = quantity + 1;
-                        tx.executeSql(
-                            'UPDATE cart SET quantity = ? WHERE prodId = ?',
-                            [newQty, prodId],
-                            () => console.log('Quantity increased'),
-                            (_, error) => console.error('Error updating quantity:', error)
-                        );
-                    } else {
-                        // Product not in cart, insert new entry
-                        tx.executeSql(
-                            'INSERT INTO cart (prodId, quantity) VALUES (?, ?, ?)',
-                            [prodId, 1],
-                            () => console.log('Item added to cart'),
-                            (_, error) => console.error('Error adding item to cart:', error)
-                        );
+                        if (quantity >= 2) {
+                            const newQty = quantity - 1;
+                            tx.executeSql(
+                                'UPDATE cart SET quantity = ? WHERE prodId = ?',
+                                [newQty, prodId],
+                                () => console.log('Quantity increased'),
+                                (_, error) => console.error('Error updating quantity:', error)
+                            );
+                        }
                     }
                 },
                 (_, error) => console.error('Error checking cart:', error)
@@ -210,6 +189,50 @@ export const increaseQty = (prodId) => {
         },
         error => console.error('Transaction error:', error)
     );
+};
+
+export const listProductByCat = async (id) => {
+    // console.log("products ...");
+
+    try {
+        return new Promise((resolve, reject) => {
+            const items = [];
+            db.transaction(
+                (tx) => {
+                    tx.executeSql(
+                        'SELECT * from items where catId = ?',
+                        [id],
+                        (_, result) => {
+                            const { rows } = result;
+                            for (let i = 0; i < rows.length; i++) {
+                                const row = rows.item(i);
+
+                                items.push({
+                                    id: row.id,
+                                    catId: row.id,
+                                    name: row.name,
+                                    image: row.image,
+                                    price: row.price,
+                                });
+                            }
+                            resolve(items);
+                        },
+                        (_, error) => {
+                            console.error('Error executing SQL:', error);
+                            reject(error);
+                        }
+                    );
+                },
+                (error) => {
+                    console.error('Transaction error:', error);
+                    reject(error);
+                }
+            );
+        });
+    } catch (error) {
+        console.error('Error in listCart:', error);
+        throw error;
+    }
 };
 
 export const listCart = async () => {
