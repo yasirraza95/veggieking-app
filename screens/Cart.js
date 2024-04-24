@@ -12,7 +12,8 @@ import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import GeneralService from '../services/general.service'
 import { useFocusEffect } from '@react-navigation/native'
-import { listCart, addToCart, increaseQty, deleteToCart, clearCart } from '../utils/sqlite';
+import { listCart } from '../utils/sqlite';
+import { FontAwesome } from '@expo/vector-icons';
 
 const Cart = ({ navigation }) => {
   const [quantity, setQuantity] = useState(1);
@@ -30,7 +31,7 @@ const Cart = ({ navigation }) => {
       let userId = await AsyncStorage.getItem("_id");
       const cartResponse = await GeneralService.cartCounterByUserId(userId);
       const { data: cartData } = cartResponse;
-      // console.log(`home-data=${cartData}`);
+      console.log(`home-data=${cartData}`);
       const { response: cartNo } = cartData;
       setCartCounter(cartNo);
 
@@ -48,41 +49,36 @@ const Cart = ({ navigation }) => {
   // console.log(response, status);
 
 
-  // TODO
-  const fetchData = async () => {
+  const fetchDataNew = async () => {
     try {
-      // let userId = await AsyncStorage.getItem("_id");
+      let userId = await AsyncStorage.getItem("_id");
       let userAddress = await AsyncStorage.getItem("user_address");
       setInputText(userAddress);
-      const response = await listCart();
-      // await clearCart();
-      console.log(response);
-      // const { response: res } = response;
+      const response = await listCart(userId);
+      const { response: res } = response;
 
-      // console.log(`success-cart=${response}`);
+      console.log(`success-cart=${res}`);
       // const { data } = response;
       // const { response: res } = data;
-      const totalPrice = response.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.quantity * currentValue.productPrice);
+      const totalPrice = res.reduce((accumulator, currentValue) => {
+        return accumulator + (currentValue.quantity * currentValue.product_price);
       }, 0);
 
-      console.log(`total=${totalPrice}`);
-
-      const numberOfItems = response.reduce((count, obj) => {
+      const numberOfItems = res.reduce((count, obj) => {
         return count + 1;
       }, 0);
       setItemNo(numberOfItems);
       setTotalPrice(totalPrice);
-      setCart(response);
+      setCart(res);
 
     } catch (err) {
-      // console.log("Error-cart-listing");
+      // console.log("Error");
       console.log(err);
       setCart([]);
     }
   }
 
-  const fetchDataOld = async () => {
+  const fetchData = async () => {
     try {
       let userId = await AsyncStorage.getItem("_id");
       let userAddress = await AsyncStorage.getItem("user_address");
@@ -155,7 +151,7 @@ const Cart = ({ navigation }) => {
     }, [])
   );
 
-  const decreaseQuantityOld = (id) => {
+  const decreaseQuantity = (id) => {
     const decreaseQty = async () => {
       try {
         let userId = await AsyncStorage.getItem("_id");
@@ -173,42 +169,6 @@ const Cart = ({ navigation }) => {
   };
 
   const increaseQuantity = (id) => {
-    console.log(id);
-    const increaseQty = async () => {
-      try {
-        const response = await addToCart(id);
-        console.log(response);
-        fetchData();
-        showToast("Quantity increased");
-        // showToast('Added to cart');
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    increaseQty();
-    // setQuantity(quantity + 1);
-  };
-
-  const decreaseQuantity = (id) => {
-    console.log(id);
-    const decreaseQty = async () => {
-      try {
-        const response = await increaseQty(id);
-        console.log(response);
-        fetchData();
-        showToast("Quantity decreased");
-        // showToast('Added to cart');
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    decreaseQty();
-    // setQuantity(quantity + 1);
-  };
-
-  const increaseQuantityOld = (id) => {
     const increaseQty = async () => {
       try {
         let userId = await AsyncStorage.getItem("_id");
@@ -327,13 +287,21 @@ const Cart = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           // data={cartData}
           keyExtractor={item => item.id}
+          ListHeaderComponent={() => (
+            <View style={styles.bannerContainer}>
+              <Text style={styles.bannerText}>Get Rs.50 Discount</Text>
+              <Text style={styles.bannerDescription}>
+                Rs.50 Discount on orders above Rs.2500
+              </Text>
+            </View>
+          )}
           renderItem={({ item, index }) => {
 
             let result = <View key={index} style={cartStyles.cartItemContainer}>
               <View style={{ marginRight: 2, width: 120 }}>
                 <Image
                   // source={images.food}
-                  source={{ uri: `https://api.veggieking.pk/public/upload/${item.productImage}` }}
+                  source={{ uri: `https://api.veggieking.pk/public/upload/${item.product_image}` }}
                   resizeMode='cover'
                   style={{
                     height: 120,
@@ -358,10 +326,10 @@ const Cart = ({ navigation }) => {
                       fontFamily: 'regular',
                       textTransform: 'capitalize',
                       marginRight: 20
-                    }}>{item.productName}</Text>
+                    }}>{item.product_name}</Text>
                   <TouchableOpacity
                     // onPress={() => console.log("Close cart items")}
-                    onPress={() => deleteCart(item.productId)}
+                    onPress={() => deleteCart(item.prod_id)}
                     style={{
                       height: 26,
                       width: 26,
@@ -372,15 +340,12 @@ const Cart = ({ navigation }) => {
                       marginTop: 2
                     }}
                   >
-                    <Image
-                      source={icons.close}
-                      resizeMode="contain"
-                      style={{
-                        width: 12,
-                        width: 12,
-                        tintColor: COLORS.white
-                      }}
-                    />
+               <TouchableOpacity
+  onPress={() => deleteCart(item.prod_id)}
+  style={styles.closeButton}
+>
+  <FontAwesome name="trash" size={16} color={COLORS.white} />
+</TouchableOpacity>
                   </TouchableOpacity>
                 </View>
 
@@ -389,16 +354,16 @@ const Cart = ({ navigation }) => {
                   fontFamily: 'regular',
                   color: COLORS.white,
                   marginVertical: 6
-                }}>Rs. {item.productPrice}</Text>
+                }}>Rs. {item.product_price}</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{
                     fontSize: 20,
                     color: COLORS.white,
                     fontFamily: 'bold'
-                  }}>Rs. {item.productPrice * item.quantity}</Text>
+                  }}>Rs. {item.product_price * item.quantity}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity
-                      onPress={() => decreaseQuantity(item.productId)}
+                      onPress={() => decreaseQuantity(item.prod_id)}
                       style={cartStyles.roundedBtn}
                     >
                       <Text style={cartStyles.body2}>-</Text>
@@ -411,7 +376,7 @@ const Cart = ({ navigation }) => {
                     }}>{item.quantity}</Text>
                     <TouchableOpacity
                       // id={item.id}
-                      onPress={() => increaseQuantity(item.productId)}
+                      onPress={() => increaseQuantity(item.prod_id)}
                       style={cartStyles.roundedBtn}
                     >
                       <Text style={cartStyles.body2}>+</Text>
@@ -484,6 +449,28 @@ const styles = StyleSheet.create({
   error: {
     color: "red"
   },
+  bannerContainer: {
+    backgroundColor: '#f44c00', 
+    padding: 16, 
+    marginTop: 10,
+    marginBottom: 16, 
+    borderRadius: 12, 
+    // flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+  },
+  bannerText: {
+    fontSize: 20, 
+    fontFamily: 'bold', 
+    color: '#FFFFFF', 
+  },
+  bannerDescription: {
+    fontSize: 16, 
+    fontFamily: 'regular', 
+    color: '#FFFFFF', 
+  },
+  
+  
 });
 
 export default Cart
