@@ -64,32 +64,74 @@ const OngoingRoute = ({ navigation, index }) => {
     fetchData();
   }
 
-  const confirmDeliver = (orderId) => {
-    console.log(orderId);
-    const delivery = async () => {
-      try {
-        const response = await GeneralService.updateOrderStatus(orderId, 'delivered');
-        const { data } = response;
-        const { response: res } = data;
-        Alert.alert(
-          'Delivery Status',
-          res,
-          [
-            {
-              text: 'OK',
-              onPress: () => refreshPage(),
-            },
-          ],
-          { cancelable: false }
-        );
-        console.log(res);
-      } catch (err) {
-        console.log(err?.response);
-      }
-    }
+  const confirmDeliver = (orderId, orderNo) => {
+    Alert.alert(
+      'Confirm Delivery',
+      `Are you sure you want to mark this order # ${orderNo} as delivered?`,
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => handleDeliveryConfirmation(orderId),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
-    delivery();
-  }
+
+  const handleDeliveryConfirmation = async (orderId) => {
+    console.log(orderId);
+    try {
+      const response = await GeneralService.updateOrderStatus(orderId, 'delivered');
+      const { data } = response;
+      const { response: res } = data;
+      Alert.alert(
+        'Delivery Status',
+        res,
+        [
+          {
+            text: 'OK',
+            onPress: () => refreshPage(),
+          },
+        ],
+        { cancelable: false }
+      );
+      console.log(res);
+    } catch (err) {
+      console.log(err?.response);
+    }
+  };
+
+  // const confirmDeliver = (orderId) => {
+  //   console.log(orderId);
+  //   const delivery = async () => {
+  //     try {
+  //       const response = await GeneralService.updateOrderStatus(orderId, 'delivered');
+  //       const { data } = response;
+  //       const { response: res } = data;
+  //       Alert.alert(
+  //         'Delivery Status',
+  //         res,
+  //         [
+  //           {
+  //             text: 'OK',
+  //             onPress: () => refreshPage(),
+  //           },
+  //         ],
+  //         { cancelable: false }
+  //       );
+  //       console.log(res);
+  //     } catch (err) {
+  //       console.log(err?.response);
+  //     }
+  //   }
+
+  //   delivery();
+  // }
 
   const getOrderOngoing = async (id) => {
     try {
@@ -176,7 +218,7 @@ const OngoingRoute = ({ navigation, index }) => {
 
             <TouchableOpacity
               // onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
-              onPress={() => confirmDeliver(item.id)}
+              onPress={() => confirmDeliver(item.id, item.order_no)}
               style={{
                 height: 38,
                 width: 140,

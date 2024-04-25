@@ -214,7 +214,6 @@ const HomeV2 = ({ navigation }) => {
 
   const addCart = async (type, prodId) => {
     try {
-      // setScreenLoading(true);
 
       if (type == "fruits") {
         const updatedProducts = fruits.map(product => {
@@ -249,18 +248,16 @@ const HomeV2 = ({ navigation }) => {
       ]);
 
       if (response) {
-
         console.log(response);
         showToast('Added to cart');
 
         getCartCounter();
-        // setScreenLoading(false);
       } else {
         throw new Error('No response from the server');
       }
 
     } catch (err) {
-      // setScreenLoading(false);
+      showToast("Error adding to cart");
     }
   }
 
@@ -273,8 +270,6 @@ const HomeV2 = ({ navigation }) => {
 
   useEffect(() => {
     // fetchAllProducts();
-    fetchVegetables();
-    fetchFruits();
 
   }, []);
 
@@ -283,6 +278,8 @@ const HomeV2 = ({ navigation }) => {
       // Code to run when the screen gains focus
       categories();
       // featureProducts();
+      fetchVegetables();
+      fetchFruits();
       // cartCounter();
       fetchAddress();
       // fetchVegetables();
@@ -358,12 +355,12 @@ const HomeV2 = ({ navigation }) => {
         GeneralService.listProductByCatCart(2, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
-
-      setVegetables(response.data.response);
-      // if (response) {
-      // } else {
-      //   throw new Error('No response from the server');
-      // }
+      // console.log(response.data.response);
+      if (response) {
+        setVegetables(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
 
       setFeatureLoading(false);
       // console.error('More products fetched');
@@ -403,8 +400,9 @@ const HomeV2 = ({ navigation }) => {
       setFeatureLoading(true);
 
       const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
       const response = await Promise.race([
-        GeneralService.listProductByCat(1),
+        GeneralService.listProductByCatCart(1, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 

@@ -187,7 +187,7 @@ const Cart = ({ navigation }) => {
   };
 
 
-  const deleteCart = (id) => {
+  const deleteCartNew = (id) => {
     console.log(id);
     const delCart = async () => {
       try {
@@ -205,10 +205,16 @@ const Cart = ({ navigation }) => {
     // setQuantity(quantity + 1);
   };
 
-  const deleteCartOld = (id) => {
+  const deleteCart = (id) => {
     console.log(id);
     const delCart = async () => {
       try {
+        
+        const updatedCart = cart.filter(cart => {
+          return cart.id !== id;
+        });
+        setCart(updatedCart);
+        
         let userId = await AsyncStorage.getItem("_id");
         const response = await GeneralService.deleteCart(userId, id);
         // console.log(response.data.response);

@@ -27,25 +27,24 @@ const PaymentMethod = ({ route }) => {
   const placeOrder = () => {
     const orderPlacement = async () => {
       try {
-        const response = listCart();
-        console.log(response);
-
-        // const timeout = 8000;
-        // const response = await Promise.race([
-        //   GeneralService.placeOrder(userId, address, instruction),
-        //   new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-        // ]);
-        // if (response) {
-        //   let orderNumber = response.data.response;
-        //   console.log(response.data.response);
-        //   await AsyncStorage.setItem("cart_counter", String(0));
-        //   navigation.replace("Thankyou", { orderNo: orderNumber });
-        // } else {
-        //   Alert.alert("Error", "No response from the server");
-        //   throw new Error('No response from the server');
-        // }
+        // const response = listCart();
         // console.log(response);
 
+        const timeout = 8000;
+        const response = await Promise.race([
+          GeneralService.placeOrder(userId, address, instruction),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+        if (response) {
+          let orderNumber = response.data.response;
+          console.log(response.data.response);
+          await AsyncStorage.setItem("cart_counter", String(0));
+          navigation.replace("Thankyou", { orderNo: orderNumber });
+        } else {
+          Alert.alert("Error", "No response from the server");
+          throw new Error('No response from the server');
+        }
+        console.log(response);
 
       } catch (err) {
         console.log(err);

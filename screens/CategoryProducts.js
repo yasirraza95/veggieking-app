@@ -13,6 +13,7 @@ import Button from '../components/Button'
 import { StatusBar } from 'expo-status-bar'
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { cartStyles } from '../styles/CartStyles'
 
 
 const CategoryProducts = ({ route }) => {
@@ -53,28 +54,82 @@ const CategoryProducts = ({ route }) => {
   );
 
 
-  const addCart = async (id) => {
+  const addCart = async (prodId) => {
     try {
-      let userId = await AsyncStorage.getItem("_id");
-      setScreenLoading(true);
+      // setScreenLoading(true);
+      const updatedProducts = products.map(product => {
+        if (product.id === prodId) {
+          return {
+            ...product,
+            quantity_added: parseInt(product.quantity_added || 0) + 1
+          };
+        }
+        return product;
+      });
+      setProducts(updatedProducts);
 
-      const timeout = 8000;
+      const timeout = 2000;
+      let userId = await AsyncStorage.getItem("_id");
+
       const response = await Promise.race([
-        GeneralService.addCart(userId, id),
+        GeneralService.addCart(userId, prodId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
       if (response) {
+        showToast('Added to cart');
+
         getCartCounter();
         // fetchProducts();
-        setScreenLoading(false);
+        // setScreenLoading(false);
       } else {
         throw new Error('No response from the server');
       }
     } catch (err) {
-      setScreenLoading(false);
+      // setScreenLoading(false);
     }
   }
+
+  const decreaseQuantity = (prodId) => {
+    const decreaseQnty = async () => {
+      try {
+        // setScreenLoading(true);
+
+        const updatedProducts = products.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) - 1
+            };
+          }
+          return product;
+        });
+        setProducts(updatedProducts);
+
+        const timeout = 2000;
+        let userId = await AsyncStorage.getItem("_id");
+        const response = await Promise.race([
+          GeneralService.decreaseQty(userId, prodId),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+
+        if (response) {
+
+          console.log(response);
+          showToast('Quantity decreased');
+
+          getCartCounter();
+          // setScreenLoading(false);
+        } else {
+          throw new Error('No response from the server');
+        }
+      } catch (err) {
+        console.log(err?.response?.data);
+      }
+    }
+
+    decreaseQnty();
+  };
 
   const removeCart = async (id) => {
     try {
@@ -102,10 +157,10 @@ const CategoryProducts = ({ route }) => {
   const fetchProducts = async () => {
     try {
       setProductsLoading(true);
+      let userId = await AsyncStorage.getItem("_id");
       const timeout = 8000;
-      const userId = await AsyncStorage.getItem("_id");
       const response = await Promise.race([
-        GeneralService.listProductByCat(catId),
+        GeneralService.listProductByCatCart(catId, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
@@ -286,17 +341,19 @@ const CategoryProducts = ({ route }) => {
                   )
                 } */}
                 {/* <AntDesign name="plus" size={12} color={COLORS.white} /> */}
-                <TouchableOpacity
-                  onPress={() => addCart(item.id)}
-                  style={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: COLORS.primary
-                  }}>
-                  <AntDesign name="plus" size={12} color={COLORS.white} />
+                {item.quantity_added >= 1 && (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => decreaseQuantity("vegetables", item.id)}
+                      style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                      <Text style={cartStyles.body2}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 8 }}>{item.quantity_added}</Text>
+                  </>
+                )}
+                <TouchableOpacity onPress={() => addCart(item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                  {/* <AntDesign name="plus" size={12} color={COLORS.white} /> */}
+                  <Text style={cartStyles.body2}>+</Text>
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>
