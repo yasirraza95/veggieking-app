@@ -1334,12 +1334,17 @@ const HomeV2 = ({ navigation }) => {
     );
   }
 
-  const renderFruits = () => {
+  const renderProducts = (title, type, fruitsData, isLast) => {
     const [quantity, setQuantity] = useState(1);
     const width = Dimensions.get('window').width;
 
     const numColumns = 2;
-    let result = <View style={{ flex: 1 }}>
+    let marginBottomStyle = {};
+    if (isLast) {
+      marginBottomStyle = { marginBottom: "20%" }; // Apply marginBottom only to the last container
+    }
+
+    let result = <View style={{ flex: 1, ...marginBottomStyle }}>
       <View style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -1347,7 +1352,7 @@ const HomeV2 = ({ navigation }) => {
         alignItems: 'center',
         // paddingHorizontal: 16
       }}>
-        <Text style={{ ...FONTS.body2 }}>Fruits</Text>
+        <Text style={{ ...FONTS.body2 }}>{title}</Text>
         <TouchableOpacity onPress={() => {
           if (quantity > 2) {
             setQuantity(quantity - 1)
@@ -1381,11 +1386,9 @@ const HomeV2 = ({ navigation }) => {
       <FlatList
         showsHorizontalScrollIndicator={false}
         horizontal={true}
-        data={fruits} keyExtractor={item => item.id}
+        data={fruitsData} keyExtractor={item => item.id}
         contentContainerStyle={{ paddingHorizontal: 8 }}
-        style={{
-          marginBottom: "20%",
-        }}
+        // style={{ marginBottom: "20%" }}
         renderItem={({ item, index }) => {
           return (
             <TouchableOpacity
@@ -1415,14 +1418,14 @@ const HomeV2 = ({ navigation }) => {
                   {item.quantity_added >= 1 && (
                     <>
                       <TouchableOpacity
-                        onPress={() => decreaseQuantity("fruits", item.id)}
+                        onPress={() => decreaseQuantity(type, item.id)}
                         style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
                         <Text style={cartStyles.body2}>-</Text>
                       </TouchableOpacity>
                       <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
                     </>
                   )}
-                  <TouchableOpacity onPress={() => addCart("fruits", item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                  <TouchableOpacity onPress={() => addCart(type, item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
                     <Text style={cartStyles.body2}>+</Text>
                   </TouchableOpacity>
                 </View>
@@ -1541,13 +1544,11 @@ const HomeV2 = ({ navigation }) => {
         }
 
         <ScrollView showsVerticalScrollIndicator={false}>
-
           {renderCarousel()}
-          {/* {renderCategoriesOld()} */}
           {renderCategories()}
-          {/* {renderFeatureProducts()} */}
-          {renderVegetables()}
-          {renderFruits()}
+          {/* {renderVegetables()} */}
+          {renderProducts("Vegetables", "vegetables", vegetables)}
+          {renderProducts("Fruits", "fruits", fruits, true)}
         </ScrollView>
       </View>
       <CustomModal modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}
