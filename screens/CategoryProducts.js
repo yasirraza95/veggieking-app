@@ -77,7 +77,7 @@ const CategoryProducts = ({ route }) => {
       ]);
 
       if (response) {
-        showToast('Added to cart');
+        // showToast('Added to cart');
 
         getCartCounter();
         // fetchProducts();
@@ -116,7 +116,7 @@ const CategoryProducts = ({ route }) => {
         if (response) {
 
           console.log(response);
-          showToast('Quantity decreased');
+          // showToast('Quantity decreased');
 
           getCartCounter();
           // setScreenLoading(false);

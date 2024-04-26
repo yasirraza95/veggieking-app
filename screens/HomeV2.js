@@ -105,7 +105,7 @@ const HomeV2 = ({ navigation }) => {
         if (response) {
 
           console.log(response);
-          showToast('Quantity decreased');
+          // showToast('Quantity decreased');
 
           getCartCounter();
           // setScreenLoading(false);
@@ -205,7 +205,7 @@ const HomeV2 = ({ navigation }) => {
       console.log("adding");
       const response = await addToCart(id);
       // console.log(response);
-      showToast('Added to cart');
+      // showToast('Added to cart');
 
     } catch (err) {
       console.log(err);
@@ -250,7 +250,7 @@ const HomeV2 = ({ navigation }) => {
       if (response) {
 
         console.log(response);
-        showToast('Added to cart');
+        // showToast('Added to cart');
 
         getCartCounter();
       } else {
@@ -258,7 +258,7 @@ const HomeV2 = ({ navigation }) => {
       }
 
     } catch (err) {
-      showToast("Error adding to cart");
+      // showToast("Error adding to cart");
     }
   }
 
@@ -1012,7 +1012,7 @@ const HomeV2 = ({ navigation }) => {
       offset: 100 * index,
       index,
     });
-    
+
     const addCart2 = async (type, prodId, index) => {
       try {
 
@@ -1055,7 +1055,7 @@ const HomeV2 = ({ navigation }) => {
         if (response) {
 
           console.log(response);
-          showToast('Added to cart');
+          // showToast('Added to cart');
 
           getCartCounter();
         } else {
@@ -1063,7 +1063,7 @@ const HomeV2 = ({ navigation }) => {
         }
 
       } catch (err) {
-        showToast("Error adding to cart");
+        // showToast("Error adding to cart");
       }
     }
 

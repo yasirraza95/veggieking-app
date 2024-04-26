@@ -14,6 +14,7 @@ import DrawerNavigation from './DrawerNavigation'
 import MapLocation from '../screens/MapLocation';
 import Otp from '../screens/Otp';
 import OrderDetail from '../screens/OrderDetail';
+import UserDetail from '../screens/UserDetail';
 import { createStackNavigator } from '@react-navigation/stack';
 import TrackingOrderV3 from '../screens/TrackingOrderV3';
 import CategoryProducts from '../screens/CategoryProducts';
@@ -108,6 +109,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="MyOrders" component={MyOrders} />
                 <Stack.Screen name="RiderOrders" component={RiderOrders} />
                 <Stack.Screen name="OrderDetail" component={OrderDetail} />
+                <Stack.Screen name="UserDetail" component={UserDetail} />
                 <Stack.Screen name="Faqs" component={Faqs} />
                 <Stack.Screen name="Settings" component={Settings} />
                 <Stack.Screen name="SubmitQuestion" component={SubmitQuestion} />
