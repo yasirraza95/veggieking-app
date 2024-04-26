@@ -99,7 +99,7 @@ const EditProfile = () => {
     }, []);
 
     const updateProfile = async (values) => {
-        // console.log(values);
+        console.log(values);
         try {
             let userId = await AsyncStorage.getItem("_id");
 
@@ -113,6 +113,7 @@ const EditProfile = () => {
             ]);
 
             if (response) {
+                getUserById();
                 Alert.alert('Success', 'Information updated successfully');
             } else {
                 throw new Error('No response from the server');

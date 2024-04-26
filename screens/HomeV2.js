@@ -3,7 +3,7 @@ import {
   ActivityIndicator, Alert
 } from
   'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { COLORS, FONTS, SIZES, icons, images } from '../constants'
 import { Feather, Ionicons, MaterialIcons, AntDesign, Octicons, MaterialCommunityIcons, Fontisto } from
   "@expo/vector-icons"
@@ -248,6 +248,7 @@ const HomeV2 = ({ navigation }) => {
       ]);
 
       if (response) {
+
         console.log(response);
         showToast('Added to cart');
 
@@ -986,6 +987,86 @@ const HomeV2 = ({ navigation }) => {
   const renderVegetables = () => {
     const [quantity, setQuantity] = useState(1);
     const width = Dimensions.get('window').width;
+    const flatListRef = useRef(null);
+    const [scrollIndex, setScrollIndex] = useState(null);
+
+    const scrollToIndex = (index) => {
+      if (flatListRef.current && index !== null && index !== undefined) {
+        flatListRef.current.scrollToIndex({
+          animated: true,
+          index: index,
+          viewPosition: 0.5, // Adjust the view position for the scrolled item
+        });
+      }
+    };
+
+    useEffect(() => {
+      if (scrollIndex !== null) {
+        scrollToIndex(scrollIndex);
+        setScrollIndex(null); // Reset scroll index after scrolling
+      }
+    }, [scrollIndex]);
+
+    const getItemLayout = (data, index) => ({
+      length: 100, // Adjust the length as per your item height
+      offset: 100 * index,
+      index,
+    });
+    
+    const addCart2 = async (type, prodId, index) => {
+      try {
+
+        if (type == "fruits") {
+          const updatedProducts = fruits.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setFruits(updatedProducts);
+          setScrollIndex(index);
+        } else if (type == "vegetables") {
+          const updatedProducts = vegetables.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setVegetables(updatedProducts);
+          setScrollIndex(index);
+          console.log(updatedProducts);
+        }
+
+        
+
+        const timeout = 2000;
+        let userId = await AsyncStorage.getItem("_id");
+        const response = await Promise.race([
+          GeneralService.addCart(userId, prodId),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+
+        if (response) {
+
+          console.log(response);
+          showToast('Added to cart');
+
+          getCartCounter();
+        } else {
+          throw new Error('No response from the server');
+        }
+
+      } catch (err) {
+        showToast("Error adding to cart");
+      }
+    }
+
 
     const numColumns = 2;
     let result = <View style={{ flex: 1 }}>
@@ -999,6 +1080,8 @@ const HomeV2 = ({ navigation }) => {
         <Text style={{ ...FONTS.body2 }}>Vegetables</Text>
       </View>
       <FlatList
+        ref={flatListRef}
+        getItemLayout={getItemLayout}
         showsHorizontalScrollIndicator={false}
         horizontal={true}
         data={vegetables} keyExtractor={item => item.id}
@@ -1060,7 +1143,7 @@ const HomeV2 = ({ navigation }) => {
                       </>
                     )}
                     <TouchableOpacity
-                      onPress={() => addCart("vegetables", item.id)}
+                      onPress={() => addCart2("vegetables", item.id, index)}
                       style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
                       <Text style={cartStyles.body2}>+</Text>
                     </TouchableOpacity>

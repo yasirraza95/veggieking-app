@@ -18,7 +18,7 @@ const PaymentMethod = ({ route }) => {
   };
 
   const navigation = useNavigation();
-  const { userId, address, items, delivery, total } = route.params;
+  const { address, items, delivery, total } = route.params;
 
   const handleChangeText = (text) => {
     setInstruction(text);
@@ -29,7 +29,7 @@ const PaymentMethod = ({ route }) => {
       try {
         // const response = listCart();
         // console.log(response);
-
+        let userId = await AsyncStorage.getItem("_id");
         const timeout = 8000;
         const response = await Promise.race([
           GeneralService.placeOrder(userId, address, instruction),
@@ -47,8 +47,12 @@ const PaymentMethod = ({ route }) => {
         console.log(response);
 
       } catch (err) {
-        console.log(err);
-        Alert.alert("Error", "Error in order");
+        if(err?.response?.status === 404) {
+          Alert.alert("Error", "No items in cart");
+        } else {
+          Alert.alert("Error", "Error in order");
+        }
+        // console.log(err?.response?.data);
         console.log("order-response");
       }
     }

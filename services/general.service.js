@@ -356,6 +356,7 @@ const deleteProduct = (values) => {
 };
 
 const placeOrder = (userId, address, instruction) => {
+    console.log(userId, address, instruction);
     const headers = {
         "Content-Type": "application/json",
     };
@@ -408,6 +409,7 @@ const getUserById = (id) => {
 };
 
 const updateUserById = (name, address, phone, email, userId) => {
+  console.log(name, address, phone, email, userId);
     const headers = {
         "Content-Type": "application/json",
     };

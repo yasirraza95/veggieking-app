@@ -247,7 +247,7 @@ const Cart = ({ navigation }) => {
       if (inputText) {
         setInputError("");
         // await clearCart();
-        navigation.navigate("PaymentMethod", { total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText, userId: 1 });
+        navigation.navigate("PaymentMethod", { total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText });
       } else {
         setInputError("Please enter address");
       }
