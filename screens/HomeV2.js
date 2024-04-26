@@ -32,10 +32,13 @@ const HomeV2 = ({ navigation }) => {
   const [screenLoading, setScreenLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [featureLoading, setFeatureLoading] = useState(false);
-  const [category, setCategory] = useState([]);
+  // const [category, setCategory] = useState([]);
+  const [category, setCategory] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [moreProd, setMoreProd] = useState([]);
-  const [fruits, setFruits] = useState([]);
-  const [vegetables, setVegetables] = useState([]);
+  // const [fruits, setFruits] = useState([]);
+  // const [vegetables, setVegetables] = useState([]);
+  const [vegetables, setVegetables] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [fruits, setFruits] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [prodCategory, setProdCategory] = useState([]);
   const [prodCatLoading, setProdCatLoading] = useState(false);
 
@@ -686,8 +689,8 @@ const HomeV2 = ({ navigation }) => {
         textAlign: 'center'
       }}>No record found</Text></View>;
 
-    response = categoryLoading ?
-      <ActivityIndicator size="large" color="blue" /> : result
+    // response = categoryLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    response = result
     return (
       response
     )
@@ -1324,8 +1327,8 @@ const HomeV2 = ({ navigation }) => {
         textAlign: 'center'
       }}>No record found</Text></View>;
 
-    response = featureLoading ?
-      <ActivityIndicator size="large" color="blue" /> : result
+    // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    response = result
     return (
       response
     );
@@ -1438,8 +1441,8 @@ const HomeV2 = ({ navigation }) => {
         textAlign: 'center'
       }}>No record found</Text></View>;
 
-    response = featureLoading ?
-      <ActivityIndicator size="large" color="blue" /> : result
+    // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    response = result
     return (
       response
     );
