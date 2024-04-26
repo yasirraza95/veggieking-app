@@ -1,6 +1,6 @@
 import {
   Dimensions, View, Text, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, FlatList,
-  ActivityIndicator, Alert
+  ActivityIndicator, Alert, useWindowDimensions
 } from
   'react-native'
 import React, { useState, useEffect, useRef } from 'react'
@@ -605,8 +605,8 @@ const HomeV2 = ({ navigation }) => {
   }
 
   const renderCategories = () => {
-    const numColumns = 3;
-
+    const { width } = useWindowDimensions();
+    const numColumns = width > 600 ? 4 : 3;
     let result = <>
       <View>
         <View style={{
@@ -636,6 +636,7 @@ const HomeV2 = ({ navigation }) => {
                   style={{
                     alignItems: 'center',
                     marginBottom: 15,
+                    width: `${100 / numColumns}%`,
                   }}
                 >
                   <View style={{
@@ -1168,83 +1169,83 @@ const HomeV2 = ({ navigation }) => {
   const renderVegetables = () => {
     const [quantity, setQuantity] = useState(1);
     const width = Dimensions.get('window').width;
-    const flatListRef = useRef(null);
-    const [scrollIndex, setScrollIndex] = useState(null);
+    // const flatListRef = useRef(null);
+    // const [scrollIndex, setScrollIndex] = useState(null);
 
-    const scrollToIndex = (index) => {
-      if (flatListRef.current && index !== null && index !== undefined) {
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: index,
-          viewPosition: 0.5, // Adjust the view position for the scrolled item
-        });
-      }
-    };
+    // const scrollToIndex = (index) => {
+    //   if (flatListRef.current && index !== null && index !== undefined) {
+    //     flatListRef.current.scrollToIndex({
+    //       animated: true,
+    //       index: index,
+    //       viewPosition: 0.5, // Adjust the view position for the scrolled item
+    //     });
+    //   }
+    // };
 
-    useEffect(() => {
-      if (scrollIndex !== null) {
-        scrollToIndex(scrollIndex);
-        setScrollIndex(null); // Reset scroll index after scrolling
-      }
-    }, [scrollIndex]);
+    // useEffect(() => {
+    //   if (scrollIndex !== null) {
+    //     scrollToIndex(scrollIndex);
+    //     setScrollIndex(null); // Reset scroll index after scrolling
+    //   }
+    // }, [scrollIndex]);
 
-    const getItemLayout = (data, index) => ({
-      length: 100, // Adjust the length as per your item height
-      offset: 100 * index,
-      index,
-    });
+    // const getItemLayout = (data, index) => ({
+    //   length: 100,
+    //   offset: 100 * index,
+    //   index,
+    // });
 
-    const addCart2 = async (type, prodId, index) => {
-      try {
+    // const addCart2 = async (type, prodId, index) => {
+    //   try {
 
-        if (type == "fruits") {
-          const updatedProducts = fruits.map(product => {
-            if (product.id === prodId) {
-              return {
-                ...product,
-                quantity_added: parseInt(product.quantity_added || 0) + 1
-              };
-            }
-            return product;
-          });
-          setFruits(updatedProducts);
-          setScrollIndex(index);
-        } else if (type == "vegetables") {
-          const updatedProducts = vegetables.map(product => {
-            if (product.id === prodId) {
-              return {
-                ...product,
-                quantity_added: parseInt(product.quantity_added || 0) + 1
-              };
-            }
-            return product;
-          });
-          setVegetables(updatedProducts);
-          setScrollIndex(index);
-          console.log(updatedProducts);
-        }
+    //     if (type == "fruits") {
+    //       const updatedProducts = fruits.map(product => {
+    //         if (product.id === prodId) {
+    //           return {
+    //             ...product,
+    //             quantity_added: parseInt(product.quantity_added || 0) + 1
+    //           };
+    //         }
+    //         return product;
+    //       });
+    //       setFruits(updatedProducts);
+    //       setScrollIndex(index);
+    //     } else if (type == "vegetables") {
+    //       const updatedProducts = vegetables.map(product => {
+    //         if (product.id === prodId) {
+    //           return {
+    //             ...product,
+    //             quantity_added: parseInt(product.quantity_added || 0) + 1
+    //           };
+    //         }
+    //         return product;
+    //       });
+    //       setVegetables(updatedProducts);
+    //       setScrollIndex(index);
+    //       console.log(updatedProducts);
+    //     }
 
-        const timeout = 2000;
-        let userId = await AsyncStorage.getItem("_id");
-        const response = await Promise.race([
-          GeneralService.addCart(userId, prodId),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-        ]);
+    //     const timeout = 2000;
+    //     let userId = await AsyncStorage.getItem("_id");
+    //     const response = await Promise.race([
+    //       GeneralService.addCart(userId, prodId),
+    //       new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+    //     ]);
 
-        if (response) {
+    //     if (response) {
 
-          console.log(response);
-          // showToast('Added to cart');
+    //       console.log(response);
+    //       // showToast('Added to cart');
 
-          getCartCounter();
-        } else {
-          throw new Error('No response from the server');
-        }
+    //       getCartCounter();
+    //     } else {
+    //       throw new Error('No response from the server');
+    //     }
 
-      } catch (err) {
-        // showToast("Error adding to cart");
-      }
-    }
+    //   } catch (err) {
+    //     // showToast("Error adding to cart");
+    //   }
+    // }
 
 
     const numColumns = 2;
@@ -1259,8 +1260,8 @@ const HomeV2 = ({ navigation }) => {
         <Text style={{ ...FONTS.body2 }}>Vegetables</Text>
       </View>
       <FlatList
-        ref={flatListRef}
-        getItemLayout={getItemLayout}
+        // ref={flatListRef}
+        // getItemLayout={getItemLayout}
         showsHorizontalScrollIndicator={false}
         horizontal={true}
         data={vegetables} keyExtractor={item => item.id}
