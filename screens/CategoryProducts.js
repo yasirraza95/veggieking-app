@@ -310,52 +310,25 @@ const CategoryProducts = ({ route }) => {
                 style={{ width: "100%", height: 84, borderRadius: 15 }}
               />
               <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
-              {/* <Text style={{ fontSize: 13, fontFamily: "regular", marginVertical: 4 }}>{item.restaurant}</Text> */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
-
-                {/* {
-                  item.quantity_added >= 1 && (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {item.quantity_added >= 1 && (
                     <>
                       <TouchableOpacity
-                        onPress={() => removeCart(item.id)}
-                        style={{
-                          height: 30,
-                          width: 30,
-                          borderRadius: 15,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: COLORS.primary
-                        }}>
-                        <AntDesign name="minus" size={12} color={COLORS.white} />
+                        onPress={() => decreaseQuantity(item.id)}
+                        style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
+                        <Text style={cartStyles.body2}>-</Text>
                       </TouchableOpacity>
-                      <Text style={{
-                        height: 25,
-                        width: 25,
-                        borderRadius: 15,
-                        // alignItems: 'center',
-                        // justifyContent: 'center',
-                        backgroundColor: COLORS.primary
-                      }}>{item.quantity_added}</Text>
+                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
                     </>
-                  )
-                } */}
-                {/* <AntDesign name="plus" size={12} color={COLORS.white} /> */}
-                {item.quantity_added >= 1 && (
-                  <>
-                    <TouchableOpacity
-                      onPress={() => decreaseQuantity("vegetables", item.id)}
-                      style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-                      <Text style={cartStyles.body2}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 8 }}>{item.quantity_added}</Text>
-                  </>
-                )}
-                <TouchableOpacity onPress={() => addCart(item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-                  {/* <AntDesign name="plus" size={12} color={COLORS.white} /> */}
-                  <Text style={cartStyles.body2}>+</Text>
-                </TouchableOpacity>
+                  )}
+                  <TouchableOpacity onPress={() => addCart(item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                    <Text style={cartStyles.body2}>+</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+
             </TouchableOpacity>
           ))
         }
