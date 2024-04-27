@@ -607,7 +607,7 @@ const HomeV2 = ({ navigation }) => {
   const renderCategories = () => {
     const numColumns = 3;
     const windowWidth = Dimensions.get('window').width;
-    const itemWidth = windowWidth < 600 ? windowWidth / 3.5 : windowWidth / 6;
+    const itemWidth = windowWidth < 600 ? windowWidth / 3.5 : windowWidth / 5;
   
     let result = <>
        <View style={styles.container}>
