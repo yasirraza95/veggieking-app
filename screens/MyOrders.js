@@ -356,7 +356,7 @@ const MyOrders = ({ navigation }) => {
           <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>My Orders</Text>
         </View>
 
-        <View style={{
+        {/* <View style={{
           height: 45,
           width: 45,
           borderRadius: 22.5,
@@ -384,7 +384,7 @@ const MyOrders = ({ navigation }) => {
             </View>
             <Feather name="shopping-bag" size={24} color={COLORS.white} />
           </View>
-        </View>
+        </View> */}
       </View>
     )
   }

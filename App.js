@@ -7,7 +7,7 @@ import AppNavigation from './navigations/AppNavigation'
 import { LogBox } from 'react-native'
 import { Provider } from 'react-redux'
 import { store } from './Redux/store'
-
+import { CartProvider } from './context/CartContext';
 
 LogBox.ignoreAllLogs();
 
@@ -29,11 +29,10 @@ export default function App() {
   return (
     <SafeAreaProvider onLayout={onLayoutRootView}>
       <Provider store={store}>
-        {/* <ToastProvider> */}
+        <CartProvider>
           <AppNavigation />
-        {/* </ToastProvider> */}
+        </CartProvider>
       </Provider>
-
     </SafeAreaProvider>
   );
 }

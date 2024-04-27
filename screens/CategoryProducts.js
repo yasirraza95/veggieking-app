@@ -211,7 +211,7 @@ const CategoryProducts = ({ route }) => {
           </TouchableOpacity>
           <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>{catName.toUpperCase()}</Text>
         </View>
-        <View style={{
+        {/* <View style={{
           height: 45,
           width: 45,
           borderRadius: 22.5,
@@ -239,7 +239,7 @@ const CategoryProducts = ({ route }) => {
             </View>
             <Feather name="shopping-bag" size={24} color={COLORS.white} />
           </View>
-        </View>
+        </View> */}
       </View>
     )
   }

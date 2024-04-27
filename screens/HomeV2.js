@@ -22,9 +22,12 @@ import MyLoader from './MyLoader'
 import { addToCart, decreaseQty, syncProducts, cartCounting } from '../utils/sqlite';
 import { ToastAndroid } from 'react-native';
 import { cartStyles } from '../styles/CartStyles'
+import { useCart } from '../context/CartContext';
 
 
 const HomeV2 = ({ navigation }) => {
+  const { updateCartCounter } = useCart();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [userAddress, setUserAddress] = useState('');
   const [cartCounter, setCartCounter] = useState(0);
@@ -196,7 +199,7 @@ const HomeV2 = ({ navigation }) => {
       // console.log(`home-data=${cartData}`);
       const { response: cartNo } = cartData;
       setCartCounter(cartNo);
-
+      updateCartCounter(cartNo);
     } catch (err) {
       console.log(err);
       setCartCounter(0);
@@ -1623,7 +1626,7 @@ const HomeV2 = ({ navigation }) => {
           </View>
 
           {/* cart counter */}
-          <View style={{
+          {/* <View style={{
             height: 45,
             width: 45,
             borderRadius: 22.5,
@@ -1651,7 +1654,7 @@ const HomeV2 = ({ navigation }) => {
               </View>
               <Feather name="shopping-bag" size={24} color={COLORS.white} />
             </View>
-          </View>
+          </View> */}
         </View>
 
         {
