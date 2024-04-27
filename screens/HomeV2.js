@@ -23,48 +23,31 @@ import { addToCart, decreaseQty, syncProducts, cartCounting } from '../utils/sql
 import { ToastAndroid } from 'react-native';
 import { cartStyles } from '../styles/CartStyles'
 import { useCart } from '../context/CartContext';
+import { debounce } from 'lodash';
 
 
 const HomeV2 = ({ navigation }) => {
-  const flatListRef = useRef();
-
-  const scrollToOffset = (offset) => {
-    flatListRef.current?.scrollToOffset({
-      animated: true,
-      offset: offset,
-    });
-  };
-
-  const scrollToIndex = (index) => {
-    flatListRef.current?.scrollToIndex({ index, animated: true });
-  };
-
-
-  const getItemLayout = (data, index) => ({
-    length: 200, // Specify the height of your item here
-    offset: 200 * index,
-    index,
-  });
-
-  // scrollToIndex(1);
-
+  const flatListRef = useRef(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   const { updateCartCounter } = useCart();
-  var scrollPosition = 0;
-
 
   const handleScroll = (event) => {
     const { contentOffset } = event.nativeEvent;
-    // setScrollOffset(contentOffset.x);
-    scrollPosition = contentOffset.x;
-    // setListScroll(scrollPosition)
+    console.log(contentOffset.x);
+    setScrollOffset(contentOffset.x);
   };
 
-  const setListScroll = (offset) => {
-    if (flatListRef.current) {
-      flatListRef.current.scrollToOffset({ offset, animated: true });
-    }
-  };
+
+  const debouncedScrollToOffset = useRef(debounce(offset => {
+    flatListRef.current?.scrollToOffset({ offset, animated: false });
+  }, 100)).current;
+
+  useEffect(() => {
+    // After the component rerenders, scroll back to the last known position
+    debouncedScrollToOffset(scrollOffset);
+  }, [scrollOffset]);
+
 
   const [searchQuery, setSearchQuery] = useState('');
   const [userAddress, setUserAddress] = useState('');
@@ -157,7 +140,7 @@ const HomeV2 = ({ navigation }) => {
 
   const addCart = async (type, prodId) => {
     try {
-      scrollToIndex(1);
+
       if (type == "fruits") {
         const updatedProducts = fruits.map(product => {
           if (product.id === prodId) {
@@ -170,8 +153,6 @@ const HomeV2 = ({ navigation }) => {
         });
         setFruits(updatedProducts);
       } else if (type == "vegetables") {
-        console.log("veges");
-
         const updatedProducts = vegetables.map(product => {
           if (product.id === prodId) {
             return {
@@ -181,18 +162,7 @@ const HomeV2 = ({ navigation }) => {
           }
           return product;
         });
-        // scrollToOffset(1500);
-        // console.log(scrollPosition);
         setVegetables(updatedProducts);
-        // setListScroll(scrollPosition);
-
-
-        // if (flatListRef.current) {
-        //   console.log(scrollOffset);
-        //   // flatListRef.current.scrollToOffset({ offset: 2, animated: false });
-        //   flatListRef.current.scrollToItem({ animated: false, item: 1 })
-        // }
-
         // console.log(flatListRef.current);
         // if (flatListRef.current) {
         //   flatListRef.current.scrollToOffset({ animated: false, offset: flatListRef.current.contentOffset });
@@ -529,12 +499,22 @@ const HomeV2 = ({ navigation }) => {
 
       <FlatList
         ref={flatListRef}
-        getItemLayout={getItemLayout}
         showsHorizontalScrollIndicator={false}
         horizontal={true}
-        // onScroll={handleScroll}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
+        // onContentSizeChange={() => {
+        //   flatListRef.current?.scrollToOffset({ offset: scrollOffset, animated: false });
+        // }}
+        // onLayout={() => {
+        //   flatListRef.current?.scrollToOffset({ offset: scrollOffset, animated: false });
+        // }}
         // data={data}
+        // maintainVisibleContentPosition={{ autoscrollToTopThreshold: 1 }}
+        // maintainVisibleContentPosition={{
+        //   autoscrollToTopThreshold: 1,
+        //   minIndexForVisible: 1,
+        // }}
         data={prodsData} keyExtractor={item => item.id.toString()}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         // style={{ marginBottom: "20%" }}
