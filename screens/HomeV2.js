@@ -26,7 +26,45 @@ import { useCart } from '../context/CartContext';
 
 
 const HomeV2 = ({ navigation }) => {
+  const flatListRef = useRef();
+
+  const scrollToOffset = (offset) => {
+    flatListRef.current?.scrollToOffset({
+      animated: true,
+      offset: offset,
+    });
+  };
+
+  const scrollToIndex = (index) => {
+    flatListRef.current?.scrollToIndex({ index, animated: true });
+  };
+
+
+  const getItemLayout = (data, index) => ({
+    length: 200, // Specify the height of your item here
+    offset: 200 * index,
+    index,
+  });
+
+  // scrollToIndex(1);
+
+
   const { updateCartCounter } = useCart();
+  var scrollPosition = 0;
+
+
+  const handleScroll = (event) => {
+    const { contentOffset } = event.nativeEvent;
+    // setScrollOffset(contentOffset.x);
+    scrollPosition = contentOffset.x;
+    // setListScroll(scrollPosition)
+  };
+
+  const setListScroll = (offset) => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset, animated: true });
+    }
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const [userAddress, setUserAddress] = useState('');
@@ -35,11 +73,8 @@ const HomeV2 = ({ navigation }) => {
   const [screenLoading, setScreenLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [featureLoading, setFeatureLoading] = useState(false);
-  // const [category, setCategory] = useState([]);
   const [category, setCategory] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [moreProd, setMoreProd] = useState([]);
-  // const [fruits, setFruits] = useState([]);
-  // const [vegetables, setVegetables] = useState([]);
   const [vegetables, setVegetables] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [fruits, setFruits] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [prodCategory, setProdCategory] = useState([]);
@@ -51,30 +86,13 @@ const HomeV2 = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  const handleSearch = (text) => {
-    setSearchQuery(text);
-  };
-
   const showToast = (message) => {
     ToastAndroid.show(message, ToastAndroid.SHORT);
   };
 
-  const getCartCounterNew = async () => {
-    try {
-      const response = await cartCounting();
-      console.log(`counter=${response}`);
-      setCartCounter(response);
-
-    } catch (err) {
-      console.log(err);
-      setCartCounter(0);
-    }
-  }
-
   const decreaseQuantity = (type, prodId) => {
     const decreaseQnty = async () => {
       try {
-        // setScreenLoading(true);
 
         if (type == "fruits") {
           const updatedProducts = fruits.map(product => {
@@ -98,7 +116,7 @@ const HomeV2 = ({ navigation }) => {
             return product;
           });
           setVegetables(updatedProducts);
-          console.log(updatedProducts);
+          // console.log(updatedProducts);
         }
 
         const timeout = 2000;
@@ -109,86 +127,17 @@ const HomeV2 = ({ navigation }) => {
         ]);
 
         if (response) {
-
-          console.log(response);
-          // showToast('Quantity decreased');
-
+          // console.log(response);
           getCartCounter();
-          // setScreenLoading(false);
         } else {
           throw new Error('No response from the server');
         }
       } catch (err) {
-        console.log(err?.response?.data);
+        // console.log(err?.response?.data);
       }
     }
 
     decreaseQnty();
-  };
-
-  const decreaseQuantityNew = (id) => {
-    const decreaseQnty = async () => {
-      try {
-        console.log(id);
-        // let userId = await AsyncStorage.getItem("_id");
-        const response = await decreaseQty(id);
-        // console.log(response.data.response);
-        // getCartCounter();
-        // fetchData();
-
-      } catch (err) {
-        console.log(err?.response?.data);
-      }
-    }
-
-    decreaseQnty();
-  };
-
-  const increaseQuantity = (id) => {
-    console.log(id);
-    const increaseQty = async () => {
-      try {
-        let userId = await AsyncStorage.getItem("_id");
-        // let userId = 1;
-        const response = await GeneralService.increaseQty(userId, id);
-        const { data: cartData } = response;
-        // console.log(`home-data=${cartData}`);
-        const { response: cartNo } = cartData;
-        setCartCounter(cartNo);
-
-
-        // const response = await addToCart(id);
-        // console.log(response.data.response);
-        // getCartCounter();
-
-        // fetchData();
-
-      } catch (err) {
-        console.log(err?.response?.data);
-      }
-    }
-
-    increaseQty();
-    // setQuantity(quantity + 1);
-  };
-
-  const increaseQuantityNew = (id) => {
-    const increaseQty = async () => {
-      try {
-        // let userId = await AsyncStorage.getItem("_id");
-        const response = await addToCart(id);
-        // console.log(response.data.response);
-        getCartCounter();
-
-        fetchData();
-
-      } catch (err) {
-        console.log(err?.response?.data);
-      }
-    }
-
-    increaseQty();
-    // setQuantity(quantity + 1);
   };
 
   const getCartCounter = async () => {
@@ -201,26 +150,14 @@ const HomeV2 = ({ navigation }) => {
       setCartCounter(cartNo);
       updateCartCounter(cartNo);
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       setCartCounter(0);
-    }
-  }
-
-  const addCartNew = async (id) => {
-    try {
-      console.log("adding");
-      const response = await addToCart(id);
-      // console.log(response);
-      // showToast('Added to cart');
-
-    } catch (err) {
-      console.log(err);
     }
   }
 
   const addCart = async (type, prodId) => {
     try {
-
+      scrollToIndex(1);
       if (type == "fruits") {
         const updatedProducts = fruits.map(product => {
           if (product.id === prodId) {
@@ -233,6 +170,8 @@ const HomeV2 = ({ navigation }) => {
         });
         setFruits(updatedProducts);
       } else if (type == "vegetables") {
+        console.log("veges");
+
         const updatedProducts = vegetables.map(product => {
           if (product.id === prodId) {
             return {
@@ -242,8 +181,24 @@ const HomeV2 = ({ navigation }) => {
           }
           return product;
         });
+        // scrollToOffset(1500);
+        // console.log(scrollPosition);
         setVegetables(updatedProducts);
-        console.log(updatedProducts);
+        // setListScroll(scrollPosition);
+
+
+        // if (flatListRef.current) {
+        //   console.log(scrollOffset);
+        //   // flatListRef.current.scrollToOffset({ offset: 2, animated: false });
+        //   flatListRef.current.scrollToItem({ animated: false, item: 1 })
+        // }
+
+        // console.log(flatListRef.current);
+        // if (flatListRef.current) {
+        //   flatListRef.current.scrollToOffset({ animated: false, offset: flatListRef.current.contentOffset });
+        //   console.log(flatListRef.current.contentOffset);
+        // }
+        // console.log(updatedProducts);
       }
 
       const timeout = 2000;
@@ -254,10 +209,6 @@ const HomeV2 = ({ navigation }) => {
       ]);
 
       if (response) {
-
-        console.log(response);
-        // showToast('Added to cart');
-
         getCartCounter();
       } else {
         throw new Error('No response from the server');
@@ -268,35 +219,22 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const fetchAllProducts = async () => {
-    const response = await GeneralService.listAllProducts();
-    // console.log(`all-products=${JSON.stringify(response.data.response)}`);
-    const { response: res } = await syncProducts(response.data.response);
-    // console.log(`sync-status=${res}`);
-  }
 
   useEffect(() => {
+    // const fetchAllProducts = async () => {
+    //   const response = await GeneralService.listAllProducts();
+    //   const { response: res } = await syncProducts(response.data.response);
+    // }
     // fetchAllProducts();
-
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      // Code to run when the screen gains focus
       categories();
-      // featureProducts();
       fetchVegetables();
       fetchFruits();
-      // cartCounter();
       fetchAddress();
-      // fetchVegetables();
-      // fetchFruits();
-      // Cleanup function (optional)
       return () => {
-        // fetchAllProducts();
-
-        // Code to run when the screen loses focus
-        // console.log('cart Screen blurred');
       };
     }, [])
   );
@@ -319,50 +257,24 @@ const HomeV2 = ({ navigation }) => {
 
       setCategoryLoading(false);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setCategoryLoading(false);
       setCategory([]);
       Alert.alert("Error", "No response from server");
     }
   };
 
-  const featureProducts = async () => {
-    try {
-      setFeatureLoading(true);
-
-      const timeout = 8000;
-      const response = await Promise.race([
-        GeneralService.listFeaturedProducts(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-      ]);
-
-      if (response) {
-        setMoreProd(response.data.response);
-      } else {
-        throw new Error('No response from the server');
-      }
-
-      setFeatureLoading(false);
-      // console.error('More products fetched');
-    } catch (error) {
-      setFeatureLoading(false);
-      setMoreProd([]);
-    }
-  };
-
-
   const fetchVegetables = async () => {
     try {
       setFeatureLoading(true);
 
       let userId = await AsyncStorage.getItem("_id");
-      console.log(`user-id=${userId}`);
+      // console.log(`user-id=${userId}`);
       const timeout = 8000;
       const response = await Promise.race([
         GeneralService.listProductByCatCart(2, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
-      // console.log(response.data.response);
       if (response) {
         setVegetables(response.data.response);
       } else {
@@ -370,32 +282,6 @@ const HomeV2 = ({ navigation }) => {
       }
 
       setFeatureLoading(false);
-      // console.error('More products fetched');
-    } catch (error) {
-      setFeatureLoading(false);
-      setVegetables([]);
-    }
-  };
-
-
-  const fetchVegetablesOld = async () => {
-    try {
-      setFeatureLoading(true);
-
-      const timeout = 8000;
-      const response = await Promise.race([
-        GeneralService.listProductByCat(2),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-      ]);
-
-      if (response) {
-        setVegetables(response.data.response);
-      } else {
-        throw new Error('No response from the server');
-      }
-
-      setFeatureLoading(false);
-      // console.error('More products fetched');
     } catch (error) {
       setFeatureLoading(false);
       setVegetables([]);
@@ -420,41 +306,14 @@ const HomeV2 = ({ navigation }) => {
       }
 
       setFeatureLoading(false);
-      // console.error('More products fetched');
     } catch (error) {
       setFeatureLoading(false);
       setFruits([]);
     }
   };
 
-  const productsByCategory = async (id) => {
-    try {
-      setProdCatLoading(true);
-
-      const timeout = 8000;
-      const response = await Promise.race([
-        GeneralService.listProductByCat(id),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-      ]);
-
-      if (response) {
-        setProdCategory(response.data.response);
-      } else {
-        throw new Error('No response from the server');
-      }
-
-      setProdCatLoading(false);
-      // console.error('More products fetched');
-    } catch (error) {
-      setProdCatLoading(false);
-      setProdCategory([]);
-    }
-  };
-
   const fetchAddress = async () => {
     let userAddress = await AsyncStorage.getItem("user_address");
-    // let cartCounter = await AsyncStorage.getItem("cart_counter");
-    // console.log(userAddress);
     setUserAddress(userAddress);
   };
 
@@ -475,7 +334,6 @@ const HomeV2 = ({ navigation }) => {
 
         <Carousel loop width={width} height={width / 3} autoPlay={true} data={[restaurant6, restaurant7, restaurant8,]}
           scrollAnimationDuration={3500}
-          // onSnapToItem={(index) => console.log('current index:', index)}
           style={{
             width: SIZES.width - 32,
             borderColor: COLORS.tertiaryGray,
@@ -535,81 +393,6 @@ const HomeV2 = ({ navigation }) => {
     )
   }
 
-  const renderCategoriesOld = () => {
-    let result = <>
-      <View>
-        <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginVertical: 8,
-          alignItems: 'center',
-        }}>
-          <Text style={{ ...FONTS.body2 }}>Categories</Text>
-        </View>
-
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          horizontal={true}
-          data={category}
-          keyExtractor={item => item.id}
-          renderItem={({ item, index }) => {
-            return (
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <TouchableOpacity key={index} onPress={() => navigate.navigate("CategoryProducts", {
-                  catId: item.id, catName:
-                    item.name
-                })}
-                >
-                  <View style={{
-                    height: 90,
-                    width: 90,
-                    borderRadius: 61,
-                    overflow: 'hidden',
-                    shadowColor: '#F1F1F1',
-                    margin: 5,
-                    shadowOffset: {
-                      width: 12,
-                      height: 12,
-                    },
-                    shadowOpacity: 0.15,
-                    shadowRadius: 10,
-                    elevation: 0.1,
-                    borderColor: COLORS.tertiaryGray,
-                    borderWidth: 2,
-                    backgroundColor: 'orange',
-                    borderColor: "#c65201",
-                  }}>
-                    <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover'
-                      style={{
-                        flex: 1,
-                        height: '100%',
-                        width: '100%',
-                      }} />
-                  </View >
-                  <Text style={{ fontSize: 16, fontFamily: 'bold', marginTop: 10, textAlign: 'center' }}>{item.name}</Text>
-                </TouchableOpacity >
-              </View >
-            )
-          }}
-        />
-      </View >
-    </>
-
-    let response = category.length > 0 ? result : <View style={{ flex: 1 }}>
-      <Text style={{
-        color: COLORS.black,
-        fontSize: 14,
-        fontFamily: 'regular',
-        textAlign: 'center'
-      }}>No record found</Text></View>;
-
-    response = categoryLoading ?
-      <ActivityIndicator size="large" color="blue" /> : result
-    return (
-      response
-    )
-  }
-
   const renderCategories = () => {
     const { width } = useWindowDimensions();
     const numColumns = width > 600 ? 4 : 3;
@@ -625,7 +408,6 @@ const HomeV2 = ({ navigation }) => {
         </View>
 
         <View>
-
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 8 }}>
             {category.map((item, index) => {
               // Define an array of border colors
@@ -677,10 +459,7 @@ const HomeV2 = ({ navigation }) => {
               );
             })}
           </View>
-
-
         </View>
-
       </View >
     </>
 
@@ -692,767 +471,12 @@ const HomeV2 = ({ navigation }) => {
         textAlign: 'center'
       }}>No record found</Text></View>;
 
-    // response = categoryLoading ? <ActivityIndicator size="large" color="blue" /> : result
     response = result
     return (
       response
     )
   }
 
-
-
-  const renderFeatureProductsOld = () => {
-    const [quantity, setQuantity] = useState(1);
-
-    const numColumns = 2;
-    let result = <View style={{ flex: 1 }}>
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginVertical: 8,
-        alignItems: 'center',
-        // paddingHorizontal: 16
-      }}>
-
-        <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
-          style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
-        >
-          <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 4 }}>See All</Text>
-          <View>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
-          </View>
-        </TouchableOpacity>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={() => decreaseQuantity(item.prod_id)}
-            style={cartStyles.roundedBtn}
-          >
-            <Text style={cartStyles.body2}>-</Text>
-          </TouchableOpacity>
-          <Text style={{
-            fontSize: 16,
-            fontFamily: 'regular',
-            color: COLORS.white,
-            marginHorizontal: 12
-          }}>{item.quantity}</Text>
-          <TouchableOpacity
-            // id={item.id}
-            onPress={() => addCart(item.id)}
-            style={cartStyles.roundedBtn}
-          >
-            <Text style={cartStyles.body2}>+</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <FlatList
-        showsHorizontalScrollIndicator={false}
-        horizontal={true}
-        data={moreProd} keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingHorizontal: 8 }}
-        // style={{
-        //   marginBottom: "30%",
-        // }}
-        renderItem={({ item, index }) => {
-          return (
-            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
-              id: item.id, name: item.name,
-              image: item.image, price: item.price, minQty: 1, type: "kg"
-            })}
-              style={{
-                flexDirection: 'column',
-                paddingHorizontal: 2,
-                paddingVertical: 4,
-                height: "auto",
-                width: 160,
-                borderWidth: 1,
-                borderColor: "#f78c47",
-                borderRadius: 20,
-                marginRight: 6,
-                marginLeft: 0,
-                marginBottom: 16
-              }}
-            >
-              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                width: '100%',
-                height: 84,
-              }} />
-
-              <TouchableOpacity onPress={() => addCart(item.id)}
-                style={{
-                  height: 30,
-                  width: 30,
-                  borderRadius: 15,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: COLORS.primary,
-                  position: 'absolute',
-                  right: 0
-                }}>
-                <AntDesign name="plus" size={12} color={COLORS.white} />
-              </TouchableOpacity>
-              <View style={{
-                padding: 8,
-                // bottom: 10,
-              }}>
-
-                <View style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap-reverse',
-                  position: 'relative',
-                }}>
-                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
-                  {/* <TouchableOpacity onPress={()=> addCart(item.id)}
-              style={{
-                      height: 30,
-                      width: 30,
-                      borderRadius: 15,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: COLORS.primary,
-                      position: 'absolute', // absolute positioning
-                      right: 0 // positioned to the left
-                    }}>
-              <AntDesign name="plus" size={12} color={COLORS.white} />
-            </TouchableOpacity> */}
-                </View>
-                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-              </View>
-            </TouchableOpacity>
-          )
-        }}
-      />
-    </View>;
-
-    let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
-      <Text style={{
-        color: COLORS.black,
-        fontSize: 14,
-        fontFamily: 'regular',
-        textAlign: 'center'
-      }}>No record found</Text></View>;
-
-    response = featureLoading ?
-      <ActivityIndicator size="large" color="blue" /> : result
-    return (
-      response
-    );
-  }
-
-  const renderFeatureProducts = () => {
-    const [quantity, setQuantity] = useState(1);
-    const width = Dimensions.get('window').width;
-
-    const numColumns = 2;
-    let result = <View style={{ flex: 1 }}>
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginVertical: 8,
-        alignItems: 'center',
-        // paddingHorizontal: 16
-      }}>
-
-        <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
-          style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
-        >
-          <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 4 }}>See All</Text>
-          <View>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => {
-          if (quantity > 2) {
-            setQuantity(quantity - 1)
-          }
-        }}
-          style={{
-            width: 24,
-            height: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.2)'
-          }}
-        >
-          <Text style={{ color: COLORS.white }}>-</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-        <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
-          style={{
-            width: 24,
-            height: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.2)'
-          }}
-        >
-          <Text style={{ color: COLORS.white }}>+</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        showsHorizontalScrollIndicator={false}
-        horizontal={true}
-        data={moreProd} keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingHorizontal: 8 }}
-        style={{
-          marginBottom: "30%",
-        }}
-        renderItem={({ item, index }) => {
-          return (
-            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
-              id: item.id, name: item.name,
-              image: item.image, price: item.price, minQty: 1, type: "kg"
-            })}
-              style={{
-                flexDirection: 'column',
-                paddingHorizontal: 2,
-                paddingVertical: 4,
-                height: "auto",
-                width: 160,
-                borderWidth: 1,
-                borderColor: "#f78c47",
-                borderRadius: 20,
-                marginRight: 6,
-                marginLeft: 0,
-                marginBottom: 16
-              }}
-            >
-              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                width: '100%',
-                height: 84,
-              }} />
-
-              {/* <TouchableOpacity onPress={() => addCart(item.id)}
-                style={{
-                  height: 30,
-                  width: 30,
-                  borderRadius: 15,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: COLORS.primary,
-                  position: 'absolute',
-                  right: 0
-                }}>
-                <AntDesign name="plus" size={12} color={COLORS.white} />
-              </TouchableOpacity> */}
-              <View style={{
-                padding: 8,
-              }}>
-                <View style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap-reverse',
-                  position: 'relative',
-                }}>
-                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
-                </View>
-                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-                <TouchableOpacity onPress={() => addCart(item.id)}
-                  style={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: COLORS.primary,
-                    position: 'absolute',
-                    right: 0,
-                    // end: 0
-                  }}>
-                  <AntDesign name="plus" size={12} color={COLORS.white} />
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          )
-        }}
-      />
-    </View>;
-
-    let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
-      <Text style={{
-        color: COLORS.black,
-        fontSize: 14,
-        fontFamily: 'regular',
-        textAlign: 'center'
-      }}>No record found</Text></View>;
-
-    response = featureLoading ?
-      <ActivityIndicator size="large" color="blue" /> : result
-    return (
-      response
-    );
-  }
-
-  // const renderVegetables = () => {
-  //   const [quantity, setQuantity] = useState(1);
-  //   const width = Dimensions.get('window').width;
-  //   const flatListRef = useRef(null);
-  //   const [scrollIndex, setScrollIndex] = useState(null);
-
-  //   const scrollToIndex = (index) => {
-  //     if (flatListRef.current && index !== null && index !== undefined) {
-  //       flatListRef.current.scrollToIndex({
-  //         animated: true,
-  //         index: index,
-  //         viewPosition: 0.5, // Adjust the view position for the scrolled item
-  //       });
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     if (scrollIndex !== null) {
-  //       scrollToIndex(scrollIndex);
-  //       setScrollIndex(null); // Reset scroll index after scrolling
-  //     }
-  //   }, [scrollIndex]);
-
-  //   const getItemLayout = (data, index) => ({
-  //     length: 100, // Adjust the length as per your item height
-  //     offset: 100 * index,
-  //     index,
-  //   });
-
-  //   const addCart2 = async (type, prodId, index) => {
-  //     try {
-
-  //       if (type == "fruits") {
-  //         const updatedProducts = fruits.map(product => {
-  //           if (product.id === prodId) {
-  //             return {
-  //               ...product,
-  //               quantity_added: parseInt(product.quantity_added || 0) + 1
-  //             };
-  //           }
-  //           return product;
-  //         });
-  //         setFruits(updatedProducts);
-  //         setScrollIndex(index);
-  //       } else if (type == "vegetables") {
-  //         const updatedProducts = vegetables.map(product => {
-  //           if (product.id === prodId) {
-  //             return {
-  //               ...product,
-  //               quantity_added: parseInt(product.quantity_added || 0) + 1
-  //             };
-  //           }
-  //           return product;
-  //         });
-  //         setVegetables(updatedProducts);
-  //         setScrollIndex(index);
-  //         console.log(updatedProducts);
-  //       }
-
-  //       const timeout = 2000;
-  //       let userId = await AsyncStorage.getItem("_id");
-  //       const response = await Promise.race([
-  //         GeneralService.addCart(userId, prodId),
-  //         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-  //       ]);
-
-  //       if (response) {
-
-  //         console.log(response);
-  //         // showToast('Added to cart');
-
-  //         getCartCounter();
-  //       } else {
-  //         throw new Error('No response from the server');
-  //       }
-
-  //     } catch (err) {
-  //       // showToast("Error adding to cart");
-  //     }
-  //   }
-
-
-  //   const numColumns = 2;
-  //   let result = <View style={{ flex: 1 }}>
-  //     <View style={{
-  //       flexDirection: 'row',
-  //       justifyContent: 'space-between',
-  //       marginVertical: 8,
-  //       alignItems: 'center',
-  //       // paddingHorizontal: 16
-  //     }}>
-  //       <Text style={{ ...FONTS.body2 }}>Vegetables</Text>
-  //     </View>
-  //     <FlatList
-  //       ref={flatListRef}
-  //       getItemLayout={getItemLayout}
-  //       showsHorizontalScrollIndicator={false}
-  //       horizontal={true}
-  //       data={vegetables} keyExtractor={item => item.id}
-  //       contentContainerStyle={{ paddingHorizontal: 8 }}
-  //       // style={{
-  //       //   marginBottom: "30%",
-  //       // }}
-  //       renderItem={({ item, index }) => {
-  //         return (
-  //           <TouchableOpacity key={item.id} onPress={() => navigate.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
-  //             style={{
-  //               flexDirection: 'column',
-  //               paddingHorizontal: 2,
-  //               paddingVertical: 4,
-  //               height: "auto",
-  //               width: 200,
-  //               borderWidth: 1,
-  //               borderColor: "#f78c47",
-  //               borderRadius: 20,
-  //               marginRight: 6,
-  //               marginLeft: 0,
-  //               marginBottom: 16,
-  //               position: 'relative',
-  //             }}
-  //           >
-  //             <Image
-  //               source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-  //               resizeMode='cover'
-  //               style={{
-  //                 borderTopLeftRadius: 20,
-  //                 borderTopRightRadius: 20,
-  //                 width: '100%',
-  //                 height: 84,
-  //               }}
-  //             />
-  //             <View style={{
-  //               padding: 8,
-  //             }}>
-  //               <View style={{
-  //                 flexDirection: 'row',
-  //                 justifyContent: 'space-between',
-  //                 alignItems: 'center',
-  //               }}>
-  //                 <Text style={{ fontSize: 18, textTransform: 'capitalize' }}>{item.name}</Text>
-  //                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-  //                   {item.quantity_added >= 1 && (
-  //                     <>
-  //                       <TouchableOpacity
-  //                         onPress={() => decreaseQuantity("vegetables", item.id)}
-  //                         style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-  //                         <Text style={cartStyles.body2}>-</Text>
-  //                       </TouchableOpacity>
-  //                       <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 8 }}>{item.quantity_added}</Text>
-  //                     </>
-  //                   )}
-  //                   <TouchableOpacity
-  //                     onPress={() => addCart2("vegetables", item.id, index)}
-  //                     style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-  //                     <Text style={cartStyles.body2}>+</Text>
-  //                   </TouchableOpacity>
-  //                 </View>
-  //               </View>
-  //               <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-  //             </View>
-  //           </TouchableOpacity>
-  //         )
-  //       }}
-  //     />
-  //   </View>;
-
-  //   let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
-  //     <Text style={{
-  //       color: COLORS.black,
-  //       fontSize: 14,
-  //       fontFamily: 'regular',
-  //       textAlign: 'center'
-  //     }}>No record found</Text></View>;
-
-  //   response = featureLoading ?
-  //     <ActivityIndicator size="large" color="blue" /> : result
-  //   return (
-  //     response
-  //   );
-  // }
-
-  const renderVegetables = () => {
-    const [quantity, setQuantity] = useState(1);
-    const width = Dimensions.get('window').width;
-    // const flatListRef = useRef(null);
-    // const [scrollIndex, setScrollIndex] = useState(null);
-
-    // const scrollToIndex = (index) => {
-    //   if (flatListRef.current && index !== null && index !== undefined) {
-    //     flatListRef.current.scrollToIndex({
-    //       animated: true,
-    //       index: index,
-    //       viewPosition: 0.5, // Adjust the view position for the scrolled item
-    //     });
-    //   }
-    // };
-
-    // useEffect(() => {
-    //   if (scrollIndex !== null) {
-    //     scrollToIndex(scrollIndex);
-    //     setScrollIndex(null); // Reset scroll index after scrolling
-    //   }
-    // }, [scrollIndex]);
-
-    // const getItemLayout = (data, index) => ({
-    //   length: 100,
-    //   offset: 100 * index,
-    //   index,
-    // });
-
-    // const addCart2 = async (type, prodId, index) => {
-    //   try {
-
-    //     if (type == "fruits") {
-    //       const updatedProducts = fruits.map(product => {
-    //         if (product.id === prodId) {
-    //           return {
-    //             ...product,
-    //             quantity_added: parseInt(product.quantity_added || 0) + 1
-    //           };
-    //         }
-    //         return product;
-    //       });
-    //       setFruits(updatedProducts);
-    //       setScrollIndex(index);
-    //     } else if (type == "vegetables") {
-    //       const updatedProducts = vegetables.map(product => {
-    //         if (product.id === prodId) {
-    //           return {
-    //             ...product,
-    //             quantity_added: parseInt(product.quantity_added || 0) + 1
-    //           };
-    //         }
-    //         return product;
-    //       });
-    //       setVegetables(updatedProducts);
-    //       setScrollIndex(index);
-    //       console.log(updatedProducts);
-    //     }
-
-    //     const timeout = 2000;
-    //     let userId = await AsyncStorage.getItem("_id");
-    //     const response = await Promise.race([
-    //       GeneralService.addCart(userId, prodId),
-    //       new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-    //     ]);
-
-    //     if (response) {
-
-    //       console.log(response);
-    //       // showToast('Added to cart');
-
-    //       getCartCounter();
-    //     } else {
-    //       throw new Error('No response from the server');
-    //     }
-
-    //   } catch (err) {
-    //     // showToast("Error adding to cart");
-    //   }
-    // }
-
-
-    const numColumns = 2;
-    let result = <View style={{ flex: 1 }}>
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginVertical: 8,
-        alignItems: 'center',
-        // paddingHorizontal: 16
-      }}>
-        <Text style={{ ...FONTS.body2 }}>Vegetables</Text>
-      </View>
-      <FlatList
-        // ref={flatListRef}
-        // getItemLayout={getItemLayout}
-        showsHorizontalScrollIndicator={false}
-        horizontal={true}
-        data={vegetables} keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingHorizontal: 8 }}
-        // style={{
-        //   marginBottom: "30%",
-        // }}
-        renderItem={({ item, index }) => {
-          return (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
-              key={index}
-              style={{
-                flexDirection: 'column',
-                paddingHorizontal: 2,
-                paddingVertical: 4,
-                height: "auto",
-                width: 200,
-                borderWidth: 1,
-                borderColor: COLORS.gray6,
-                borderRadius: 15,
-                marginRight: 6,
-                marginBottom: 16
-              }}>
-              <Image
-                source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-                resizeMode='cover'
-                style={{ width: "100%", height: 84, borderRadius: 15 }}
-              />
-              <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {item.quantity_added >= 1 && (
-                    <>
-                      <TouchableOpacity
-                        onPress={() => decreaseQuantity("vegetables", item.id)}
-                        style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
-                        <Text style={cartStyles.body2}>-</Text>
-                      </TouchableOpacity>
-                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
-                    </>
-                  )}
-                  <TouchableOpacity onPress={() => addCart("vegetables", item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-                    <Text style={cartStyles.body2}>+</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </TouchableOpacity>
-          )
-        }}
-      />
-    </View>;
-
-    let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
-      <Text style={{
-        color: COLORS.black,
-        fontSize: 14,
-        fontFamily: 'regular',
-        textAlign: 'center'
-      }}>No record found</Text></View>;
-
-    // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
-    response = result
-    return (
-      response
-    );
-  }
-
-  // const renderProducts = (title, type, prodsData, isLast) => {
-  //   const [quantity, setQuantity] = useState(1);
-  //   const width = Dimensions.get('window').width;
-
-  //   const numColumns = 2;
-  //   let marginBottomStyle = {};
-  //   if (isLast) {
-  //     marginBottomStyle = { marginBottom: "20%" };
-  //   }
-
-  //   let result = <View style={{ flex: 1, ...marginBottomStyle }}>
-  //     <View style={{
-  //       flexDirection: 'row',
-  //       justifyContent: 'space-between',
-  //       marginVertical: 8,
-  //       alignItems: 'center',
-  //     }}>
-  //       <Text style={{ ...FONTS.body2 }}>{title}</Text>
-  //       <TouchableOpacity onPress={() => {
-  //         if (quantity > 2) {
-  //           setQuantity(quantity - 1)
-  //         }
-  //       }}
-  //         style={{
-  //           width: 24,
-  //           height: 24,
-  //           alignItems: 'center',
-  //           justifyContent: 'center',
-  //           borderRadius: 12,
-  //           backgroundColor: 'rgba(255,255,255,0.2)'
-  //         }}
-  //       >
-  //         <Text style={{ color: COLORS.white }}>-</Text>
-  //       </TouchableOpacity>
-  //       <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
-  //       <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
-  //         style={{
-  //           width: 24,
-  //           height: 24,
-  //           alignItems: 'center',
-  //           justifyContent: 'center',
-  //           borderRadius: 12,
-  //           backgroundColor: 'rgba(255,255,255,0.2)'
-  //         }}
-  //       >
-  //         <Text style={{ color: COLORS.white }}>+</Text>
-  //       </TouchableOpacity>
-  //     </View>
-
-  //     <FlatList
-  //       showsHorizontalScrollIndicator={false}
-  //       horizontal={true}
-  //       data={prodsData} keyExtractor={item => item.id}
-  //       contentContainerStyle={{ paddingHorizontal: 8 }}
-  //       // style={{ marginBottom: "20%" }}
-  //       renderItem={({ item, index }) => {
-  //         return (
-  //           <TouchableOpacity
-  //             onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
-  //             key={index}
-  //             style={{
-  //               flexDirection: 'column',
-  //               paddingHorizontal: 2,
-  //               paddingVertical: 4,
-  //               height: "auto",
-  //               width: 200,
-  //               borderWidth: 1,
-  //               borderColor: COLORS.gray6,
-  //               borderRadius: 15,
-  //               marginRight: 6,
-  //               marginBottom: 16
-  //             }}>
-  //             <Image
-  //               source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-  //               resizeMode='cover'
-  //               style={{ width: "100%", height: 84, borderRadius: 15 }}
-  //             />
-  //             <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
-  //             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-  //               <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
-  //               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-  //                 {item.quantity_added >= 1 && (
-  //                   <>
-  //                     <TouchableOpacity
-  //                       onPress={() => decreaseQuantity(type, item.id)}
-  //                       style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
-  //                       <Text style={cartStyles.body2}>-</Text>
-  //                     </TouchableOpacity>
-  //                     <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
-  //                   </>
-  //                 )}
-  //                 <TouchableOpacity onPress={() => addCart(type, item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-  //                   <Text style={cartStyles.body2}>+</Text>
-  //                 </TouchableOpacity>
-  //               </View>
-  //             </View>
-  //           </TouchableOpacity>
-  //         )
-  //       }}
-  //     />
-  //   </View>;
-
-  //   let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
-  //     <Text style={{
-  //       color: COLORS.black,
-  //       fontSize: 14,
-  //       fontFamily: 'regular',
-  //       textAlign: 'center'
-  //     }}>No record found</Text></View>;
-
-  //   // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
-  //   response = result
-  //   return (
-  //     response
-  //   );
-  // }
 
   const renderProducts = (title, type, prodsData, isLast) => {
     const [quantity, setQuantity] = useState(1);
@@ -1504,9 +528,14 @@ const HomeV2 = ({ navigation }) => {
       </View>
 
       <FlatList
+        ref={flatListRef}
+        getItemLayout={getItemLayout}
         showsHorizontalScrollIndicator={false}
         horizontal={true}
-        data={prodsData} keyExtractor={item => item.id}
+        // onScroll={handleScroll}
+        scrollEventThrottle={16}
+        // data={data}
+        data={prodsData} keyExtractor={item => item.id.toString()}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         // style={{ marginBottom: "20%" }}
         renderItem={({ item, index }) => {
@@ -1548,6 +577,7 @@ const HomeV2 = ({ navigation }) => {
                   <TouchableOpacity onPress={() => addCart(type, item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
                     <Text style={cartStyles.body2}>+</Text>
                   </TouchableOpacity>
+
                 </View>
               </View>
             </TouchableOpacity>
@@ -1570,8 +600,39 @@ const HomeV2 = ({ navigation }) => {
     );
   }
 
+  const ProductsHorizontalScrollView = () => {
+    // Sample product data
+    const products = [
+      { id: 1, name: 'Product 1' },
+      { id: 2, name: 'Product 2' },
+      { id: 3, name: 'Product 3' },
+      { id: 4, name: 'Product 4' },
+      { id: 5, name: 'Product 5' },
+      { id: 6, name: 'Product 6' },
+      { id: 7, name: 'Product 7' },
+      { id: 8, name: 'Product 8' },
+      { id: 9, name: 'Product 9' },
+      { id: 10, name: 'Product 10' },
+    ];
+
+    return (
+      <ScrollView
+        horizontal={true}
+        showsHorizontalScrollIndicator={true}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        {products.map((product) => (
+          <View key={product.id} style={styles.productContainer}>
+            <Text style={styles.productName}>{product.name}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.area}>
+      {/* <View style={{ flex: 1, marginHorizontal: 16 }}> */}
       <View style={{ flex: 1, marginHorizontal: 16 }}>
         <StatusBar hidden={true} />
         <View style={{
@@ -1625,36 +686,7 @@ const HomeV2 = ({ navigation }) => {
             </View>
           </View>
 
-          {/* cart counter */}
-          {/* <View style={{
-            height: 45,
-            width: 45,
-            borderRadius: 22.5,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: COLORS.tertiaryBlack
-          }}>
-            <View>
-              <View style={{
-                position: 'absolute',
-                top: -16,
-                left: 12,
-                backgroundColor: COLORS.primary,
-                height: 25,
-                width: 25,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 12.5,
-                zIndex: 999
-              }}>
-                <Text style={{
-                  fontSize: 16,
-                  color: COLORS.white
-                }}>{cartCounter}</Text>
-              </View>
-              <Feather name="shopping-bag" size={24} color={COLORS.white} />
-            </View>
-          </View> */}
+
         </View>
 
         {
@@ -1662,13 +694,17 @@ const HomeV2 = ({ navigation }) => {
             <ActivityIndicator size="large" color="blue" /> : null
         }
 
+        {/* {ProductsHorizontalScrollView()} */}
+
         <ScrollView showsVerticalScrollIndicator={false}>
           {renderCarousel()}
           {renderCategories()}
           {/* {renderVegetables()} */}
           {renderProducts("Vegetables", "vegetables", vegetables)}
-          {renderProducts("Fruits", "fruits", fruits, true)}
+          {/* {renderProducts("Fruits", "fruits", fruits, true)} */}
         </ScrollView>
+        {/* {ProductsHorizontalScrollView()} */}
+
       </View>
       <CustomModal modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}
         code="#1243CD2" />

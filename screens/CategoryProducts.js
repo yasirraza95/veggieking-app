@@ -591,7 +591,7 @@ const CategoryProducts = ({ route }) => {
           screenLoading ?
             <ActivityIndicator size="large" color="blue" /> : null
         }
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView horizontal showsVerticalScrollIndicator={false}>
           {/* {renderRestaurantDetails()} */}
           {renderFoodsByCategories()}
         </ScrollView>
