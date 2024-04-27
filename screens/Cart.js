@@ -263,7 +263,7 @@ const Cart = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.blue }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'lightGrey' }}>
       <StatusBar hidden={true} />
       <View style={cartStyles.header}>
 
@@ -284,7 +284,7 @@ const Cart = ({ navigation }) => {
                 style={{ height: 24, width: 24, tintColor: COLORS.black }}
               />
             </TouchableOpacity>
-            <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular', color: COLORS.white }}>Cart</Text>
+            <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular', color: '#000' }}>Cart</Text>
           </View>
         </View>
 
@@ -293,14 +293,19 @@ const Cart = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           // data={cartData}
           keyExtractor={item => item.id}
-          // ListHeaderComponent={() => (
-          //   <View style={styles.bannerContainer}>
-          //     <Text style={styles.bannerText}>Get Rs.50 Discount</Text>
-          //     <Text style={styles.bannerDescription}>
-          //       Rs.50 Discount on orders above Rs.2500
-          //     </Text>
-          //   </View>
-          // )}
+          ListHeaderComponent={() => (
+            <View>
+            <View style={styles.bannerContainer}>
+              <Text style={styles.bannerText}>Get Rs.50 Discount</Text>
+              <Text style={styles.bannerDescription}>
+                Rs.50 Discount on orders above Rs.2500
+              </Text>
+            <View style={styles.progressContainer}>
+        <View style={[styles.progressBar, { width: `59%` }]} />
+      </View>
+            </View>
+            </View>
+          )}
           renderItem={({ item, index }) => {
 
             let result = <View key={index} style={cartStyles.cartItemContainer}>
@@ -328,7 +333,7 @@ const Cart = ({ navigation }) => {
                   <Text
                     style={{
                       fontSize: 13,
-                      color: COLORS.white,
+                      color: '#000',
                       fontFamily: 'regular',
                       textTransform: 'capitalize',
                       marginRight: 20
@@ -350,7 +355,7 @@ const Cart = ({ navigation }) => {
   onPress={() => deleteCart(item.prod_id)}
   style={styles.closeButton}
 >
-  <FontAwesome name="trash" size={16} color={COLORS.white} />
+  <FontAwesome name="trash" size={16} color={'#fff'} />
 </TouchableOpacity>
                   </TouchableOpacity>
                 </View>
@@ -358,32 +363,32 @@ const Cart = ({ navigation }) => {
                 <Text style={{
                   fontSize: 16,
                   fontFamily: 'regular',
-                  color: COLORS.white,
+                  color: '#000',
                   marginVertical: 6
                 }}>Rs. {item.product_price}</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{
                     fontSize: 20,
-                    color: COLORS.white,
+                    color: '#f44c00',
                     fontFamily: 'bold'
                   }}>Rs. {item.product_price * item.quantity}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity
                       onPress={() => decreaseQuantity(item.prod_id)}
-                      style={cartStyles.roundedBtn}
+                      style={styles.roundedBtn}
                     >
                       <Text style={cartStyles.body2}>-</Text>
                     </TouchableOpacity>
                     <Text style={{
                       fontSize: 16,
                       fontFamily: 'regular',
-                      color: COLORS.white,
+                      color: '#000',
                       marginHorizontal: 12
                     }}>{item.quantity}</Text>
                     <TouchableOpacity
                       // id={item.id}
                       onPress={() => increaseQuantity(item.prod_id)}
-                      style={cartStyles.roundedBtn}
+                      style={styles.roundedBtn}
                     >
                       <Text style={cartStyles.body2}>+</Text>
                     </TouchableOpacity>
@@ -475,7 +480,25 @@ const styles = StyleSheet.create({
     fontFamily: 'regular', 
     color: '#FFFFFF', 
   },
-  
+  progressContainer: {
+    width: '90%', 
+    backgroundColor: '#ccc', 
+    borderRadius: 10,
+    overflow: 'hidden', 
+    marginTop: 10
+  },
+  progressBar: {
+    height: 8, 
+    backgroundColor: '#fff', 
+  },
+  roundedBtn:{
+    height: 24,
+    width: 24,
+    borderRadius: 12,
+    backgroundColor: "#f44c00",
+    alignItems: 'center',
+    justifyContent: 'center',
+},
   
 });
 
