@@ -1,10 +1,14 @@
-import { View, Text, Platform } from 'react-native'
-import React from 'react'
+import { View, Text, Platform, StyleSheet } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { COLORS } from '../constants'
 import { HomeV1, Profile, Search, Card, Notifications, Menu, MyOrders, Message, PersonalProfile, Cart } from '../screens'
 import { Ionicons, SimpleLineIcons } from '@expo/vector-icons'
 import DrawerNavigation from './DrawerNavigation'
+import GeneralService from '../services/general.service'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useFocusEffect } from '@react-navigation/core'
+import { useCart } from '../context/CartContext';
 
 const Tab = createBottomTabNavigator()
 
@@ -23,6 +27,14 @@ const screenOptions = {
 }
 
 const BottomTabNavigation = () => {
+    const { cartCounter } = useCart();
+
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         getCartCounter();
+    //     }, [])
+    // );
+
     return (
         <Tab.Navigator screenOptions={screenOptions}>
             <Tab.Screen
@@ -94,13 +106,20 @@ const BottomTabNavigation = () => {
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
-                            <Ionicons
-                                name={focused ? "cart-sharp" : "cart-outline"}
-                                size={24}
-                                color={
-                                    focused ? COLORS.primary : COLORS.black
-                                }
-                            />
+                            <>
+                                <Ionicons
+                                    name={focused ? "cart-sharp" : "cart-outline"}
+                                    size={24}
+                                    color={
+                                        focused ? COLORS.primary : COLORS.black
+                                    }
+                                />
+                                {cartCounter > 0 && (
+                                    <View style={styles.cartBadge}>
+                                        <Text style={styles.cartBadgeText}>{cartCounter}</Text>
+                                    </View>
+                                )}
+                            </>
                         )
                     },
                 }}
@@ -126,5 +145,23 @@ const BottomTabNavigation = () => {
         </Tab.Navigator>
     )
 }
+
+const styles = StyleSheet.create({
+    cartBadge: {
+        position: 'absolute',
+        bottom: 25,
+        right: 15,
+        backgroundColor: 'red',
+        borderRadius: 10,
+        width: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    cartBadgeText: {
+        color: 'white',
+        fontSize: 12,
+    },
+});
 
 export default BottomTabNavigation

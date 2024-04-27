@@ -32,7 +32,7 @@ const Thankyou = ({ navigation, route }) => {
                     <Text style={styles.btnText}>Dashboard</Text>
                 </TouchableOpacity>
                 <Text style={styles.contact}>For any query please contact us at{"\n"}
-                    0300-1234567
+                    0346-5477825
                 </Text>
             </View>
         </SafeAreaView>

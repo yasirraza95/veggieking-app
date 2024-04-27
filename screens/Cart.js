@@ -193,7 +193,7 @@ const Cart = ({ navigation }) => {
       try {
         const response = await deleteToCart(id);
         fetchData();
-        showToast("Item removed");
+        // showToast("Item removed");
 
       } catch (err) {
         console.log("delete error");

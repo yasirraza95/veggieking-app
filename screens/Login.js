@@ -201,7 +201,7 @@ const Login = ({ navigation }) => {
                       onChangeText={handleChange('phone')}
                       onBlur={handleBlur('phone')}
                       value={values.phone}
-                      placeholder="03001234567"
+                      placeholder="Enter Phone No."
                       placeholderTextColor={COLORS.black}
                       keyboardType="numeric"
                     />
@@ -214,7 +214,7 @@ const Login = ({ navigation }) => {
                         onBlur={handleBlur('password')}
                         value={values.password}
                         autoCapitalize="none"
-                        placeholder="*************"
+                        placeholder="Enter Password"
                         placeholderTextColor={COLORS.black}
                         secureTextEntry={!isPasswordVisible}
                         style={{ flex: 1, marginRight: 10 }}

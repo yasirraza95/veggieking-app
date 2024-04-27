@@ -199,10 +199,10 @@ const OngoingRoute = ({ navigation, index }) => {
           }}>
             <TouchableOpacity
               // onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
-              onPress={() => navigate.navigate("OrderDetail", { orderId: item.id })}
+              onPress={() => navigate.navigate("UserDetail", { custName: item.name, custEmail: item.email, custPhone: item.phone, custAddress: item.address })}
               style={{
                 height: 38,
-                width: 140,
+                width: 100,
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: COLORS.primary,
@@ -213,7 +213,26 @@ const OngoingRoute = ({ navigation, index }) => {
                 color: COLORS.white,
                 fontSize: 14,
                 fontFamily: 'regular'
-              }}>Details</Text>
+              }}>User Details</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              // onPress={() => navigate.navigate("TrackingOrders", { orderId: item.id, orderNo: item.order_no, orderDate: item.created_at })}
+              onPress={() => navigate.navigate("OrderDetail", { orderId: item.id })}
+              style={{
+                height: 38,
+                width: 100,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: COLORS.primary,
+                borderRadius: 8
+              }}
+            >
+              <Text style={{
+                color: COLORS.white,
+                fontSize: 14,
+                fontFamily: 'regular'
+              }}>Order Details</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -221,7 +240,7 @@ const OngoingRoute = ({ navigation, index }) => {
               onPress={() => confirmDeliver(item.id, item.order_no)}
               style={{
                 height: 38,
-                width: 140,
+                width: 100,
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: COLORS.green,
