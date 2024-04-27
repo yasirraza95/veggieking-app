@@ -606,75 +606,38 @@ const HomeV2 = ({ navigation }) => {
 
   const renderCategories = () => {
     const numColumns = 3;
-
+    const windowWidth = Dimensions.get('window').width;
+    const itemWidth = windowWidth < 600 ? windowWidth / 3.5 : windowWidth / 6;
+  
     let result = <>
-      <View>
-        <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginVertical: 8,
-          alignItems: 'center',
-        }}>
-          <Text style={{ ...FONTS.body2 }}>Categories</Text>
-        </View>
+       <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Categories</Text>
+      </View>
+      <View style={styles.categoryContainer}>
+        {category.map((item, index) => {
+          const borderColors = ['#FF6347', '#6A5ACD', '#32CD32', '#FFD700', '#20B2AA', '#9370DB', '#FF8C00', '#00CED1', '#8A2BE2', '#ADFF2F'];
+          const borderColorIndex = index % borderColors.length;
 
-        <View>
-
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 8 }}>
-            {category.map((item, index) => {
-              // Define an array of border colors
-              const borderColors = ['#FF6347', '#6A5ACD', '#32CD32', '#FFD700', '#20B2AA', '#9370DB', '#FF8C00', '#00CED1', '#8A2BE2', '#ADFF2F'];
-              // Use modulo operator to ensure the index is within the range of borderColors array
-              const borderColorIndex = index % borderColors.length;
-
-              return (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => navigate.navigate("CategoryProducts", {
-                    catId: item.id, catName: item.name
-                  })}
-                  style={{
-                    alignItems: 'center',
-                    marginBottom: 15,
-                  }}
-                >
-                  <View style={{
-                    height: 90,
-                    width: 90,
-                    borderRadius: 45,
-                    overflow: 'hidden',
-                    shadowColor: '#F1F1F1',
-                    shadowOffset: {
-                      width: 2,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 5,
-                    elevation: 5,
-                    borderWidth: 2, // Add borderWidth
-                    borderColor: borderColors[borderColorIndex], // Assign different borderColor
-                    backgroundColor: 'orange',
-                  }}>
-                    <Image
-                      source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-                      resizeMode='cover'
-                      style={{
-                        flex: 1,
-                        height: '100%',
-                        width: '100%',
-                      }}
-                    />
-                  </View>
-                  <Text style={{ fontSize: 16, fontFamily: 'bold', textAlign: 'center', marginTop: 5 }}>{item.name}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-
-        </View>
-
-      </View >
+          return (
+            <TouchableOpacity
+              key={index}
+              onPress={() => navigate.navigate("CategoryProducts", { catId: item.id, catName: item.name })}
+              style={[styles.categoryItem, { width: itemWidth }]}
+            >
+              <View style={[styles.imageContainer, { borderColor: borderColors[borderColorIndex] }]}>
+                <Image
+                  source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+                  resizeMode='cover'
+                  style={styles.image}
+                />
+              </View>
+              <Text style={styles.categoryName}>{item.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
     </>
 
     let response = category.length > 0 ? result : <View style={{ flex: 1 }}>
@@ -1125,12 +1088,14 @@ const HomeV2 = ({ navigation }) => {
               <View style={{
                 padding: 8,
               }}>
+                <Text style={{ fontSize: 18, textTransform: 'capitalize' }}>{item.name}</Text>
                 <View style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
-                  <Text style={{ fontSize: 18, textTransform: 'capitalize' }}>{item.name}</Text>
+                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
+
                   <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                     {item.quantity_added >= 1 && (
                       <>
@@ -1149,7 +1114,7 @@ const HomeV2 = ({ navigation }) => {
                     </TouchableOpacity>
                   </View>
                 </View>
-                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
+                {/* <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text> */}
               </View>
             </TouchableOpacity>
           )
@@ -1273,6 +1238,9 @@ const HomeV2 = ({ navigation }) => {
               />
 
               <View style={{ padding: 8 }}>
+                    <Text style={{ fontSize: 18, textTransform: "capitalize" }}>
+                      {item.name}
+                    </Text>
                 <View
                   style={{
                     flexDirection: "row",
@@ -1280,9 +1248,9 @@ const HomeV2 = ({ navigation }) => {
                     alignItems: "center",
                   }}
                 >
-                  <Text style={{ fontSize: 18, textTransform: "capitalize" }}>
-                    {item.name}
-                  </Text>
+                      <Text style={{ fontFamily: "regular", marginVertical: 3 }}>
+                  Rs. {item.price}
+                </Text>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     {item.quantity_added >= 1 && (
                       <>
@@ -1304,9 +1272,9 @@ const HomeV2 = ({ navigation }) => {
                     </TouchableOpacity>
                   </View>
                 </View>
-                <Text style={{ fontFamily: "regular", marginVertical: 3 }}>
+                {/* <Text style={{ fontFamily: "regular", marginVertical: 3 }}>
                   Rs. {item.price}
-                </Text>
+                </Text> */}
               </View>
             </TouchableOpacity>
           )
@@ -1441,7 +1409,57 @@ const styles = StyleSheet.create({
   area: {
     flex: 1,
     backgroundColor: COLORS.white
-  }
+  },
+    container: {
+    paddingHorizontal: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 8,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  categoryItem: {
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  imageContainer: {
+    height: 90,
+    width: 90,
+    borderRadius: 45,
+    overflow: 'hidden',
+    shadowColor: '#F1F1F1',
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
+    borderWidth: 2,
+    backgroundColor: 'orange',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    height: '100%',
+    width: '100%',
+  },
+  categoryName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 5,
+  },
 })
 
 export default HomeV2
