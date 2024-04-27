@@ -1334,14 +1334,131 @@ const HomeV2 = ({ navigation }) => {
     );
   }
 
-  const renderProducts = (title, type, fruitsData, isLast) => {
+  // const renderProducts = (title, type, prodsData, isLast) => {
+  //   const [quantity, setQuantity] = useState(1);
+  //   const width = Dimensions.get('window').width;
+
+  //   const numColumns = 2;
+  //   let marginBottomStyle = {};
+  //   if (isLast) {
+  //     marginBottomStyle = { marginBottom: "20%" };
+  //   }
+
+  //   let result = <View style={{ flex: 1, ...marginBottomStyle }}>
+  //     <View style={{
+  //       flexDirection: 'row',
+  //       justifyContent: 'space-between',
+  //       marginVertical: 8,
+  //       alignItems: 'center',
+  //     }}>
+  //       <Text style={{ ...FONTS.body2 }}>{title}</Text>
+  //       <TouchableOpacity onPress={() => {
+  //         if (quantity > 2) {
+  //           setQuantity(quantity - 1)
+  //         }
+  //       }}
+  //         style={{
+  //           width: 24,
+  //           height: 24,
+  //           alignItems: 'center',
+  //           justifyContent: 'center',
+  //           borderRadius: 12,
+  //           backgroundColor: 'rgba(255,255,255,0.2)'
+  //         }}
+  //       >
+  //         <Text style={{ color: COLORS.white }}>-</Text>
+  //       </TouchableOpacity>
+  //       <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
+  //       <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
+  //         style={{
+  //           width: 24,
+  //           height: 24,
+  //           alignItems: 'center',
+  //           justifyContent: 'center',
+  //           borderRadius: 12,
+  //           backgroundColor: 'rgba(255,255,255,0.2)'
+  //         }}
+  //       >
+  //         <Text style={{ color: COLORS.white }}>+</Text>
+  //       </TouchableOpacity>
+  //     </View>
+
+  //     <FlatList
+  //       showsHorizontalScrollIndicator={false}
+  //       horizontal={true}
+  //       data={prodsData} keyExtractor={item => item.id}
+  //       contentContainerStyle={{ paddingHorizontal: 8 }}
+  //       // style={{ marginBottom: "20%" }}
+  //       renderItem={({ item, index }) => {
+  //         return (
+  //           <TouchableOpacity
+  //             onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+  //             key={index}
+  //             style={{
+  //               flexDirection: 'column',
+  //               paddingHorizontal: 2,
+  //               paddingVertical: 4,
+  //               height: "auto",
+  //               width: 200,
+  //               borderWidth: 1,
+  //               borderColor: COLORS.gray6,
+  //               borderRadius: 15,
+  //               marginRight: 6,
+  //               marginBottom: 16
+  //             }}>
+  //             <Image
+  //               source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+  //               resizeMode='cover'
+  //               style={{ width: "100%", height: 84, borderRadius: 15 }}
+  //             />
+  //             <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
+  //             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+  //               <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
+  //               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+  //                 {item.quantity_added >= 1 && (
+  //                   <>
+  //                     <TouchableOpacity
+  //                       onPress={() => decreaseQuantity(type, item.id)}
+  //                       style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
+  //                       <Text style={cartStyles.body2}>-</Text>
+  //                     </TouchableOpacity>
+  //                     <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
+  //                   </>
+  //                 )}
+  //                 <TouchableOpacity onPress={() => addCart(type, item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+  //                   <Text style={cartStyles.body2}>+</Text>
+  //                 </TouchableOpacity>
+  //               </View>
+  //             </View>
+  //           </TouchableOpacity>
+  //         )
+  //       }}
+  //     />
+  //   </View>;
+
+  //   let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
+  //     <Text style={{
+  //       color: COLORS.black,
+  //       fontSize: 14,
+  //       fontFamily: 'regular',
+  //       textAlign: 'center'
+  //     }}>No record found</Text></View>;
+
+  //   // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
+  //   response = result
+  //   return (
+  //     response
+  //   );
+  // }
+
+  const renderProducts = (title, type, prodsData, isLast) => {
     const [quantity, setQuantity] = useState(1);
     const width = Dimensions.get('window').width;
 
     const numColumns = 2;
     let marginBottomStyle = {};
     if (isLast) {
-      marginBottomStyle = { marginBottom: "20%" }; // Apply marginBottom only to the last container
+      marginBottomStyle = { marginBottom: "20%" };
     }
 
     let result = <View style={{ flex: 1, ...marginBottomStyle }}>
@@ -1350,7 +1467,6 @@ const HomeV2 = ({ navigation }) => {
         justifyContent: 'space-between',
         marginVertical: 8,
         alignItems: 'center',
-        // paddingHorizontal: 16
       }}>
         <Text style={{ ...FONTS.body2 }}>{title}</Text>
         <TouchableOpacity onPress={() => {
@@ -1383,10 +1499,11 @@ const HomeV2 = ({ navigation }) => {
           <Text style={{ color: COLORS.white }}>+</Text>
         </TouchableOpacity>
       </View>
+
       <FlatList
         showsHorizontalScrollIndicator={false}
         horizontal={true}
-        data={fruitsData} keyExtractor={item => item.id}
+        data={prodsData} keyExtractor={item => item.id}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         // style={{ marginBottom: "20%" }}
         renderItem={({ item, index }) => {
@@ -1444,7 +1561,6 @@ const HomeV2 = ({ navigation }) => {
         textAlign: 'center'
       }}>No record found</Text></View>;
 
-    // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
     response = result
     return (
       response
