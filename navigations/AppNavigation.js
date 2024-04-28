@@ -1,7 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useState, useEffect } from 'react'
-import {Onboarding1, Onboarding2, Onboarding3, Signup, Verification, Login, StartUpScreen, ForgotPassword, ResetPassword, Onboarding4,
+import {
+    Onboarding1, Onboarding2, Onboarding3, Signup, Verification, Login, StartUpScreen, ForgotPassword, ResetPassword, Onboarding4,
     LocationAccess, HomeV1, FoodDetailsV1, FoodDetailsV2, RestaurantView1, RestaurantView2, FoodByKeywords, Cart, EditCart, PaymentMethod,
     PaymentMethodNoCard, AddPaymentCard, PaymentSuccess, TrackingOrderV1, Message, Menu, PersonalProfile, EditProfile, Address, AddNewAddress,
     Call, TrackingOrderV2, Chat, VideoCall, OpenShops, AddReview, CancelOrders, Profile, TransactionHistory, Faqs, Settings, SubmitQuestion,
@@ -19,6 +20,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TrackingOrderV3 from '../screens/TrackingOrderV3';
 import CategoryProducts from '../screens/CategoryProducts';
 import Thankyou from '../screens/Thankyou';
+import Contact from '../screens/Contact';
 // import { Toast } from '@react-native-toast-message';
 
 const Stack = createNativeStackNavigator()
@@ -86,6 +88,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="RestaurantView" component={RestaurantView1} />
                 <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
                 <Stack.Screen name="Cart" component={Cart} />
+                <Stack.Screen name="Contact" component={Contact} />
                 <Stack.Screen name="Thankyou" component={Thankyou} />
                 <Stack.Screen name="EditCart" component={EditCart} />
                 <Stack.Screen name="PaymentMethod" component={PaymentMethod} />

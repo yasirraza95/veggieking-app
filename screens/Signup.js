@@ -15,6 +15,7 @@ import { Formik } from 'formik'
 import { signInSchema } from '../schema'
 import { Ionicons } from '@expo/vector-icons';
 import GeneralService from '../services/general.service'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 const initialState = {
@@ -50,6 +51,34 @@ const Signup = ({ navigation }) => {
         navigation.replace('Login');
     };
 
+    const handleLogin = async (values) => {
+        try {
+            const response = await GeneralService.login(values);
+            const { data } = response;
+            const { access_token, user } = data;
+            const { id, user_type, first_name, last_name, address, phone, email } = user;
+
+            const cartResponse = await GeneralService.cartCounterByUserId(id);
+            const { data: cartData } = cartResponse;
+            const { response: cartNo } = cartData;
+
+            const keys = await AsyncStorage.getAllKeys();
+            await AsyncStorage.multiRemove(keys);
+
+            await AsyncStorage.setItem("accessToken", access_token);
+            await AsyncStorage.setItem("_id", String(id));
+            await AsyncStorage.setItem("user_type", user_type);
+            await AsyncStorage.setItem("user_name", first_name + " " + last_name);
+            await AsyncStorage.setItem("user_phone", phone);
+            await AsyncStorage.setItem("user_email", email);
+            await AsyncStorage.setItem("cart_counter", String(cartNo));
+            navigation.replace('LocationAccess');
+        } catch (err) {
+            console.log(err)
+            Alert.alert("Login Error", "Server error. Please try again later.");
+        }
+    };
+
     const handleSignUp = async (values) => {
         try {
             setIsLoading(true);
@@ -59,8 +88,10 @@ const Signup = ({ navigation }) => {
             console.log('SignUp response:', response);
             setIsLoading(false);
             setIsEnable(true);
+
+            handleLogin(values);
             // Alert.alert('Success', 'User registered successfully');
-            Alert.alert('Success', 'User registered successfully', [{ text: 'OK', onPress: handleAlertOK }]);
+            // Alert.alert('Success', 'User registered successfully', [{ text: 'OK', onPress: handleAlertOK }]);
         } catch (err) {
             console.log(err);
             setIsLoading(false);

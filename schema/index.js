@@ -16,7 +16,7 @@ export const signInSchema = Yup.object({
   phone: Yup.string().min(11, "Min 11 numbers required").max(11, "Max 11 numbers allowed").matches(
     /^03[0-9]{9}$/, 'Invalid phone number'
   ).required("Enter Phone No."),
-  email: Yup.string().email('Enter valid email').required("Please enter the Email"),
+  email: Yup.string().email('Enter valid email').nullable(),
   // password: Yup.string().min(2).required("Enter Password"),
   password: Yup.string().min(4, 'Min 4 characters required').required('Enter Password')
 });
@@ -27,7 +27,7 @@ export const userProfile = Yup.object({
   phone: Yup.string().min(11, "Min 11 numbers required").max(11, "Max 11 numbers allowed").matches(
     /^03[0-9]{9}$/, 'Invalid phone number'
   ).required("Enter Phone No."),
-  email: Yup.string().email('Enter valid email').required("Please enter the Email"),
+  email: Yup.string().email('Enter valid email').nullable(),
   // password: Yup.string().min(2).required("Enter Password"),
   // password: Yup.string().min(4, 'Min 4 characters required').required('Enter Password')
 });
@@ -35,6 +35,11 @@ export const userProfile = Yup.object({
 export const forgotSchema = Yup.object({
   email: Yup.string().email('Enter valid email').required("Please enter the Email"),
 });
+
+export const contactSchema = Yup.object({
+  message: Yup.string().required("Please enter the Message"),
+});
+
 const ProfileSchema = Yup.object().shape({
   fullName: Yup.string()
     .required('Full Name is required'),

@@ -221,6 +221,8 @@ const Cart = ({ navigation }) => {
 
         let userId = await AsyncStorage.getItem("_id");
         const response = await GeneralService.deleteCart(userId, id);
+        console.log(response);
+        getCartCounter();
         // console.log(response.data.response);
 
         // let cartCounter = await AsyncStorage.getItem("cart_counter");
@@ -258,12 +260,11 @@ const Cart = ({ navigation }) => {
       console.log(inputText);
     }
     // TODO
-    if (totalPrice >= 1) {
+    if (parseInt(totalPrice) >= 1000) {
       orderPlace();
     } else {
       Alert.alert("Price Alert", "Minimum order is Rs 1000");
     }
-
   }
 
   return (
@@ -297,75 +298,76 @@ const Cart = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item, index }) => {
-            let result = <View key={index} style={cartStyles.cartItemContainer}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ width: 80, marginRight: 10 }}>
-                  <Image
-                    source={{ uri: `https://api.veggieking.pk/public/upload/${item.product_image}` }}
-                    resizeMode='contain'
-                    style={{
-                      height: 80,
-                      flex: 1,
-                      borderRadius: 30,
-                    }}
-                  />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      color: '#000',
-                      fontFamily: 'regular',
-                      textTransform: 'capitalize',
-                      marginBottom: 6,
-                    }}>{item.product_name}</Text>
-                  <Text style={{
-                    fontSize: 20,
-                    color: '#f44c00',
-                    fontFamily: 'bold',
-                    marginBottom: 6,
-                  }}>Rs. {item.product_price * item.quantity}</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity
-                    onPress={() => decreaseQuantity(item.prod_id)}
-                    style={styles.roundedBtn}
-                  >
-                    <Text style={cartStyles.body2}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={{
-                    fontSize: 16,
-                    fontFamily: 'regular',
-                    color: '#000',
-                    marginHorizontal: 12
-                  }}>{item.quantity}</Text>
-                  <TouchableOpacity
-                    onPress={() => increaseQuantity(item.prod_id)}
-                    style={styles.roundedBtn}
-                  >
-                    <Text style={cartStyles.body2}>+</Text>
-                  </TouchableOpacity>
+            return (
+              <View style={cartStyles.cardContainer}>
+                <View style={cartStyles.card}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {/* Delete Button */}
+                    <TouchableOpacity
+                      onPress={() => deleteCart(item.prod_id)}
+                      style={styles.deleteButton}
+                    >
+                      <FontAwesome name="remove" size={24} color="red" style={{ marginRight: 10 }} />
+                    </TouchableOpacity>
+                    <View style={{ width: 80, marginRight: 10 }}>
+                      <Image
+                        source={{ uri: `https://api.veggieking.pk/public/upload/${item.product_image}` }}
+                        resizeMode='contain'
+                        style={{
+                          height: 80,
+                          flex: 1,
+                          borderRadius: 10,
+                        }}
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          color: '#000',
+                          fontFamily: 'regular',
+                          textTransform: 'capitalize',
+                          marginBottom: 6,
+                        }}>{item.product_name}</Text>
+                      <Text style={{
+                        fontSize: 20,
+                        color: '#f44c00',
+                        fontFamily: 'bold',
+                        marginBottom: 6,
+                      }}>Rs. {item.product_price * item.quantity}</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                      {/* Minus Button */}
+                      <TouchableOpacity
+                        onPress={() => decreaseQuantity(item.prod_id)}
+                        style={styles.roundedBtn}
+                      >
+                        <Text style={cartStyles.body2}>-</Text>
+                      </TouchableOpacity>
+                      {/* Quantity Text */}
+                      <Text style={{
+                        fontSize: 16,
+                        fontFamily: 'regular',
+                        color: '#000',
+                        marginHorizontal: 12
+                      }}>{item.quantity}</Text>
+                      {/* Plus Button */}
+                      <TouchableOpacity
+                        onPress={() => increaseQuantity(item.prod_id)}
+                        style={styles.roundedBtn}
+                      >
+                        <Text style={cartStyles.body2}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
-            </View>
+            );
+          }}
 
-            let response = cart.length > 0 ? result : <View style={{ flex: 1 }}>
-              <Text style={{
-                color: COLORS.black,
-                fontSize: 14,
-                fontFamily: 'regular',
-                textAlign: 'center'
-
-              }}>No record found</Text></View>;
-
-            response = isLoading ? <ActivityIndicator size="large" color="white" /> : result
-
-            return (
-              response
-            )
-          }
-          }
         />
+
       </View>
       {
         cart.length > 0 && (

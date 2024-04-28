@@ -8,7 +8,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import { COLORS, images } from "../constants";
-import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory, PersonalProfile } from "../screens";
+import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory, PersonalProfile, Contact } from "../screens";
 import Otp from "../screens/Otp";
 import Logout from "../screens/Logout";
 import { useEffect, useState } from "react";
@@ -158,6 +158,18 @@ const DrawerNavigation = () => {
           )
         }}
         component={Cart}
+      />
+
+      <Drawer.Screen
+        name="Contact"
+        options={{
+          drawerLabel: "Contact",
+          title: "Contact",
+          drawerIcon: () => (
+            <Ionicons name="mail-outline" size={24} color={COLORS.black} />
+          )
+        }}
+        component={Contact}
       />
 
       <Drawer.Screen

@@ -32,6 +32,7 @@ import Message from "./Message";
 import Menu from "./Menu";
 import PersonalProfile from "./PersonalProfile";
 import EditProfile from "./EditProfile";
+import Contact from "./Contact";
 import Address from "./Address";
 import AddNewAddress from "./AddNewAddress";
 import MyOrders from "./MyOrders";
@@ -82,6 +83,7 @@ export {
     Message,
     Menu,
     PersonalProfile,
+    Contact,
     EditProfile,
     Address,
     AddNewAddress,

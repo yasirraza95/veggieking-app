@@ -15,8 +15,35 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili]
 const FoodDetailsV1 = ({ route }) => {
 
+  const { id: prodId, name, image, price, minQty, quantity_added, type } = route.params;
+
+
+  const [data, setData] = useState({});
+  const [quantity, setQuantity] = useState(0);
+
   const [cartCounter, setCartCounter] = useState(0);
   const [screenLoading, setScreenLoading] = useState(false);
+
+  const handleQuantityChange = (newQuantity) => {
+    setQuantity(newQuantity);
+  };
+
+
+  const fetchData = async (id) => {
+    try {
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await GeneralService.getProductCartById(id, userId);
+      const { data } = response;
+      const { response: res } = data;
+      console.log(res);
+      // console.log(`home-data=${cartData}`);
+      // const { response: cartNo } = cartData;
+      setQuantity(res);
+    } catch (err) {
+      console.log(err);
+      setQuantity(0);
+    }
+  }
 
   const getCartCounter = async () => {
     try {
@@ -40,11 +67,38 @@ const FoodDetailsV1 = ({ route }) => {
       //   console.log(`cart-counter=${cartCounter}`);
       //   setCartCounter(cartCounter);
       // };
-
+      fetchData(prodId);
       getCartCounter();
 
     }, [])
   );
+
+  const decreaseQuantity = (id) => {
+    const decreaseQty = async () => {
+      try {
+        let userId = await AsyncStorage.getItem("_id");
+        // const response = await GeneralService.decreaseQty(userId, id);
+
+        const timeout = 8000;
+        const response = await Promise.race([
+          GeneralService.decreaseQty(userId, id),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        ]);
+        // console.log(response.data.response);
+        if (response) {
+          fetchData(prodId);
+          getCartCounter();
+
+        } else {
+          throw new Error('No response from the server');
+        }
+      } catch (err) {
+        console.log(err?.response?.data);
+      }
+    }
+
+    decreaseQty();
+  };
 
   const cartAddition = (id) => {
     console.log(`id=${id}`);
@@ -61,6 +115,7 @@ const FoodDetailsV1 = ({ route }) => {
         ]);
 
         if (response) {
+          fetchData(prodId);
           // if (response.status == 200) {
           //   let cartCounter = await AsyncStorage.getItem("cart_counter");
           //   cartCounter = parseInt(cartCounter, 10);
@@ -81,7 +136,6 @@ const FoodDetailsV1 = ({ route }) => {
     addCart();
   }
 
-  const { id, name, image, price, minQty, type } = route.params;
   const renderHeader = () => {
     const navigation = useNavigation()
     return (
@@ -140,13 +194,12 @@ const FoodDetailsV1 = ({ route }) => {
 
   const renderFoodDetails = () => {
     const [isFavourite, setIsFavourite] = useState(false);
-    const [quantity, setQuantity] = useState(1);
-    const navigation = useNavigation();
 
     const [selectedSize, setSelectedSize] = useState(null);
     const handleSizeSelection = (size) => {
       setSelectedSize(size);
     }
+
     return (
       <View style={{ marginVertical: 16 }}>
         {/* Food details images */}
@@ -202,15 +255,27 @@ const FoodDetailsV1 = ({ route }) => {
               justifyContent: 'space-between',
               marginBottom: 16,
             }}>
-              <Text style={{ fontSize: 28, fontFamily: 'regular' }}>Rs. {price}/{type}</Text>
+              <Text style={{ fontSize: 28, fontFamily: 'regular' }}>Rs. {price}</Text>
 
             </View>
-            <Button
-              filled
-              onPress={() => cartAddition(id)}
-              isEnable={true}
-              title="ADD TO CART"
-            />
+            {quantity > 0 ? (
+              <View style={quantityStyle.container}>
+                <TouchableOpacity onPress={() => decreaseQuantity(prodId)} style={quantityStyle.button}>
+                  <Text style={quantityStyle.buttonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={quantityStyle.quantity}>{quantity}</Text>
+                <TouchableOpacity onPress={() => cartAddition(prodId)} style={quantityStyle.button}>
+                  <Text style={quantityStyle.buttonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <Button
+                filled
+                onPress={() => cartAddition(prodId)}
+                isEnable={true}
+                title={`ADD TO CART`}
+              />
+            )}
           </View>
         </View>
       </View>
@@ -221,10 +286,10 @@ const FoodDetailsV1 = ({ route }) => {
       <StatusBar hidden={true} />
       <View style={{ flex: 1, paddingHorizontal: 16 }}>
         {renderHeader()}
-        {
+        {/* {
           screenLoading ?
             <ActivityIndicator size="large" color="blue" /> : null
-        }
+        } */}
         <ScrollView showsVerticalScrollIndicator={false}>
           {renderFoodDetails()}
         </ScrollView>
@@ -254,5 +319,43 @@ const styles = StyleSheet.create({
     fontFamily: 'regular'
   },
 })
+
+const quantityStyle = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', // Center the content horizontally
+    borderRadius: 5,
+    borderColor: '#ccc',
+    overflow: 'hidden', // Clip any content that exceeds the container
+  },
+  button: {
+    paddingHorizontal: 25,
+    paddingVertical: 8,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+  },
+  buttonText: {
+    fontSize: 20,
+    color: '#fff',
+  },
+  quantity: {
+    fontSize: 16,
+    paddingHorizontal: 30,
+  },
+  // Apply borders only to the buttons and quantity text
+  buttonBorder: {
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#ccc',
+  },
+  quantityBorder: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+});
+
 
 export default FoodDetailsV1

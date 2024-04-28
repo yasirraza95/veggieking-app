@@ -51,5 +51,5 @@ export const cartStyles = StyleSheet.create({
         // height: 120,
         borderRadius: 30,
         marginTop: 8,
-    }
+    },
 })

@@ -56,7 +56,7 @@ const HomeV2 = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [userAddress, setUserAddress] = useState('');
   const [cartCounter, setCartCounter] = useState(0);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
   const [screenLoading, setScreenLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [featureLoading, setFeatureLoading] = useState(false);
@@ -371,7 +371,7 @@ const HomeV2 = ({ navigation }) => {
       let userId = await AsyncStorage.getItem("_id");
       const timeout = 8000;
       const response = await Promise.race([
-        GeneralService.listFeaturedProductByCart(1),
+        GeneralService.listFeaturedProductByCart(userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
@@ -942,7 +942,7 @@ const HomeV2 = ({ navigation }) => {
         renderItem={({ item, index }) => {
           return (
             <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
               key={index}
               style={{
                 flexDirection: 'column',
@@ -975,7 +975,10 @@ const HomeV2 = ({ navigation }) => {
                       <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
                     </>
                   )}
-                  <TouchableOpacity onPress={() => addCart("featured", item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                  <TouchableOpacity
+                    onPress={() => addCart("featured", item.id)}
+                    style={[cartStyles.roundedBtn,
+                    { backgroundColor: '#f44c00' }]}>
                     <Text style={cartStyles.body2}>+</Text>
                   </TouchableOpacity>
                 </View>
