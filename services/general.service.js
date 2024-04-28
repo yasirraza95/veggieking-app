@@ -264,6 +264,18 @@ const listProductByCatCart = (id, userId) => {
     );
 };
 
+const listFeaturedProductByCart = (userId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-featured-product-by-cart/${userId}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const listFeaturedProducts = () => {
     const headers = {
         "Content-Type": "application/json",
@@ -409,7 +421,7 @@ const getUserById = (id) => {
 };
 
 const updateUserById = (name, address, phone, email, userId) => {
-  console.log(name, address, phone, email, userId);
+    console.log(name, address, phone, email, userId);
     const headers = {
         "Content-Type": "application/json",
     };
@@ -606,7 +618,7 @@ const getCharges = () => {
 
 const GeneralService = {
     login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
-    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listAllCategories, listFeaturedProducts, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
+    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listAllCategories, listFeaturedProducts, listFeaturedProductByCart, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, updateUserById, updatePassword,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart, getCharges
 };

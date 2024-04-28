@@ -3,7 +3,7 @@ import {
   ActivityIndicator, Alert, useWindowDimensions
 } from
   'react-native'
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { COLORS, FONTS, SIZES, icons, images } from '../constants'
 import { Feather, Ionicons, MaterialIcons, AntDesign, Octicons, MaterialCommunityIcons, Fontisto } from
   "@expo/vector-icons"
@@ -27,7 +27,6 @@ import { debounce } from 'lodash';
 
 
 const HomeV2 = ({ navigation }) => {
-  const flatListRef = useRef(null);
   const [scrollOffset, setScrollOffset] = useState(0);
 
   const handleScroll = (event) => {
@@ -35,14 +34,21 @@ const HomeV2 = ({ navigation }) => {
     setScrollOffset(contentOffset.y);
   };
 
-  const debouncedScrollToOffset = useRef(debounce(offset => {
-    flatListRef.current?.scrollToOffset({ offset, animated: false });
-  }, 100)).current;
+  // const debouncedScrollToOffset = useRef(debounce(offset => {
+  //   flatListRef.current?.scrollToOffset({ offset, animated: false });
+  // }, 100)).current;
 
-  useLayoutEffect(() => {
-    // After the component rerenders, scroll back to the last known position
-    debouncedScrollToOffset(scrollOffset);
-  }, [scrollOffset]); // Trigger effect when scrollOffset changes
+  // useEffect(() => {
+  //   // After the component rerenders, scroll back to the last known position
+  //   debouncedScrollToOffset(scrollOffset);
+  // }, [scrollOffset]); // Trigger effect when scrollOffset changes
+
+  // useEffect(() => {
+  //   // Scroll to the previous position after re-rendering
+  //   if (flatListRef.current) {
+  //     flatListRef.current.scrollToIndex({ index: 0, animated: false });
+  //   }
+  // }, [prodsData]);
 
 
   const { updateCartCounter } = useCart();
@@ -54,7 +60,9 @@ const HomeV2 = ({ navigation }) => {
   const [screenLoading, setScreenLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [featureLoading, setFeatureLoading] = useState(false);
+  // const [featureProd, setFeatureProd] = useState([]);
   // const [category, setCategory] = useState([]);
+  const [featureProd, setFeatureProd] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [category, setCategory] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [moreProd, setMoreProd] = useState([]);
   // const [fruits, setFruits] = useState([]);
@@ -116,7 +124,7 @@ const HomeV2 = ({ navigation }) => {
             }
             return product;
           });
-          // setVegetables(updatedProducts);
+          setVegetables(updatedProducts);
           console.log(updatedProducts);
         }
 
@@ -261,7 +269,19 @@ const HomeV2 = ({ navigation }) => {
           }
           return product;
         });
-        // setVegetables(updatedProducts);
+        setVegetables(updatedProducts);
+        console.log(updatedProducts);
+      } else if (type == "featured") {
+        const updatedProducts = featureProd.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setFeatureProd(updatedProducts);
         console.log(updatedProducts);
       }
 
@@ -303,7 +323,7 @@ const HomeV2 = ({ navigation }) => {
     React.useCallback(() => {
       // Code to run when the screen gains focus
       categories();
-      // featureProducts();
+      featureProducts();
       fetchVegetables();
       fetchFruits();
       // cartCounter();
@@ -348,15 +368,16 @@ const HomeV2 = ({ navigation }) => {
   const featureProducts = async () => {
     try {
       setFeatureLoading(true);
-
+      let userId = await AsyncStorage.getItem("_id");
       const timeout = 8000;
       const response = await Promise.race([
-        GeneralService.listFeaturedProducts(),
+        GeneralService.listFeaturedProductByCart(1),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
       if (response) {
-        setMoreProd(response.data.response);
+        console.log(response.data.response);
+        setFeatureProd(response.data.response);
       } else {
         throw new Error('No response from the server');
       }
@@ -365,7 +386,7 @@ const HomeV2 = ({ navigation }) => {
       // console.error('More products fetched');
     } catch (error) {
       setFeatureLoading(false);
-      setMoreProd([]);
+      setFeatureProd([]);
     }
   };
 
@@ -722,7 +743,7 @@ const HomeV2 = ({ navigation }) => {
 
 
 
-  const renderFeatureProductsOld = () => {
+  const renderFeatureProductsNew = () => {
     const [quantity, setQuantity] = useState(1);
 
     const numColumns = 2;
@@ -878,14 +899,6 @@ const HomeV2 = ({ navigation }) => {
       }}>
 
         <Text style={{ ...FONTS.body2 }}>Featured Products</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("RestaurantView")}
-          style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
-        >
-          <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 4 }}>See All</Text>
-          <View>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
-          </View>
-        </TouchableOpacity>
 
         <TouchableOpacity onPress={() => {
           if (quantity > 2) {
@@ -919,18 +932,18 @@ const HomeV2 = ({ navigation }) => {
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
-        horizontal={true}
-        data={moreProd} keyExtractor={item => item.id}
+        // horizontal={true}
+        numColumns={2}
+        data={featureProd} keyExtractor={item => item.id}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         style={{
-          marginBottom: "30%",
+          marginBottom: "15%",
         }}
         renderItem={({ item, index }) => {
           return (
-            <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
-              id: item.id, name: item.name,
-              image: item.image, price: item.price, minQty: 1, type: "kg"
-            })}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+              key={index}
               style={{
                 flexDirection: 'column',
                 paddingHorizontal: 2,
@@ -938,58 +951,34 @@ const HomeV2 = ({ navigation }) => {
                 height: "auto",
                 width: 160,
                 borderWidth: 1,
-                borderColor: "#f78c47",
-                borderRadius: 20,
+                borderColor: COLORS.gray6,
+                borderRadius: 15,
                 marginRight: 6,
-                marginLeft: 0,
                 marginBottom: 16
-              }}
-            >
-              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }} resizeMode='cover' style={{
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                width: '100%',
-                height: 84,
-              }} />
-
-              {/* <TouchableOpacity onPress={() => addCart(item.id)}
-                style={{
-                  height: 30,
-                  width: 30,
-                  borderRadius: 15,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: COLORS.primary,
-                  position: 'absolute',
-                  right: 0
-                }}>
-                <AntDesign name="plus" size={12} color={COLORS.white} />
-              </TouchableOpacity> */}
-              <View style={{
-                padding: 8,
               }}>
-                <View style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap-reverse',
-                  position: 'relative',
-                }}>
-                  <Text style={{ fontSize: 18, textTransform: 'capitalize', }}>{item.name}</Text>
+              <Image
+                source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+                resizeMode='cover'
+                style={{ width: "100%", height: 84, borderRadius: 15 }}
+              />
+              <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {item.quantity_added >= 1 && (
+                    <>
+                      <TouchableOpacity
+                        onPress={() => decreaseQuantity("featured", item.id)}
+                        style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
+                        <Text style={cartStyles.body2}>-</Text>
+                      </TouchableOpacity>
+                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
+                    </>
+                  )}
+                  <TouchableOpacity onPress={() => addCart("featured", item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                    <Text style={cartStyles.body2}>+</Text>
+                  </TouchableOpacity>
                 </View>
-                <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-                <TouchableOpacity onPress={() => addCart(item.id)}
-                  style={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: COLORS.primary,
-                    position: 'absolute',
-                    right: 0,
-                    // end: 0
-                  }}>
-                  <AntDesign name="plus" size={12} color={COLORS.white} />
-                </TouchableOpacity>
               </View>
             </TouchableOpacity>
           )
@@ -1005,8 +994,8 @@ const HomeV2 = ({ navigation }) => {
         textAlign: 'center'
       }}>No record found</Text></View>;
 
-    response = featureLoading ?
-      <ActivityIndicator size="large" color="blue" /> : result
+    // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    response = result
     return (
       response
     );
@@ -1476,6 +1465,19 @@ const HomeV2 = ({ navigation }) => {
   // }
 
   const renderProducts = (title, type, prodsData, isLast) => {
+    const flatListRef = useRef(null);
+
+    useEffect(() => {
+      // Scroll to the previous position after re-rendering
+      if (flatListRef.current) {
+        flatListRef.current.scrollToIndex({ index: 20, animated: false });
+      }
+    }, [prodsData]);
+
+    const handleScrollToIndexFailed = (info) => {
+      console.warn(`Scroll to index failed: ${info.index}`);
+    };
+
     const [quantity, setQuantity] = useState(1);
     const width = Dimensions.get('window').width;
 
@@ -1525,6 +1527,9 @@ const HomeV2 = ({ navigation }) => {
       </View>
 
       <FlatList
+        ref={flatListRef}
+        initialScrollIndex={0}
+        onScrollToIndexFailed={handleScrollToIndexFailed}
         showsHorizontalScrollIndicator={false}
         horizontal={true}
         data={prodsData} keyExtractor={item => item.id.toString()}
@@ -1686,8 +1691,10 @@ const HomeV2 = ({ navigation }) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           {renderCarousel()}
           {renderCategories()}
+          {renderFeatureProducts()}
+          {/* {featureProducts()} */}
           {/* {renderVegetables()} */}
-          {renderProducts("Vegetables", "vegetables", vegetables)}
+          {/* {renderProducts("Vegetables", "vegetables", vegetables)} */}
           {/* {renderProducts("Fruits", "fruits", fruits, true)} */}
         </ScrollView>
       </View>

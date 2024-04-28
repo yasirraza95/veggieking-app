@@ -105,7 +105,7 @@ const FoodDetailsV1 = ({ route }) => {
           <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Product Details</Text>
         </View>
 
-        <View style={{
+        {/* <View style={{
           height: 45,
           width: 45,
           borderRadius: 22.5,
@@ -133,7 +133,7 @@ const FoodDetailsV1 = ({ route }) => {
             </View>
             <Feather name="shopping-bag" size={24} color={COLORS.white} />
           </View>
-        </View>
+        </View> */}
       </View>
     )
   }

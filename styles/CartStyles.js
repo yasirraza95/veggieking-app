@@ -48,8 +48,8 @@ export const cartStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: SIZES.width -32,
-        height: 120,
+        // height: 120,
         borderRadius: 30,
-        marginTop: 20,
+        marginTop: 8,
     }
 })

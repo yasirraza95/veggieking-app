@@ -55,6 +55,7 @@ const OngoingRoute = ({ navigation, index }) => {
     <View style={{ flex: 1 }}>
       <FlatList
         data={ongoingData}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}
         renderItem={({ item, index }) => (
           <View style={{ flexDirection: 'column' }}>
@@ -188,6 +189,7 @@ const HistoryRoute = ({ navigation, index }) => {
     <View style={{ flex: 1 }}>
       <FlatList
         data={historyData}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}
         renderItem={({ item, index }) => (
           <View style={{ flexDirection: 'column' }}>
@@ -315,7 +317,7 @@ const MyOrders = ({ navigation }) => {
         // console.log(`home-data=${cartData}`);
         const { response: cartNo } = cartData;
         setCartCounter(cartNo);
-  
+
       } catch (err) {
         console.log(err);
         setCartCounter(0);
