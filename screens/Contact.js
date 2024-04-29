@@ -66,7 +66,6 @@ const Contact = () => {
             ]);
 
             if (response) {
-                getUserById();
                 Alert.alert('Contact Us', 'Your message has been sent');
             } else {
                 throw new Error('No response from the server');
@@ -74,6 +73,7 @@ const Contact = () => {
             setIsLoading(false);
             setIsEnable(true);
         } catch (err) {
+            console.log(err);
             setIsLoading(false);
             setIsEnable(true);
             setMessageError("");

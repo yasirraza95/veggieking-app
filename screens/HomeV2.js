@@ -67,8 +67,12 @@ const HomeV2 = ({ navigation }) => {
   const [moreProd, setMoreProd] = useState([]);
   // const [fruits, setFruits] = useState([]);
   // const [vegetables, setVegetables] = useState([]);
-  const [vegetables, setVegetables] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
-  const [fruits, setFruits] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [vegetables, setVegetables] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [fruits, setFruits] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [dryFruits, setDryFruits] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [snacks, setSnacks] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [spices, setSpices] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [peeledVgs, setPeeledVgs] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [prodCategory, setProdCategory] = useState([]);
   const [prodCatLoading, setProdCatLoading] = useState(false);
 
@@ -98,12 +102,12 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const decreaseQuantity = (type, prodId) => {
+  const decreaseQuantity = (catId, prodId) => {
     const decreaseQnty = async () => {
       try {
         // setScreenLoading(true);
 
-        if (type == "fruits") {
+        if (catId == 2) {
           const updatedProducts = fruits.map(product => {
             if (product.id === prodId) {
               return {
@@ -114,7 +118,7 @@ const HomeV2 = ({ navigation }) => {
             return product;
           });
           setFruits(updatedProducts);
-        } else if (type == "vegetables") {
+        } else if (catId == 1) {
           const updatedProducts = vegetables.map(product => {
             if (product.id === prodId) {
               return {
@@ -126,7 +130,55 @@ const HomeV2 = ({ navigation }) => {
           });
           setVegetables(updatedProducts);
           console.log(updatedProducts);
-        }
+        } else if (catId == 8) {
+          const updatedProducts = dryFruits.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setDryFruits(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 9) {
+          const updatedProducts = snacks.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setSnacks(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 13) {
+          const updatedProducts = spices.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setSpices(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 12) {
+          const updatedProducts = peeledVgs.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setPeeledVgs(updatedProducts);
+          console.log(updatedProducts);
+        } 
 
         const timeout = 2000;
         let userId = await AsyncStorage.getItem("_id");
@@ -245,10 +297,10 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCart = async (type, prodId) => {
+  const addCart = async (catId, type, prodId) => {
     try {
 
-      if (type == "fruits") {
+      if (catId == 2) {
         const updatedProducts = fruits.map(product => {
           if (product.id === prodId) {
             return {
@@ -259,7 +311,7 @@ const HomeV2 = ({ navigation }) => {
           return product;
         });
         setFruits(updatedProducts);
-      } else if (type == "vegetables") {
+      } else if (catId == 1) {
         const updatedProducts = vegetables.map(product => {
           if (product.id === prodId) {
             return {
@@ -271,8 +323,8 @@ const HomeV2 = ({ navigation }) => {
         });
         setVegetables(updatedProducts);
         console.log(updatedProducts);
-      } else if (type == "featured") {
-        const updatedProducts = featureProd.map(product => {
+      } else if (catId == 8) {
+        const updatedProducts = dryFruits.map(product => {
           if (product.id === prodId) {
             return {
               ...product,
@@ -281,7 +333,43 @@ const HomeV2 = ({ navigation }) => {
           }
           return product;
         });
-        setFeatureProd(updatedProducts);
+        setDryFruits(updatedProducts);
+        console.log(updatedProducts);
+      } else if (catId == 9) {
+        const updatedProducts = snacks.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setSnacks(updatedProducts);
+        console.log(updatedProducts);
+      } else if (catId == 8) {
+        const updatedProducts = spices.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setSpices(updatedProducts);
+        console.log(updatedProducts);
+      } else if (catId == 13) {
+        const updatedProducts = peeledVgs.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setPeeledVgs(updatedProducts);
         console.log(updatedProducts);
       }
 
@@ -323,9 +411,13 @@ const HomeV2 = ({ navigation }) => {
     React.useCallback(() => {
       // Code to run when the screen gains focus
       categories();
-      featureProducts();
+      // featureProducts();
       fetchVegetables();
       fetchFruits();
+      fetchDryFruits();
+      fetchSnacks();
+      fetchSpices();
+      fetchPeeledVgs();
       // cartCounter();
       fetchAddress();
       // fetchVegetables();
@@ -399,7 +491,7 @@ const HomeV2 = ({ navigation }) => {
       console.log(`user-id=${userId}`);
       const timeout = 8000;
       const response = await Promise.race([
-        GeneralService.listProductByCatCart(2, userId),
+        GeneralService.listLimProductByCatCart(2, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
       // console.log(response.data.response);
@@ -449,7 +541,7 @@ const HomeV2 = ({ navigation }) => {
       const timeout = 8000;
       let userId = await AsyncStorage.getItem("_id");
       const response = await Promise.race([
-        GeneralService.listProductByCatCart(1, userId),
+        GeneralService.listLimProductByCatCart(1, userId),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
 
@@ -464,6 +556,106 @@ const HomeV2 = ({ navigation }) => {
     } catch (error) {
       setFeatureLoading(false);
       setFruits([]);
+    }
+  };
+
+  const fetchDryFruits = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await Promise.race([
+        GeneralService.listLimProductByCatCart(8, userId),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setDryFruits(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+
+      setFeatureLoading(false);
+      // console.error('More products fetched');
+    } catch (error) {
+      setFeatureLoading(false);
+      setDryFruits([]);
+    }
+  };
+
+  const fetchSnacks = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await Promise.race([
+        GeneralService.listLimProductByCatCart(9, userId),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setSnacks(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+
+      setFeatureLoading(false);
+      // console.error('More products fetched');
+    } catch (error) {
+      setFeatureLoading(false);
+      setSnacks([]);
+    }
+  };
+
+  const fetchSpices = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await Promise.race([
+        GeneralService.listLimProductByCatCart(13, userId),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setSpices(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+
+      setFeatureLoading(false);
+      // console.error('More products fetched');
+    } catch (error) {
+      setFeatureLoading(false);
+      setSpices([]);
+    }
+  };
+
+  const fetchPeeledVgs = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await Promise.race([
+        GeneralService.listLimProductByCatCart(12, userId),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setPeeledVgs(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+
+      setFeatureLoading(false);
+      // console.error('More products fetched');
+    } catch (error) {
+      setFeatureLoading(false);
+      setPeeledVgs([]);
     }
   };
 
@@ -999,6 +1191,136 @@ const HomeV2 = ({ navigation }) => {
 
     // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
     response = result
+    return (
+      response
+    );
+  }
+
+  const renderVerticalProducts = (id, title, data, isLast) => {
+    const [quantity, setQuantity] = useState(1);
+    const width = Dimensions.get('window').width;
+
+    const numColumns = 2;
+    let marginBottomStyle = {};
+    if (isLast) {
+      marginBottomStyle = { marginBottom: "20%" };
+    }
+
+    let result = <View style={{ flex: 1, ...marginBottomStyle }}>
+
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        // paddingHorizontal: 16
+      }}>
+
+        <Text style={{ ...FONTS.body2 }}>{title}</Text>
+
+        <TouchableOpacity onPress={() => navigate.navigate("CategoryProducts", {
+          catId: id, catName: title
+        })}
+          style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
+        >
+          <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 4 }}>See All</Text>
+          <View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => {
+          if (quantity > 2) {
+            setQuantity(quantity - 1)
+          }
+        }}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>-</Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 16, color: COLORS.white }}>{quantity}</Text>
+        <TouchableOpacity onPress={() => setQuantity(quantity + 1)}
+          style={{
+            width: 24,
+            height: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: 'rgba(255,255,255,0.2)'
+          }}
+        >
+          <Text style={{ color: COLORS.white }}>+</Text>
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        // horizontal={true}
+        numColumns={2}
+        data={data} keyExtractor={item => item.id}
+        contentContainerStyle={{ paddingHorizontal: 8 }}
+        style={{
+          marginBottom: "5%",
+        }}
+        renderItem={({ item, index }) => {
+          return (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
+              key={index}
+              style={{
+                flexDirection: 'column',
+                paddingHorizontal: 2,
+                paddingVertical: 4,
+                height: "auto",
+                width: 160,
+                borderWidth: 1,
+                borderColor: COLORS.gray6,
+                borderRadius: 15,
+                marginRight: 6,
+                marginBottom: 16
+              }}>
+              <Image
+                source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+                resizeMode='cover'
+                style={{ width: "100%", height: 84, borderRadius: 15 }}
+              />
+              <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {item.quantity_added >= 1 && (
+                    <>
+                      <TouchableOpacity
+                        onPress={() => decreaseQuantity(id, item.id)}
+                        style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
+                        <Text style={cartStyles.body2}>-</Text>
+                      </TouchableOpacity>
+                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
+                    </>
+                  )}
+                  <TouchableOpacity
+                    onPress={() => addCart(id, item.id)}
+                    style={[cartStyles.roundedBtn,
+                    { backgroundColor: '#f44c00' }]}>
+                    <Text style={cartStyles.body2}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )
+        }}
+      />
+    </View>;
+
+    let response = data.length > 0 && result;
+
+    // response = featureLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    // response = result
     return (
       response
     );
@@ -1644,46 +1966,9 @@ const HomeV2 = ({ navigation }) => {
                   fontSize: 14,
                   fontWeight: 'regular'
                 }}>{userAddress ?? "N/A"}</Text>
-                {/*
-              <Image source={icons.arrowDown2} style={{
-                  height: 12,
-                  width: 12,
-                  marginLeft: 4
-                }} /> */}
               </View>
             </View>
           </View>
-
-          {/* cart counter */}
-          {/* <View style={{
-            height: 45,
-            width: 45,
-            borderRadius: 22.5,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: COLORS.tertiaryBlack
-          }}>
-            <View>
-              <View style={{
-                position: 'absolute',
-                top: -16,
-                left: 12,
-                backgroundColor: COLORS.primary,
-                height: 25,
-                width: 25,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 12.5,
-                zIndex: 999
-              }}>
-                <Text style={{
-                  fontSize: 16,
-                  color: COLORS.white
-                }}>{cartCounter}</Text>
-              </View>
-              <Feather name="shopping-bag" size={24} color={COLORS.white} />
-            </View>
-          </View> */}
         </View>
 
         {
@@ -1694,7 +1979,13 @@ const HomeV2 = ({ navigation }) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           {renderCarousel()}
           {renderCategories()}
-          {renderFeatureProducts()}
+          {/* {renderFeatureProducts()} */}
+          {renderVerticalProducts(1, "Vegetables", vegetables)}
+          {renderVerticalProducts(2, "Fruits", fruits)}
+          {renderVerticalProducts(8, "Dry Fruits", dryFruits, true)}
+          {renderVerticalProducts(9, "Snacks", snacks)}
+          {renderVerticalProducts(13, "Spices", spices)}
+          {renderVerticalProducts(12, "Peeled Vgs", peeledVgs)}
           {/* {featureProducts()} */}
           {/* {renderVegetables()} */}
           {/* {renderProducts("Vegetables", "vegetables", vegetables)} */}

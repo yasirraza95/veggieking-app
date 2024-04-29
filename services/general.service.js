@@ -281,6 +281,18 @@ const listProductByCatCart = (id, userId) => {
     );
 };
 
+const listLimProductByCatCart = (id, userId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-lim-product-by-cat-cart/${id}/${userId}`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const listFeaturedProductByCart = (userId) => {
     const headers = {
         "Content-Type": "application/json",
@@ -648,7 +660,7 @@ const getCharges = () => {
 
 const GeneralService = {
     login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
-    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listAllCategories, listFeaturedProducts, listFeaturedProductByCart, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
+    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listLimProductByCatCart, listAllCategories, listFeaturedProducts, listFeaturedProductByCart, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
     listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, getProductCartById, updateUserById, updatePassword,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart, getCharges, submitMessage
 };
