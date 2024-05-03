@@ -54,9 +54,10 @@ const HomeV2 = ({ navigation }) => {
   const { updateCartCounter } = useCart();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [notificationData, setNotificationData] = useState({});
   const [userAddress, setUserAddress] = useState('');
   const [cartCounter, setCartCounter] = useState(0);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [screenLoading, setScreenLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [featureLoading, setFeatureLoading] = useState(false);
@@ -178,7 +179,7 @@ const HomeV2 = ({ navigation }) => {
           });
           setPeeledVgs(updatedProducts);
           console.log(updatedProducts);
-        } 
+        }
 
         const timeout = 2000;
         let userId = await AsyncStorage.getItem("_id");
@@ -269,6 +270,19 @@ const HomeV2 = ({ navigation }) => {
     increaseQty();
     // setQuantity(quantity + 1);
   };
+
+  const fetchNotifiaction = async () => {
+    try {
+      const response = await GeneralService.getNotification();
+      const { data } = response;
+      const { response: res } = data;
+      setNotificationData({ body: res.body, heading: res.heading, button: res.button });
+      setModalVisible(res.notification_status == 'yes' ? true : false);
+      // console.log(`home-data=${cartData}`);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   const getCartCounter = async () => {
     try {
@@ -693,6 +707,7 @@ const HomeV2 = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       getCartCounter();
+      fetchNotifiaction();
     }, [])
   );
 
@@ -1992,8 +2007,10 @@ const HomeV2 = ({ navigation }) => {
           {/* {renderProducts("Fruits", "fruits", fruits, true)} */}
         </ScrollView>
       </View>
-      <CustomModal modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}
-        code="#1243CD2" />
+      <CustomModal heading={notificationData.heading} body={notificationData.body} body2={notificationData.body}
+        button={notificationData.button}
+        modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}
+      />
     </SafeAreaView>
   )
 }

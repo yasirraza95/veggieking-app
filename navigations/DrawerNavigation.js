@@ -163,7 +163,7 @@ const DrawerNavigation = () => {
       <Drawer.Screen
         name="Contact"
         options={{
-          drawerLabel: "Contact",
+          drawerLabel: "Contact Us",
           title: "Contact",
           drawerIcon: () => (
             <Ionicons name="mail-outline" size={24} color={COLORS.black} />

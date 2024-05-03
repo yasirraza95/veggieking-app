@@ -3,7 +3,7 @@ import { View, Text, Modal, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONTS, SIZES } from '../constants';
 
-const CustomModal = ({ modalVisible, setModalVisible, onPressGotIt, code }) => {
+const CustomModal = ({ heading, body, button, body2, modalVisible, setModalVisible, onPressGotIt }) => {
   return (
     <Modal animationType="slide" transparent={true} visible={modalVisible}>
       <TouchableOpacity
@@ -27,10 +27,10 @@ const CustomModal = ({ modalVisible, setModalVisible, onPressGotIt, code }) => {
             }}
           >
             <Text style={{ fontSize: 30, fontFamily: 'extraBold', marginTop: 30, color: COLORS.white }}>
-              Hurry Offers!
+              {heading}
             </Text>
-            <Text style={{ ...FONTS.h2, color: COLORS.white, marginVertical: 68 }}>{code}</Text>
-            <Text style={{ fontSize: 13, fontFamily: 'regular', color: COLORS.white }}>Use the coupon to get 25% discount</Text>
+            <Text style={{ ...FONTS.h2, color: COLORS.white, marginVertical: 68 }}>{body2}</Text>
+            <Text style={{ fontSize: 13, fontFamily: 'regular', color: COLORS.white }}>{body}</Text>
             <TouchableOpacity
               onPress={onPressGotIt} // Pass the onPressGotIt prop as the onPress event
               style={{
@@ -44,7 +44,7 @@ const CustomModal = ({ modalVisible, setModalVisible, onPressGotIt, code }) => {
                 marginTop: 38,
               }}
             >
-              <Text style={{ ...FONTS.body3, color: COLORS.white }}>GOT IT</Text>
+              <Text style={{ ...FONTS.body3, color: COLORS.white }}>{button}</Text>
             </TouchableOpacity>
           </LinearGradient>
         </View>
