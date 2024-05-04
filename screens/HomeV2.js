@@ -34,25 +34,9 @@ const HomeV2 = ({ navigation }) => {
     setScrollOffset(contentOffset.y);
   };
 
-  // const debouncedScrollToOffset = useRef(debounce(offset => {
-  //   flatListRef.current?.scrollToOffset({ offset, animated: false });
-  // }, 100)).current;
-
-  // useEffect(() => {
-  //   // After the component rerenders, scroll back to the last known position
-  //   debouncedScrollToOffset(scrollOffset);
-  // }, [scrollOffset]); // Trigger effect when scrollOffset changes
-
-  // useEffect(() => {
-  //   // Scroll to the previous position after re-rendering
-  //   if (flatListRef.current) {
-  //     flatListRef.current.scrollToIndex({ index: 0, animated: false });
-  //   }
-  // }, [prodsData]);
-
-
   const { updateCartCounter } = useCart();
-
+  const [sliders, setSliders] = useState([restaurant6]);
+  // const [sliders, setSliders] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationData, setNotificationData] = useState({});
   const [userAddress, setUserAddress] = useState('');
@@ -61,13 +45,9 @@ const HomeV2 = ({ navigation }) => {
   const [screenLoading, setScreenLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [featureLoading, setFeatureLoading] = useState(false);
-  // const [featureProd, setFeatureProd] = useState([]);
-  // const [category, setCategory] = useState([]);
   const [featureProd, setFeatureProd] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [category, setCategory] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [moreProd, setMoreProd] = useState([]);
-  // const [fruits, setFruits] = useState([]);
-  // const [vegetables, setVegetables] = useState([]);
   const [vegetables, setVegetables] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [fruits, setFruits] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [dryFruits, setDryFruits] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
@@ -276,9 +256,25 @@ const HomeV2 = ({ navigation }) => {
       const response = await GeneralService.getNotification();
       const { data } = response;
       const { response: res } = data;
-      setNotificationData({ body: res.body, heading: res.heading, button: res.button });
+      setNotificationData({ body: res.body, body2: res.body2, heading: res.heading, button: res.button });
       setModalVisible(res.notification_status == 'yes' ? true : false);
       // console.log(`home-data=${cartData}`);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const fetchSliders = async () => {
+    try {
+      const response = await GeneralService.getSliders();
+      const { data } = response;
+      const { response: res } = data;
+      // console.log(res.map(item => item.image));
+      setSliders(res.map(item => item.image));
+      // setSliders(["restaurant6.png"]);
+      // const url = "https://api.veggieking.pk/public/upload/";
+      // setSliders(res.map(item => ({ source: { uri: url + item.image } })));
+
     } catch (err) {
       console.log(err);
     }
@@ -311,7 +307,7 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCart = async (catId, type, prodId) => {
+  const addCart = async (catId, prodId) => {
     try {
 
       if (catId == 2) {
@@ -708,6 +704,7 @@ const HomeV2 = ({ navigation }) => {
     React.useCallback(() => {
       getCartCounter();
       fetchNotifiaction();
+      fetchSliders()
     }, [])
   );
 
@@ -720,7 +717,7 @@ const HomeV2 = ({ navigation }) => {
         }}>
         </View>
 
-        <Carousel loop width={width} height={width / 3} autoPlay={true} data={[restaurant6, restaurant7, restaurant8,]}
+        <Carousel loop width={width} height={width / 3} autoPlay={true} data={sliders}
           scrollAnimationDuration={3500}
           // onSnapToItem={(index) => console.log('current index:', index)}
           style={{
@@ -732,16 +729,20 @@ const HomeV2 = ({ navigation }) => {
             borderRadius: 15
           }}
           renderItem={({ item, index }) => (
+            console.log(item),
             <View style={{
               flex: 1,
               borderWidth: 1,
               justifyContent: 'center',
             }}>
-              <Image source={item} style={{
-                width: SIZES.width - 1,
-                height: width / 2,
-                borderRadius: 15
-              }} />
+
+              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item}` }}
+                defaultSource={require('../assets/images/restaurants/restaurant6.png')}
+                style={{
+                  width: SIZES.width - 1,
+                  height: width / 2,
+                  borderRadius: 15
+                }} />
             </View>
           )}
         />
@@ -1221,7 +1222,8 @@ const HomeV2 = ({ navigation }) => {
       marginBottomStyle = { marginBottom: "20%" };
     }
 
-    let result = <View style={{ flex: 1, ...marginBottomStyle }}>
+    // let result = <View style={{ flex: 1, ...marginBottomStyle }}>
+    let result = <View style={{ flex: 1 }}>
 
       <View style={{
         flexDirection: 'row',
@@ -1230,16 +1232,16 @@ const HomeV2 = ({ navigation }) => {
         // paddingHorizontal: 16
       }}>
 
-        <Text style={{ ...FONTS.body2 }}>{title}</Text>
+        <Text style={{ ...FONTS.body2, fontFamily: "bold" }}>{title}</Text>
 
         <TouchableOpacity onPress={() => navigate.navigate("CategoryProducts", {
           catId: id, catName: title
         })}
           style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
         >
-          <Text style={{ fontSize: 16, fontFamily: 'regular', marginRight: 4 }}>See All</Text>
+          <Text style={{ fontSize: 16, fontFamily: 'bold', marginRight: 0 }}>See All</Text>
           <View>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.gray4} />
+            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.black} />
           </View>
         </TouchableOpacity>
 
@@ -1991,13 +1993,13 @@ const HomeV2 = ({ navigation }) => {
             <ActivityIndicator size="large" color="blue" /> : null
         }
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: "15%" }}>
           {renderCarousel()}
           {renderCategories()}
           {/* {renderFeatureProducts()} */}
           {renderVerticalProducts(1, "Vegetables", vegetables)}
           {renderVerticalProducts(2, "Fruits", fruits)}
-          {renderVerticalProducts(8, "Dry Fruits", dryFruits, true)}
+          {renderVerticalProducts(8, "Dry Fruits", dryFruits)}
           {renderVerticalProducts(9, "Snacks", snacks)}
           {renderVerticalProducts(13, "Spices", spices)}
           {renderVerticalProducts(12, "Peeled Vgs", peeledVgs)}
@@ -2007,7 +2009,7 @@ const HomeV2 = ({ navigation }) => {
           {/* {renderProducts("Fruits", "fruits", fruits, true)} */}
         </ScrollView>
       </View>
-      <CustomModal heading={notificationData.heading} body={notificationData.body} body2={notificationData.body}
+      <CustomModal heading={notificationData.heading} body={notificationData.body} body2={notificationData.body2}
         button={notificationData.button}
         modalVisible={modalVisible} setModalVisible={setModalVisible} onPressGotIt={handlePressGotIt}
       />

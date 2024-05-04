@@ -59,8 +59,8 @@ const VerificationComponent = ({ route }) => {
 
   const handleForgot = async () => {
     try {
-      setIsLoading(true);
-      setIsEnable(false);
+      // setIsLoading(true);
+      // setIsEnable(false);
       const response = await GeneralService.forgotOtp(email); // Call the forgot method and capture the response
       console.log('Forgot response:', response); // Log the response to see the structure and extract the message if needed
 
@@ -68,9 +68,9 @@ const VerificationComponent = ({ route }) => {
       // setIsEnable(true);
       // Display the response message, assuming the response contains a 'message' field
       // Alert.alert('Success', 'Check your email to reset password'); // Modify the field according to your API response structure
-      navigation.navigate("opt", { email: values.email });
+      navigation.navigate("opt", { email: email });
     } catch (err) {
-      // console.error('Error occurred:', err);
+      console.error('Error occurred:', err);
       Alert.alert("Error", "Server error. Please try again later.");
       // setIsLoading(false);
       // setIsEnable(true);

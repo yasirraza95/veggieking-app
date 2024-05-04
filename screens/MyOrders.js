@@ -52,7 +52,7 @@ const OngoingRoute = ({ navigation, index }) => {
 
   // console.log(ongoingData.length);
   let result = (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginBottom: "20%" }}>
       <FlatList
         data={ongoingData}
         showsVerticalScrollIndicator={false}
@@ -123,7 +123,7 @@ const OngoingRoute = ({ navigation, index }) => {
         )}
       />
       {/* Add padding to the bottom to accommodate bottom content */}
-      <View style={{ height: 100 }}></View>
+      {/* <View style={{ height: 100 }}></View> */}
     </View>
   );
 
@@ -186,7 +186,7 @@ const HistoryRoute = ({ navigation, index }) => {
   // const navigation = useNavigation();
   let result =
 
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginBottom: "20%" }}>
       <FlatList
         data={historyData}
         showsVerticalScrollIndicator={false}

@@ -152,6 +152,7 @@ const OngoingRoute = ({ navigation, index }) => {
   let result = <View style={{ flex: 1 }}>
     <FlatList
       data={ongoingData}
+      showsVerticalScrollIndicator={false}
       keyExtractor={item => item.id}
       renderItem={({ item, index }) => (
         <View style={{ flexDirection: 'column' }}>
@@ -323,6 +324,7 @@ const HistoryRoute = ({ navigation, index }) => {
     <View style={{ flex: 1 }}>
       <FlatList
         data={historyData}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}
         renderItem={({ item, index }) => (
           <View style={{ flexDirection: 'column' }}>

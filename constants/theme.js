@@ -62,6 +62,7 @@ export const FONTS = {
     body1: { fontFamily: 'regular', fontSize: SIZES.body1, lineHeight: 36 },
     body2: { fontFamily: 'regular', fontSize: SIZES.body2, lineHeight: 30 },
     body3: { fontFamily: 'regular', fontSize: SIZES.body3, lineHeight: 22 },
+    body5: { fontFamily: 'bold', fontSize: SIZES.body1, lineHeight: 50 },
     body4: { fontFamily: 'regular', fontSize: SIZES.body4, lineHeight: 20 },
 }
 

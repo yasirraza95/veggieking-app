@@ -23,7 +23,9 @@ const CategoryProducts = ({ route }) => {
   const [screenLoading, setScreenLoading] = useState(false);
   const [productsLoading, setProductsLoading] = useState(false);
   const [selectedStars, setSelectedStars] = useState(Array(5).fill(false));
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
+
   const navigation = useNavigation();
 
   const getCartCounter = async () => {
@@ -344,7 +346,8 @@ const CategoryProducts = ({ route }) => {
       }}>No record found</Text></View>;
 
 
-    response = productsLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    // response = productsLoading ? <ActivityIndicator size="large" color="blue" /> : result
+    response =  result
 
     return (
       response

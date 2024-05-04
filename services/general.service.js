@@ -461,6 +461,18 @@ const getNotification = () => {
     );
 };
 
+const getSliders = () => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/list-sliders`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const getProductCartById = (id, userId) => {
     console.log(id, userId);
     const headers = {
@@ -673,7 +685,7 @@ const getCharges = () => {
 const GeneralService = {
     login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
     deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listLimProductByCatCart, listAllCategories, listFeaturedProducts, listFeaturedProductByCart, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
-    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, getProductCartById, getNotification, updateUserById, updatePassword,
+    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, getProductCartById, getNotification, getSliders, updateUserById, updatePassword,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart, getCharges, submitMessage
 };
 export default GeneralService;

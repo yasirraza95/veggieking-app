@@ -13,6 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Formik } from 'formik'
 import { passwordSchema } from '../schema'
 import GeneralService from '../services/general.service'
+import { useNavigation } from '@react-navigation/native'
 
 const isTestMode = true
 
@@ -24,12 +25,13 @@ const ResetPassword = ({ navigation, route }) => {
             confirm_password: "",
         },
     }
+    const navigate = useNavigation();
     const [isEnable, setIsEnable] = useState(true)
     const [error, setError] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
     
-    const {otp, email} = route;
+    const {otp, email} = route.params;
 
     const updatePassword = async (values) => {
 
@@ -48,6 +50,7 @@ const ResetPassword = ({ navigation, route }) => {
     
             if (response) {
                 Alert.alert('Success', 'Information updated successfully');
+                navigate.replace("Login");
             } else {
                 throw new Error('No response from the server');
             }

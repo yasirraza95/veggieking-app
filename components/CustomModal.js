@@ -29,7 +29,7 @@ const CustomModal = ({ heading, body, button, body2, modalVisible, setModalVisib
             <Text style={{ fontSize: 30, fontFamily: 'extraBold', marginTop: 30, color: COLORS.white }}>
               {heading}
             </Text>
-            <Text style={{ ...FONTS.h2, color: COLORS.white, marginVertical: 68 }}>{body2}</Text>
+            <Text style={{ ...FONTS.h2, color: COLORS.white, marginVertical: 68, marginHorizontal: 2, textAlign: "center" }}>{body2}</Text>
             <Text style={{ fontSize: 13, fontFamily: 'regular', color: COLORS.white }}>{body}</Text>
             <TouchableOpacity
               onPress={onPressGotIt} // Pass the onPressGotIt prop as the onPress event
@@ -44,7 +44,7 @@ const CustomModal = ({ heading, body, button, body2, modalVisible, setModalVisib
                 marginTop: 38,
               }}
             >
-              <Text style={{ ...FONTS.body3, color: COLORS.white }}>{button}</Text>
+              <Text style={{ ...FONTS.body5, color: COLORS.white }}>{button}</Text>
             </TouchableOpacity>
           </LinearGradient>
         </View>
