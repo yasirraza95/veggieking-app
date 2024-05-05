@@ -94,7 +94,7 @@ const HomeV2 = ({ navigation }) => {
       try {
         // setScreenLoading(true);
 
-        if (catId == 2) {
+        if (catId == 1) {
           const updatedProducts = fruits.map(product => {
             if (product.id === prodId) {
               return {
@@ -105,7 +105,7 @@ const HomeV2 = ({ navigation }) => {
             return product;
           });
           setFruits(updatedProducts);
-        } else if (catId == 1) {
+        } else if (catId == 2) {
           const updatedProducts = vegetables.map(product => {
             if (product.id === prodId) {
               return {
