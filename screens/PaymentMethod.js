@@ -169,8 +169,8 @@ const PaymentMethod = ({ route }) => {
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={styles.editSection}>
-              <Text style={styles.editText}>Delivery Address</Text>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Delivery Address</Text>
               <Text>
                 {address}
               </Text>
@@ -376,6 +376,7 @@ const styles = StyleSheet.create({
   },
   editText: {
     fontSize: 16,
+    fontWeight:'bold'
   },
   editIcon: {
     borderWidth: 1,
