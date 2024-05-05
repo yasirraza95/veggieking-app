@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native'
 import React, { useState, useReducer, useEffect, useCallback } from 'react'
 import { COLORS, SIZES, icons, images } from "../constants"
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { commonStyles } from '../styles/CommonStyles'
 import { MaterialCommunityIcons } from "@expo/vector-icons"
@@ -49,9 +49,7 @@ const EditProfile = () => {
 
     const getUserById = async () => {
         try {
-
             let userId = await AsyncStorage.getItem("_id");
-
             const timeout = 8000;
             const response = await Promise.race([
                 GeneralService.getUserById(userId),
@@ -70,12 +68,8 @@ const EditProfile = () => {
             }
         } catch (err) {
             // console.log(err);
-
             Alert.alert("Error", "No response from server");
-
         }
-
-        // const response = GeneralService.getUserById(userId);
     }
 
     const initialState = {
@@ -94,9 +88,15 @@ const EditProfile = () => {
         formIsValid: false,
     }
 
-    useEffect(() => {
-        getUserById();
-    }, []);
+    // useEffect(() => {
+    //     getUserById();
+    // }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getUserById();
+        }, [])
+    );
 
     const updateProfile = async (values) => {
         console.log(values);
@@ -113,6 +113,7 @@ const EditProfile = () => {
             ]);
 
             if (response) {
+                await AsyncStorage.setItem("my_address", values.address);
                 getUserById();
                 Alert.alert('Success', 'Information updated successfully');
             } else {

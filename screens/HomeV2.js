@@ -331,8 +331,9 @@ const HomeV2 = ({ navigation }) => {
 
   const addCart = async (catId, prodId) => {
     try {
+      console.log(catId, prodId);
 
-      if (catId == 2) {
+      if (catId == 1) {
         const updatedProducts = fruits.map(product => {
           if (product.id === prodId) {
             return {
@@ -343,7 +344,7 @@ const HomeV2 = ({ navigation }) => {
           return product;
         });
         setFruits(updatedProducts);
-      } else if (catId == 1) {
+      } else if (catId == 2) {
         const updatedProducts = vegetables.map(product => {
           if (product.id === prodId) {
             return {
@@ -379,7 +380,7 @@ const HomeV2 = ({ navigation }) => {
         });
         setSnacks(updatedProducts);
         console.log(updatedProducts);
-      } else if (catId == 8) {
+      } else if (catId == 13) {
         const updatedProducts = spices.map(product => {
           if (product.id === prodId) {
             return {
@@ -391,7 +392,7 @@ const HomeV2 = ({ navigation }) => {
         });
         setSpices(updatedProducts);
         console.log(updatedProducts);
-      } else if (catId == 13) {
+      } else if (catId == 12) {
         const updatedProducts = peeledVgs.map(product => {
           if (product.id === prodId) {
             return {

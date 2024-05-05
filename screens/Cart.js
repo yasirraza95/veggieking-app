@@ -84,11 +84,12 @@ const Cart = ({ navigation }) => {
 
   const fetchData = async () => {
     try {
+      console.log("asjdhskdh");
       let userId = await AsyncStorage.getItem("_id");
       console.log(`user-id=${userId}`);
       let userAddress = await AsyncStorage.getItem("my_address");
-      // console.log(userAddress);
-      setInputText(userAddress);
+      console.log(userAddress);
+      setInputText(userAddress.toString());
       const response = await GeneralService.listCartByUserId(userId);
       const { data } = response;
       const { response: res } = data;
@@ -293,7 +294,7 @@ const Cart = ({ navigation }) => {
             </TouchableOpacity>
             <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular', color: '#000' }}>Cart</Text>
           </View>
-          
+
         </View>
 
         {

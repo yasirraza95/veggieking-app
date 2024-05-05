@@ -1,8 +1,8 @@
 import { View, Input, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ScrollView } from 'react-native-virtualized-view'
 import { COLORS, SIZES, FONTS, icons, images } from "../constants"
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { commonStyles } from '../styles/CommonStyles'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
@@ -41,9 +41,16 @@ const PersonalProfile = () => {
     }
   };
 
-  useEffect(() => {
-    getProfile();
-  }, []);
+  // useEffect(() => {
+  //   getProfile();
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getProfile();
+    }, [])
+  );
+
   const renderHeader = () => {
     const navigation = useNavigation()
     return (
