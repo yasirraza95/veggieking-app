@@ -247,10 +247,12 @@ const FoodDetailsV1 = ({ route }) => {
           }}>Description</Text>
 
           <Text style={{
-            fontSize: 20,
+            fontSize: 16,
             fontFamily: 'regular',
             textTransform: 'capitalize',
-            // marginVertical: 15
+            color: COLORS.black,
+            // fontSize: 14,
+            fontFamily: 'regular',
           }}>{description}</Text>
           {/* <View style={{
             backgroundColor: COLORS.tertiaryGray,
