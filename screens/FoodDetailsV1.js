@@ -245,50 +245,20 @@ const FoodDetailsV1 = ({ route }) => {
             textTransform: 'capitalize',
             marginVertical: 15
           }}>Description</Text>
-
-          <Text style={{
-            fontSize: 16,
-            fontFamily: 'regular',
-            textTransform: 'capitalize',
-            color: COLORS.black,
-            // fontSize: 14,
-            fontFamily: 'regular',
-          }}>{description}</Text>
-          {/* <View style={{
-            backgroundColor: COLORS.tertiaryGray,
-            borderRadius: 24,
-            paddingHorizontal: 10,
-            paddingVertical: 16,
-            marginBottom: "10%",
-            position: 'relative'
-            // marginTop: 300
-          }}>
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginBottom: 16,
-            }}>
-
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{ width: '100%' }}>
+              <Text style={{
+                fontSize: 16,
+                fontFamily: 'regular',
+                textTransform: 'capitalize',
+                color: COLORS.black,
+                // fontSize: 14,
+                fontFamily: 'regular',
+                textAlign: 'justify',
+                hyphens: 'auto',
+              }}>{description}</Text>
             </View>
-            {quantity > 0 ? (
-              <View style={quantityStyle.container}>
-                <TouchableOpacity onPress={() => decreaseQuantity(prodId)} style={quantityStyle.button}>
-                  <Text style={quantityStyle.buttonText}>-</Text>
-                </TouchableOpacity>
-                <Text style={quantityStyle.quantity}>{quantity}</Text>
-                <TouchableOpacity onPress={() => cartAddition(prodId)} style={quantityStyle.button}>
-                  <Text style={quantityStyle.buttonText}>+</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <Button
-                filled
-                onPress={() => cartAddition(prodId)}
-                isEnable={true}
-                title={`ADD TO CART`}
-              />
-            )}
-          </View> */}
+          </ScrollView>
         </View>
       </View>
     );
@@ -299,9 +269,9 @@ const FoodDetailsV1 = ({ route }) => {
       <StatusBar hidden={true} />
       <View style={{ flex: 1, paddingHorizontal: 16 }}>
         {renderHeader()}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {renderFoodDetails()}
-        </ScrollView>
+        {/* <ScrollView showsVerticalScrollIndicator={false}> */}
+        {renderFoodDetails()}
+        {/* </ScrollView> */}
         <View style={styles.addToCartContainer}>
           <View style={{
             backgroundColor: COLORS.tertiaryGray,
