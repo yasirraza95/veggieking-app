@@ -4,7 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS, SIZES, illustrations } from '../constants'
 import { Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
+import { useCart } from '../context/CartContext';
+
 const Thankyou = ({ navigation, route }) => {
+    const { updateCartCounter } = useCart();
+    updateCartCounter(0);
+    
     const { orderNo } = route.params;
     return (
         <SafeAreaView style={styles.area}>

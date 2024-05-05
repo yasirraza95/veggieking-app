@@ -1,33 +1,28 @@
-import { View, Image, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { COLORS, SIZES, icons, images } from '../constants'
-import { commonStyles } from '../styles/CommonStyles'
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { View, Image, TouchableOpacity, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS, SIZES, icons, images } from '../constants';
+import { commonStyles } from '../styles/CommonStyles';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Feather, Ionicons, MaterialCommunityIcons, Fontisto, Octicons } from "@expo/vector-icons";
-import { ScrollView } from 'react-native-virtualized-view'
-import Button from "../components/Button"
-import { StatusBar } from 'expo-status-bar'
-import GeneralService from '../services/general.service'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-// import Toast from '@react-native-toast-message';
+import Button from "../components/Button";
+import { StatusBar } from 'expo-status-bar';
+import GeneralService from '../services/general.service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili]
+const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili];
+
 const FoodDetailsV1 = ({ route }) => {
-
-  const { id: prodId, name, image, price, minQty, quantity_added, type } = route.params;
-
+  const { id: prodId, name, description, image, price, minQty, quantity_added, type } = route.params;
 
   const [data, setData] = useState({});
   const [quantity, setQuantity] = useState(0);
-
   const [cartCounter, setCartCounter] = useState(0);
   const [screenLoading, setScreenLoading] = useState(false);
 
   const handleQuantityChange = (newQuantity) => {
     setQuantity(newQuantity);
   };
-
 
   const fetchData = async (id) => {
     try {
@@ -137,7 +132,7 @@ const FoodDetailsV1 = ({ route }) => {
   }
 
   const renderHeader = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
     return (
       <View style={{
         flexDirection: 'row',
@@ -158,7 +153,6 @@ const FoodDetailsV1 = ({ route }) => {
           </TouchableOpacity>
           <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Product Details</Text>
         </View>
-
         {/* <View style={{
           height: 45,
           width: 45,
@@ -189,20 +183,20 @@ const FoodDetailsV1 = ({ route }) => {
           </View>
         </View> */}
       </View>
-    )
-  }
+    );
+  };
 
   const renderFoodDetails = () => {
     const [isFavourite, setIsFavourite] = useState(false);
-
     const [selectedSize, setSelectedSize] = useState(null);
+
     const handleSizeSelection = (size) => {
       setSelectedSize(size);
     }
 
+
     return (
       <View style={{ marginVertical: 16 }}>
-        {/* Food details images */}
         <View>
           <TouchableOpacity
             onPress={() => setIsFavourite(!isFavourite)}
@@ -228,35 +222,97 @@ const FoodDetailsV1 = ({ route }) => {
             resizeMode='contain'
             style={{
               width: SIZES.width - 32,
-              height: 184,
+              height: 190,
               borderRadius: 32,
               borderColor: COLORS.gray6,
-              borderWidth: 1
+              borderWidth: 2
             }}
           />
         </View>
         <View style={{ marginVertical: 16 }}>
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 22, fontFamily: 'bold', textTransform: 'capitalize', marginVertical: 0 }}>
+              {name}
+            </Text>
+            <Text style={{ fontSize: 22, fontFamily: 'regular' }}>
+              Rs. {price}
+            </Text>
+          </View>
 
           <Text style={{
-            fontSize: 18,
+            fontSize: 22,
             fontFamily: 'bold',
             textTransform: 'capitalize',
-            marginVertical: 10
-          }}>{name}</Text>
-          <View style={{
+            marginVertical: 15
+          }}>Description</Text>
+
+          <Text style={{
+            fontSize: 20,
+            fontFamily: 'regular',
+            textTransform: 'capitalize',
+            // marginVertical: 15
+          }}>{description}</Text>
+          {/* <View style={{
             backgroundColor: COLORS.tertiaryGray,
             borderRadius: 24,
             paddingHorizontal: 10,
             paddingVertical: 16,
-            marginTop: 300
+            marginBottom: "10%",
+            position: 'relative'
+            // marginTop: 300
           }}>
             <View style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               marginBottom: 16,
             }}>
-              <Text style={{ fontSize: 28, fontFamily: 'regular' }}>Rs. {price}</Text>
 
+            </View>
+            {quantity > 0 ? (
+              <View style={quantityStyle.container}>
+                <TouchableOpacity onPress={() => decreaseQuantity(prodId)} style={quantityStyle.button}>
+                  <Text style={quantityStyle.buttonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={quantityStyle.quantity}>{quantity}</Text>
+                <TouchableOpacity onPress={() => cartAddition(prodId)} style={quantityStyle.button}>
+                  <Text style={quantityStyle.buttonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <Button
+                filled
+                onPress={() => cartAddition(prodId)}
+                isEnable={true}
+                title={`ADD TO CART`}
+              />
+            )}
+          </View> */}
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+      <StatusBar hidden={true} />
+      <View style={{ flex: 1, paddingHorizontal: 16 }}>
+        {renderHeader()}
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {renderFoodDetails()}
+        </ScrollView>
+        <View style={styles.addToCartContainer}>
+          <View style={{
+            backgroundColor: COLORS.tertiaryGray,
+            borderRadius: 24,
+            paddingHorizontal: 10,
+            paddingVertical: 16,
+            position: 'relative'
+          }}>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 16,
+            }}>
             </View>
             {quantity > 0 ? (
               <View style={quantityStyle.container}>
@@ -279,24 +335,9 @@ const FoodDetailsV1 = ({ route }) => {
           </View>
         </View>
       </View>
-    )
-  }
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <StatusBar hidden={true} />
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
-        {renderHeader()}
-        {/* {
-          screenLoading ?
-            <ActivityIndicator size="large" color="blue" /> : null
-        } */}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {renderFoodDetails()}
-        </ScrollView>
-      </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   checkboxContainer: {
@@ -318,7 +359,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'regular'
   },
-})
+  addToCartContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+  },
+});
 
 const quantityStyle = StyleSheet.create({
   container: {
@@ -358,4 +406,4 @@ const quantityStyle = StyleSheet.create({
 });
 
 
-export default FoodDetailsV1
+export default FoodDetailsV1;

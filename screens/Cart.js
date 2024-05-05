@@ -17,6 +17,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '../context/CartContext';
 
 const Cart = ({ navigation }) => {
+  const basket = require("../assets/images/basket.png");
+
   const [quantity, setQuantity] = useState(1);
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
@@ -104,7 +106,7 @@ const Cart = ({ navigation }) => {
       getCartCounter();
     } catch (err) {
       console.log("Error");
-      console.log(err);
+      console.log(err?.response?.data);
       setCart([]);
     }
   }
@@ -293,80 +295,95 @@ const Cart = ({ navigation }) => {
           </View>
         </View>
 
-        <FlatList
-          data={cart}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({ item, index }) => {
-            return (
-              <View style={cartStyles.cardContainer}>
-                <View style={cartStyles.card}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {/* Delete Button */}
-                    <TouchableOpacity
-                      onPress={() => deleteCart(item.prod_id)}
-                      style={styles.deleteButton}
-                    >
-                      <FontAwesome name="remove" size={24} color="red" style={{ marginRight: 10 }} />
-                    </TouchableOpacity>
-                    <View style={{ width: 80, marginRight: 10 }}>
-                      <Image
-                        source={{ uri: `https://api.veggieking.pk/public/upload/${item.product_image}` }}
-                        resizeMode='contain'
-                        style={{
-                          height: 80,
-                          flex: 1,
-                          borderRadius: 10,
-                        }}
-                      />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          fontSize: 13,
-                          color: '#000',
-                          fontFamily: 'regular',
-                          textTransform: 'capitalize',
-                          marginBottom: 6,
-                        }}>{item.product_name}</Text>
-                      <Text style={{
-                        fontSize: 20,
-                        color: '#f44c00',
-                        fontFamily: 'bold',
-                        marginBottom: 6,
-                      }}>Rs. {item.product_price * item.quantity}</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {
+          cartCounter == 0 ? (
+            <View style={[styles.centeredContainer, { backgroundColor: 'lightGrey' }]}>
+              <Image source={basket} style={{ width: "40%", height: "20%", marginHorizontal: 10 }} />
+              <Text style={{
+                color: COLORS.black,
+                fontSize: 14,
+                fontFamily: 'regular',
+                textAlign: 'center'
+              }}>Your cart is empty</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={cart}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item, index }) => {
+                return (
+                  <View style={cartStyles.cardContainer}>
+                    <View style={cartStyles.card}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {/* Delete Button */}
+                        <TouchableOpacity
+                          onPress={() => deleteCart(item.prod_id)}
+                          style={styles.deleteButton}
+                        >
+                          <FontAwesome name="remove" size={24} color="red" style={{ marginRight: 10 }} />
+                        </TouchableOpacity>
+                        <View style={{ width: 80, marginRight: 10 }}>
+                          <Image
+                            source={{ uri: `https://api.veggieking.pk/public/upload/${item.product_image}` }}
+                            resizeMode='contain'
+                            style={{
+                              height: 80,
+                              flex: 1,
+                              borderRadius: 10,
+                            }}
+                          />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text
+                            style={{
+                              fontSize: 13,
+                              color: '#000',
+                              fontFamily: 'regular',
+                              textTransform: 'capitalize',
+                              marginBottom: 6,
+                            }}>{item.product_name}</Text>
+                          <Text style={{
+                            fontSize: 20,
+                            color: '#f44c00',
+                            fontFamily: 'bold',
+                            marginBottom: 6,
+                          }}>Rs. {item.product_price * item.quantity}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-                      {/* Minus Button */}
-                      <TouchableOpacity
-                        onPress={() => decreaseQuantity(item.prod_id)}
-                        style={styles.roundedBtn}
-                      >
-                        <Text style={cartStyles.body2}>-</Text>
-                      </TouchableOpacity>
-                      {/* Quantity Text */}
-                      <Text style={{
-                        fontSize: 16,
-                        fontFamily: 'regular',
-                        color: '#000',
-                        marginHorizontal: 12
-                      }}>{item.quantity}</Text>
-                      {/* Plus Button */}
-                      <TouchableOpacity
-                        onPress={() => increaseQuantity(item.prod_id)}
-                        style={styles.roundedBtn}
-                      >
-                        <Text style={cartStyles.body2}>+</Text>
-                      </TouchableOpacity>
+                          {/* Minus Button */}
+                          <TouchableOpacity
+                            onPress={() => decreaseQuantity(item.prod_id)}
+                            style={styles.roundedBtn}
+                          >
+                            <Text style={cartStyles.body2}>-</Text>
+                          </TouchableOpacity>
+                          {/* Quantity Text */}
+                          <Text style={{
+                            fontSize: 16,
+                            fontFamily: 'regular',
+                            color: '#000',
+                            marginHorizontal: 12
+                          }}>{item.quantity}</Text>
+                          {/* Plus Button */}
+                          <TouchableOpacity
+                            onPress={() => increaseQuantity(item.prod_id)}
+                            style={styles.roundedBtn}
+                          >
+                            <Text style={cartStyles.body2}>+</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     </View>
                   </View>
-                </View>
-              </View>
-            );
-          }}
+                );
+              }}
 
-        />
+            />
+          )
+        }
+
 
       </View>
       {
@@ -452,6 +469,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f44c00",
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
 });

@@ -17,7 +17,7 @@ import { cartStyles } from '../styles/CartStyles'
 
 
 const CategoryProducts = ({ route }) => {
-  const { catName, catId } = route.params;
+  const { catId, catName } = route.params;
   const [cartCounter, setCartCounter] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [screenLoading, setScreenLoading] = useState(false);
@@ -347,7 +347,7 @@ const CategoryProducts = ({ route }) => {
 
 
     // response = productsLoading ? <ActivityIndicator size="large" color="blue" /> : result
-    response =  result
+    response = result
 
     return (
       response

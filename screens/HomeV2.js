@@ -39,6 +39,7 @@ const HomeV2 = ({ navigation }) => {
   // const [sliders, setSliders] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationData, setNotificationData] = useState({});
+
   const [userAddress, setUserAddress] = useState('');
   const [cartCounter, setCartCounter] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -56,11 +57,16 @@ const HomeV2 = ({ navigation }) => {
   const [peeledVgs, setPeeledVgs] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [prodCategory, setProdCategory] = useState([]);
   const [prodCatLoading, setProdCatLoading] = useState(false);
+  const [storedNotificationId, setStoredNotificationId] = useState(null);
 
   const navigate = useNavigation();
 
-  const handlePressGotIt = () => {
+  const handlePressGotIt = async () => {
     setModalVisible(false);
+    const notificationId = notificationData.id;
+    // console.log(`not-id=${notificationData.id}`);
+    // await AsyncStorage.setItem('notificationAcknowledged', 'true');
+    await AsyncStorage.setItem('storedNotificationId', notificationId.toString()); // Store the new notification ID
   };
 
   const handleSearch = (text) => {
@@ -256,8 +262,24 @@ const HomeV2 = ({ navigation }) => {
       const response = await GeneralService.getNotification();
       const { data } = response;
       const { response: res } = data;
-      setNotificationData({ body: res.body, body2: res.body2, heading: res.heading, button: res.button });
-      setModalVisible(res.notification_status == 'yes' ? true : false);
+      const { id, body, body2, heading, button } = res;
+      // console.log(`fetch-id=${id}`);
+
+      // setNotificationData({ body: res.body, body2: res.body2, heading: res.heading, button: res.button });
+      // setModalVisible(res.notification_status == 'yes' ? true : false);
+
+      const storedId = await AsyncStorage.getItem('storedNotificationId');
+      // console.log(`id=${id}, store-id=${storedId}`);
+      if (id != storedId) {
+        // console.log("not calling");
+        setNotificationData({ id: id, body: res.body, body2: res.body2, heading: res.heading, button: res.button });
+        setModalVisible(true); // Show the modal
+        setStoredNotificationId(id); // Store the new notification ID
+      }
+      // if (res.notification_status === 'yes' && !(await AsyncStorage.getItem('notificationAcknowledged'))) {
+      //   setNotificationData({ body: res.body, body2: res.body2, heading: res.heading, button: res.button });
+      //   setModalVisible(true); // Show the modal
+      // }
       // console.log(`home-data=${cartData}`);
     } catch (err) {
       console.log(err);
@@ -556,6 +578,7 @@ const HomeV2 = ({ navigation }) => {
       ]);
 
       if (response) {
+        console.log(response.data.response);
         setFruits(response.data.response);
       } else {
         throw new Error('No response from the server');
@@ -729,7 +752,7 @@ const HomeV2 = ({ navigation }) => {
             borderRadius: 15
           }}
           renderItem={({ item, index }) => (
-            console.log(item),
+            // console.log(item),
             <View style={{
               flex: 1,
               borderWidth: 1,
@@ -1007,7 +1030,7 @@ const HomeV2 = ({ navigation }) => {
         renderItem={({ item, index }) => {
           return (
             <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
-              id: item.id, name: item.name,
+              id: item.id, name: item.name, description: item.description,
               image: item.image, price: item.price, minQty: 1, type: "kg"
             })}
               style={{
@@ -1150,7 +1173,7 @@ const HomeV2 = ({ navigation }) => {
         renderItem={({ item, index }) => {
           return (
             <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
               key={index}
               style={{
                 flexDirection: 'column',
@@ -1285,9 +1308,10 @@ const HomeV2 = ({ navigation }) => {
           marginBottom: "5%",
         }}
         renderItem={({ item, index }) => {
+          // console.log(item);
           return (
             <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
               key={index}
               style={{
                 flexDirection: 'column',
@@ -1630,7 +1654,7 @@ const HomeV2 = ({ navigation }) => {
         renderItem={({ item, index }) => {
           return (
             <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
               key={index}
               style={{
                 flexDirection: 'column',
@@ -1880,7 +1904,7 @@ const HomeV2 = ({ navigation }) => {
         renderItem={({ item, index }) => {
           return (
             <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
               key={index}
               style={{
                 flexDirection: 'column',
@@ -1997,8 +2021,8 @@ const HomeV2 = ({ navigation }) => {
           {renderCarousel()}
           {renderCategories()}
           {/* {renderFeatureProducts()} */}
-          {renderVerticalProducts(1, "Vegetables", vegetables)}
-          {renderVerticalProducts(2, "Fruits", fruits)}
+          {renderVerticalProducts(2, "Vegetables", vegetables)}
+          {renderVerticalProducts(1, "Fruits", fruits)}
           {renderVerticalProducts(8, "Dry Fruits", dryFruits)}
           {renderVerticalProducts(9, "Snacks", snacks)}
           {renderVerticalProducts(13, "Spices", spices)}

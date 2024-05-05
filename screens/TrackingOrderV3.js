@@ -10,6 +10,7 @@ import { Feather, FontAwesome5 } from "@expo/vector-icons"
 import VerticalStepper from '../components/VerticalStepper'
 import { StatusBar } from 'expo-status-bar'
 import GeneralService from '../services/general.service'
+import { ScrollView } from 'react-native-virtualized-view'
 
 // TODO
 const TrackingOrderV3 = ({ route, navigation }) => {
@@ -78,66 +79,56 @@ const TrackingOrderV3 = ({ route, navigation }) => {
       <View style={{
         width: SIZES.width - 32,
         marginHorizontal: 16,
-        top: 150
+        top: 90,
       }}>
-        <View
-          style={{ flexDirection: 'row' }}
-        >
-          <View style={{
-            marginRight: 12
-          }}>
-            {/* <Image
-              // source={images.food}
-              source={images.burger1}
-              style={{
-                height: 80,
-                width: 80,
-                borderRadius: 12,
-                borderColor: COLORS.gray,
-                borderWidth: 1
-              }}
-            /> */}
+        <ScrollView showsVerticalScrollIndicator={true}>
+          <View
+            style={{ flexDirection: 'row' }}
+          >
+            <View style={{
+              marginRight: 12
+            }}>
+            </View>
+            <View style={{
+              flexDirection: 'column',
+            }}>
+              <Text style={{ ...FONTS.h4 }}>{orderNo}</Text>
+              <Text style={styles.body3}>Orderd at {orderDate}</Text>
+              {data.map((res) => {
+                return (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.h3}>{res.quantity}x</Text>
+                    <Text style={styles.body3}>{res.prod_name}</Text>
+                  </View>
+                )
+              })}
+
+            </View>
           </View>
           <View style={{
-            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginVertical: 22
           }}>
-            <Text style={{ ...FONTS.h4 }}>{orderNo}</Text>
-            <Text style={styles.body3}>Orderd at {orderDate}</Text>
-            {data.map((res) => {
-              return (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.h3}>{res.quantity}x</Text>
-                  <Text style={styles.body3}>{res.prod_name}</Text>
-                </View>
-              )
-            })}
-
-            {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.h3}>4x</Text>
-              <Text style={styles.body3}>Sandwitch</Text>
-            </View> */}
           </View>
-        </View>
-        <View style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginVertical: 22
-        }}>
-        </View>
 
-        <VerticalStepper status={orderStatus} />
+          <VerticalStepper status={orderStatus} />
 
-        <Image
-          // source={illustrations.deliverd}
-          // source={illustrations.packing}
-          source={orderStatus === "PENDING" ? illustrations.received :
-            (orderStatus === "DELIVERED" ? illustrations.deliverd :
-              (orderStatus === "PACKING" ? illustrations.packing :
-                (orderStatus === "CANCELLED" ? COLORS.red : illustrations.deliverd)))}
-          style={[styles.locationImage, { alignSelf: 'center' }]}
-        />
+          <Image
+            // source={illustrations.deliverd}
+            // source={illustrations.packing}
+            source={orderStatus === "PENDING" ? illustrations.received :
+              (orderStatus === "DELIVERED" ? illustrations.deliverd :
+                (orderStatus === "PACKING" ? illustrations.packing :
+                  (orderStatus === "CANCELLED" ? COLORS.red : illustrations.deliverd)))}
+            style={[styles.locationImage, { alignSelf: 'center' }]}
+          />
+
+        </ScrollView>
 
       </View>
+
+
     </SafeAreaView>
   )
 }
