@@ -26,7 +26,7 @@ const UserDtlCard = ({ name, email, phone, address }) => {
                 justifyContent: "space-between",
                 paddingVertical: 8
             }}>
-                <Text style={styles.amount}>Address: {address}</Text>
+                <Text style={styles.amount}>Delivery Address: {address}</Text>
             </View>
         </>
     )

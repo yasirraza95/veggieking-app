@@ -371,6 +371,24 @@ const HistoryRoute = ({ navigation, index }) => {
               marginVertical: 18
             }}>
               <TouchableOpacity
+                onPress={() => navigate.navigate("UserDetail", { custName: item.name, custEmail: item.email, custPhone: item.phone, custAddress: item.address })}
+                // onPress={() => navigation.navigate("OrderDetail")}
+                style={{
+                  height: 38,
+                  width: 140,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: COLORS.primary,
+                  borderRadius: 8
+                }}
+              >
+                <Text style={{
+                  color: COLORS.white,
+                  fontSize: 14,
+                  fontFamily: 'regular'
+                }}>User Details</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => navigate.navigate("OrderDetail", { orderId: item.id })}
                 // onPress={() => navigation.navigate("OrderDetail")}
                 style={{
