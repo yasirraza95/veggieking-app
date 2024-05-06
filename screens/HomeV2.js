@@ -899,7 +899,6 @@ const HomeV2 = ({ navigation }) => {
         </View>
 
         <View>
-
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 8 }}>
             {category.map((item, index) => {
               // Define an array of border colors
@@ -1247,15 +1246,13 @@ const HomeV2 = ({ navigation }) => {
     }
 
     // let result = <View style={{ flex: 1, ...marginBottomStyle }}>
-    let result = <View style={{ flex: 1 }}>
-
+    let result = <View>
       <View style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         // paddingHorizontal: 16
       }}>
-
         <Text style={{ ...FONTS.body2, fontFamily: "bold" }}>{title}</Text>
 
         <TouchableOpacity onPress={() => navigate.navigate("CategoryProducts", {
@@ -1263,7 +1260,7 @@ const HomeV2 = ({ navigation }) => {
         })}
           style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
         >
-          <Text style={{ fontSize: 16, fontFamily: 'bold', marginRight: 0 }}>See All</Text>
+          <Text style={{ fontSize: 16, fontFamily: 'bold' }}>See All</Text>
           <View>
             <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.black} />
           </View>
@@ -1299,64 +1296,66 @@ const HomeV2 = ({ navigation }) => {
           <Text style={{ color: COLORS.white }}>+</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        showsHorizontalScrollIndicator={false}
-        // horizontal={true}
-        numColumns={2}
-        data={data} keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingHorizontal: 8 }}
-        style={{
-          marginBottom: "5%",
-        }}
-        renderItem={({ item, index }) => {
-          // console.log(item);
-          return (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
-              key={index}
-              style={{
-                flexDirection: 'column',
-                paddingHorizontal: 2,
-                paddingVertical: 4,
-                height: "auto",
-                width: 160,
-                borderWidth: 1,
-                borderColor: COLORS.gray6,
-                borderRadius: 15,
-                marginRight: 6,
-                marginBottom: 16
-              }}>
-              <Image
-                source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-                resizeMode='cover'
-                style={{ width: "100%", height: 84, borderRadius: 15 }}
-              />
-              <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {item.quantity_added >= 1 && (
-                    <>
-                      <TouchableOpacity
-                        onPress={() => decreaseQuantity(id, item.id)}
-                        style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
-                        <Text style={cartStyles.body2}>-</Text>
-                      </TouchableOpacity>
-                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
-                    </>
-                  )}
-                  <TouchableOpacity
-                    onPress={() => addCart(id, item.id)}
-                    style={[cartStyles.roundedBtn,
-                    { backgroundColor: '#f44c00' }]}>
-                    <Text style={cartStyles.body2}>+</Text>
-                  </TouchableOpacity>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          // horizontal={true}
+          numColumns={2}
+          data={data} keyExtractor={item => item.id}
+          contentContainerStyle={{ paddingHorizontal: 8 }}
+          style={{
+            marginBottom: "5%",
+          }}
+          renderItem={({ item, index }) => {
+            // console.log(item);
+            return (
+              <TouchableOpacity
+                onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
+                key={index}
+                style={{
+                  flexDirection: 'column',
+                  paddingHorizontal: 2,
+                  paddingVertical: 4,
+                  height: "auto",
+                  width: 160,
+                  borderWidth: 1,
+                  borderColor: COLORS.gray6,
+                  borderRadius: 15,
+                  marginRight: 6,
+                  marginBottom: 16
+                }}>
+                <Image
+                  source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+                  resizeMode='cover'
+                  style={{ width: "100%", height: 84, borderRadius: 15 }}
+                />
+                <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {item.quantity_added >= 1 && (
+                      <>
+                        <TouchableOpacity
+                          onPress={() => decreaseQuantity(id, item.id)}
+                          style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
+                          <Text style={cartStyles.body2}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
+                      </>
+                    )}
+                    <TouchableOpacity
+                      onPress={() => addCart(id, item.id)}
+                      style={[cartStyles.roundedBtn,
+                      { backgroundColor: '#f44c00' }]}>
+                      <Text style={cartStyles.body2}>+</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          )
-        }}
-      />
+              </TouchableOpacity>
+            )
+          }}
+        />
+      </View>
     </View>;
 
     let response = data.length > 0 && result;
