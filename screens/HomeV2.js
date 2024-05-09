@@ -945,7 +945,7 @@ const HomeV2 = ({ navigation }) => {
                       }}
                     />
                   </View>
-                  <Text style={{ fontSize: 16, fontFamily: 'bold', textAlign: 'center', marginTop: 5 }}>{item.name}</Text>
+                  <Text style={{ fontSize: 12, fontFamily: 'bold', textAlign: 'center', justifyContent: 'center', marginTop: 5 }}>{item.name}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -1253,16 +1253,16 @@ const HomeV2 = ({ navigation }) => {
         alignItems: 'center',
         // paddingHorizontal: 16
       }}>
-        <Text style={{ ...FONTS.body2, fontFamily: "bold" }}>{title}</Text>
+        <Text style={{ ...FONTS.body2, fontFamily: "bold", color: COLORS.primary }}>{title}</Text>
 
         <TouchableOpacity onPress={() => navigate.navigate("CategoryProducts", {
           catId: id, catName: title
         })}
           style={{ flexDirection: 'row', alignItems: 'center', position: "absolute", right: 6 }}
         >
-          <Text style={{ fontSize: 16, fontFamily: 'bold' }}>See All</Text>
+          <Text style={{ fontSize: 16, fontFamily: 'bold', color: COLORS.primary }}>See All</Text>
           <View>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.black} />
+            <MaterialIcons name="keyboard-arrow-right" size={24} color={COLORS.primary} />
           </View>
         </TouchableOpacity>
 
