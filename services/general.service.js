@@ -501,6 +501,21 @@ const updateUserById = (name, address, phone, email, userId) => {
     );
 };
 
+const updatePasswordById = (current_password, new_password, userId) => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    // console.log(current_password, new_password, userId);
+    return axios.put(
+        `${API_URL}/edit-password`, {
+        id: userId, current_password: current_password, new_password: new_password
+    },
+        {
+            headers: headers,
+        }
+    );
+};
+
 const updatePassword = (token, email, password) => {
     console.log(token, email, password);
     const headers = {
@@ -680,12 +695,11 @@ const getCharges = () => {
     );
 };
 
-
-
 const GeneralService = {
-    login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId, cartCounterByUserId, increaseQty, decreaseQty,
-    deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart, listLimProductByCatCart, listAllCategories, listFeaturedProducts, listFeaturedProductByCart, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
-    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, getProductCartById, getNotification, getSliders, updateUserById, updatePassword,
+    login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId,
+    cartCounterByUserId, increaseQty, decreaseQty, deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart,
+    listLimProductByCatCart, listAllCategories, listFeaturedProducts, listFeaturedProductByCart, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
+    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, getProductCartById, getNotification, getSliders, updateUserById, updatePasswordById, updatePassword,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart, getCharges, submitMessage
 };
 export default GeneralService;

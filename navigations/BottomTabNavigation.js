@@ -106,7 +106,7 @@ const BottomTabNavigation = () => {
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
-                            <>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
                                 <Ionicons
                                     name={focused ? "cart-sharp" : "cart-outline"}
                                     size={24}
@@ -119,7 +119,7 @@ const BottomTabNavigation = () => {
                                         <Text style={styles.cartBadgeText}>{cartCounter}</Text>
                                     </View>
                                 )}
-                            </>
+                            </View>
                         )
                     },
                 }}
@@ -147,16 +147,17 @@ const BottomTabNavigation = () => {
 }
 
 const styles = StyleSheet.create({
-    cartBadge: {
+    cartBadgeContainer: {
         position: 'absolute',
-        bottom: 25,
-        right: 15,
+        top: 0,
+        right: 0,
+        transform: [{ translateX: 6 }, { translateY: -8 }],
+    },
+    cartBadge: {
         backgroundColor: 'red',
         borderRadius: 10,
-        width: 20,
-        height: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
     },
     cartBadgeText: {
         color: 'white',

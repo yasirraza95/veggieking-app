@@ -32,6 +32,15 @@ export const userProfile = Yup.object({
   // password: Yup.string().min(4, 'Min 4 characters required').required('Enter Password')
 });
 
+export const passwordProfile = Yup.object({
+  current_password: Yup.string().min(4, 'Min 4 characters required').required('Enter Current Password'),
+  new_password: Yup.string().min(4, 'Min 4 characters required').required('Enter New Password'),
+  // confirm_password: Yup.string().min(4, 'Min 4 characters required').required('Enter Confirm Password'),
+  confirm_password: Yup.string().oneOf([Yup.ref('new_password'), null], 'Passwords must match')
+    .min(4, 'Min 4 characters required')
+    .required('Enter Confirm Password')
+});
+
 export const forgotSchema = Yup.object({
   email: Yup.string().email('Enter valid email').required("Please enter the Email"),
 });

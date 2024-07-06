@@ -8,11 +8,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import { COLORS, images } from "../constants";
-import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory, PersonalProfile, Contact } from "../screens";
+import { Address, Menu, Notifications, PaymentMethod, Cart, MyOrders, HomeV1, HomeV2, Search, TrackingOrderV1, History, TrackingOrderV2, TransactionHistory, PersonalProfile, Contact, EditProfile } from "../screens";
 import Otp from "../screens/Otp";
 import Logout from "../screens/Logout";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import EditPassword from "../screens/EditPassword";
 
 const Drawer = createDrawerNavigator();
 const DrawerNavigation = () => {
@@ -115,6 +116,19 @@ const DrawerNavigation = () => {
         }}
         component={PersonalProfile}
       />
+
+      <Drawer.Screen
+        name="EditPassword"
+        options={{
+          drawerLabel: "Change Password",
+          title: "EditPassword",
+          headerShadowVisible: false,
+          drawerIcon: () => (
+            <Ionicons name="key-outline" size={24} color={COLORS.black} />
+          )
+        }}
+        component={EditPassword}
+      />
       <Drawer.Screen
         name="Orders"
         options={{
@@ -126,28 +140,7 @@ const DrawerNavigation = () => {
         }}
         component={MyOrders}
       />
-      {/* <Drawer.Screen
-        name="Otp"
-        options={{
-          drawerLabel: "OTP",
-          title: "Otp",
-          drawerIcon: () => (
-            <Ionicons name="gift-outline" size={24} color={COLORS.black} />
-          )
-        }}
-        component={Otp}
-      /> */}
-      {/* <Drawer.Screen
-        name="Search"
-        options={{
-          drawerLabel: "Search",
-          title: "Search",
-          drawerIcon: () => (
-            <Ionicons name="search-outline" size={24} color={COLORS.black} />
-          )
-        }}
-        component={Search}
-      /> */}
+
       <Drawer.Screen
         name="Cart"
         options={{
@@ -183,51 +176,6 @@ const DrawerNavigation = () => {
         }}
         component={Logout}
       />
-
-      {/* <Drawer.Screen
-        name="Delivery Address"
-        options={{
-          drawerLabel: "Delivery Address",
-          title: "Delivery Address",
-          drawerIcon: () => (
-            <Ionicons name="location-outline" size={24} color={COLORS.black} />
-          )
-        }}
-        component={Address}
-      /> */}
-      {/* <Drawer.Screen
-        name="Payment Methods"
-        options={{
-          drawerLabel: "Payment Methods",
-          title: "Payment Methods",
-          drawerIcon: () => (
-            <AntDesign name="creditcard" size={24} color={COLORS.black} />
-          )
-        }}
-        component={PaymentMethod}
-      /> */}
-      {/* <Drawer.Screen
-        name="Notifications"
-        options={{
-          drawerLabel: "Notifications",
-          title: "Notifications",
-          drawerIcon: () => (
-            <Ionicons name="notifications-outline" size={24} color={COLORS.black} />
-          )
-        }}
-        component={Notifications}
-      /> */}
-      {/* <Drawer.Screen
-        name="Help"
-        options={{
-          drawerLabel: "Help",
-          title: "Help",
-          drawerIcon: () => (
-            <Feather name="help-circle" size={24} color={COLORS.black} />
-          )
-        }}
-        component={Menu}
-      /> */}
     </Drawer.Navigator>
   )
 }

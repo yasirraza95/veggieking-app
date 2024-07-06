@@ -13,20 +13,17 @@ import { reducer } from '../utils/reducers/formReducers'
 import { ScrollView } from 'react-native-virtualized-view'
 import { StatusBar } from 'expo-status-bar'
 import { Formik } from 'formik'
-import { signInSchema, userProfile } from '../schema'
+import { passwordProfile, signInSchema, userProfile } from '../schema'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import GeneralService from '../services/general.service'
-import { useCart } from '../context/CartContext';
 
-const EditProfile = () => {
-    const { updateUserAddress } = useCart();
+const EditPassword = () => {
     const [image, setImage] = useState(null);
     const [error, setError] = useState();
     const [profileInfo, setProfileInfo] = useState({
-        name: "",
-        address: "",
-        phone: "",
-        email: "",
+        current_password: "",
+        new_password: "",
+        confirm_password: "",
     });
     const [emailError, setEmailError] = useState("");
     const [phoneError, setPhoneError] = useState("");
@@ -49,59 +46,23 @@ const EditProfile = () => {
         [dispatchFormState]
     )
 
-    const getUserById = async () => {
-        try {
-            let userId = await AsyncStorage.getItem("_id");
-            const timeout = 8000;
-            const response = await Promise.race([
-                GeneralService.getUserById(userId),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-            ]);
-
-            if (response) {
-                setProfileInfo({
-                    name: response.data.response.first_name + " " + response.data.response.last_name,
-                    address: response.data.response.address,
-                    phone: response.data.response.phone,
-                    email: response.data.response.email,
-                });
-            } else {
-                throw new Error('No response from the server');
-            }
-        } catch (err) {
-            // console.log(err);
-            Alert.alert("Error", "No response from server");
-        }
-    }
-
     const initialState = {
         inputValues: {
-            name: profileInfo.name,
-            email: profileInfo.email,
-            phone: profileInfo.phone,
-            address: profileInfo.address
+            current_password: "",
+            new_password: "",
+            confirm_password: "",
         },
         inputValidities: {
-            name: false,
-            email: false,
-            phone: false,
-            address: profileInfo.address
+            current_password: false,
+            new_password: false,
+            confirm_password: false,
         },
         formIsValid: false,
     }
 
-    // useEffect(() => {
-    //     getUserById();
-    // }, []);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            getUserById();
-        }, [])
-    );
-
-    const updateProfile = async (values) => {
-        console.log(values);
+    const updatePassword = async (values) => {
+        // console.log(values);
         try {
             let userId = await AsyncStorage.getItem("_id");
 
@@ -110,15 +71,12 @@ const EditProfile = () => {
             // console.log(values);
             const timeout = 8000;
             const response = await Promise.race([
-                GeneralService.updateUserById(values.name, values.address, values.phone, values.email, userId),
+                GeneralService.updatePasswordById(values.current_password, values.new_password, userId),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
             ]);
 
             if (response) {
-                await AsyncStorage.setItem("my_address", values.address);
-                updateUserAddress(values.address);
-                getUserById();
-                Alert.alert('Success', 'Information updated successfully');
+                Alert.alert('Success', 'Password updated successfully');
             } else {
                 throw new Error('No response from the server');
             }
@@ -128,20 +86,13 @@ const EditProfile = () => {
             setIsEnable(true);
             // Alert.alert('Success', 'User registered successfully');
         } catch (err) {
-            // console.log(err);
+            console.log(err?.response?.status);
             setIsLoading(false);
             setIsEnable(true);
-            setEmailError("");
-            setPhoneError("");
+            // setEmailError("");
+            // setPhoneError("");
             if (err?.response?.status === 422) {
-                // console.log(err?.response?.data);
-                if (err?.response?.data?.email) {
-                    setEmailError(err?.response?.data?.email[0]);
-                }
-
-                if (err?.response?.data?.phone) {
-                    setPhoneError(err?.response?.data?.phone[0]);
-                }
+                Alert.alert("Error", "Current Password is incorrect");
             } else {
                 Alert.alert("Error", "Server error. Please try again later.");
             }
@@ -185,7 +136,7 @@ const EditProfile = () => {
                             style={{ height: 24, width: 24, tintColor: COLORS.black }}
                         />
                     </TouchableOpacity>
-                    <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Edit Profile</Text>
+                    <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Change Password</Text>
                 </View>
 
             </View>
@@ -232,80 +183,52 @@ const EditProfile = () => {
                 </View> */}
                 <Formik
                     initialValues={initialState.inputValues}
-                    validationSchema={userProfile}
+                    validationSchema={passwordProfile}
                     enableReinitialize={true}
-                    onSubmit={updateProfile}
+                    onSubmit={updatePassword}
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                         <View style={{
                             width: SIZES.width - 32, marginVertical: 25
                         }}>
-                            <Text style={commonStyles.inputHeader}>Name</Text>
+                            <Text style={commonStyles.inputHeader}>Current Password</Text>
                             <Input
-                                id="name"
-                                name="name"
-                                autoCapitalize="words"
-                                onChangeText={handleChange('name')}
-                                onBlur={handleBlur('name')}
-                                value={values.name}
-                                // onInputChanged={inputChangedHandler}
-                                // errorText={formState.inputValidities['name']}
-                                placeholder="Full Name"
+                                id="current_password"
+                                name="current_password"
+                                autoCapitalize="none"
+                                onChangeText={handleChange('current_password')}
+                                onBlur={handleBlur('current_password')}
+                                value={values.password}
+                                placeholder="Enter Current Password"
                                 placeholderTextColor={COLORS.black}
                             />
-                            {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
+                            {touched.current_password && errors.current_password && <Text style={styles.error}>{errors.current_password}</Text>}
 
-                            <Text style={commonStyles.inputHeader}>Address</Text>
+                            <Text style={commonStyles.inputHeader}>New Password</Text>
                             <Input
-                                id="address"
-                                name="address"
-                                onChangeText={handleChange('address')}
-                                onBlur={handleBlur('address')}
-                                // onInputChanged={inputChangedHandler}
-                                // errorText={formState.inputValidities['email']}
-                                value={values.address}
-                                placeholder="Address"
+                                id="new_password"
+                                name="new_password"
+                                autoCapitalize="none"
+                                onChangeText={handleChange('new_password')}
+                                onBlur={handleBlur('new_password')}
+                                value={values.new_password}
+                                placeholder="Enter New Password"
                                 placeholderTextColor={COLORS.black}
                             />
-                            {touched.address && errors.address && <Text style={styles.error}>{errors.address}</Text>}
+                            {touched.new_password && errors.new_password && <Text style={styles.error}>{errors.new_password}</Text>}
 
-                            <Text style={commonStyles.inputHeader}>Phone No.</Text>
+                            <Text style={commonStyles.inputHeader}>Confirm Password</Text>
                             <Input
-                                name="phone"
-                                id="phone"
-                                onChangeText={handleChange('phone')}
-                                onBlur={handleBlur('phone')}
-                                value={values.phone}
-                                placeholder="Phone No."
+                                id="confirm_password"
+                                name="confirm_password"
+                                autoCapitalize="none"
+                                onChangeText={handleChange('confirm_password')}
+                                onBlur={handleBlur('confirm_password')}
+                                value={values.confirm_password}
+                                placeholder="Enter Confirm Password"
                                 placeholderTextColor={COLORS.black}
-                                keyboardType="numeric"
                             />
-                            {!phoneError && touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
-                            {!errors.phone && phoneError && <Text style={styles.error}>{phoneError}</Text>}
-
-                            <Text style={commonStyles.inputHeader}>Email Address</Text>
-                            <Input
-                                name="email"
-                                id="email"
-                                onChangeText={handleChange('email')}
-                                onBlur={handleBlur('email')}
-                                value={values.email}
-                                placeholder="Email Address"
-                                placeholderTextColor={COLORS.black}
-                                keyboardType="email-address"
-                            />
-                            {!emailError && touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
-                            {!errors.email && emailError && <Text style={styles.error}>{emailError}</Text>}
-
-
-                            {/* <Button
-                                title="SAVE"
-                                filled
-                                onPress={() => navigation.navigate("PersonalProfile")}
-                                style={{
-                                    marginTop: 12
-                                }}
-                            /> */}
+                            {touched.confirm_password && errors.confirm_password && <Text style={styles.error}>{errors.confirm_password}</Text>}
 
                             <Button
                                 title="Update"
@@ -344,4 +267,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditProfile
+export default EditPassword

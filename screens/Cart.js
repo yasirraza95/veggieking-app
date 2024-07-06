@@ -12,7 +12,6 @@ import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import GeneralService from '../services/general.service'
 import { useFocusEffect } from '@react-navigation/native'
-import { listCart } from '../utils/sqlite';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '../context/CartContext';
 
@@ -24,72 +23,78 @@ const Cart = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [totalPrice, setTotalPrice] = useState(0)
   const [itemNo, setItemNo] = useState(0)
-  const [cartCounter, setCartCounter] = useState(0);
+  const [cartCounter, setCartCounter] = useState(0); ``
   const [inputText, setInputText] = useState('');
   const [inputError, setInputError] = useState('');
   const [deliveryCharges, setDeliveryCharges] = useState(0);
-  const { updateCartCounter } = useCart();
+  const { updateCartCounter, updateUserAddress, userAddress } = useCart();
 
   const getCartCounter = async () => {
     try {
+      console.log(`user-address=${userAddress}`);
       let userId = await AsyncStorage.getItem("_id");
       const cartResponse = await GeneralService.cartCounterByUserId(userId);
       const { data: cartData } = cartResponse;
       // console.log(`home-data=${cartData}`);
-      const { response: cartNo } = cartData;
+      const { counter: cartNo, address } = cartData;
+      // console.log(address);
       setCartCounter(cartNo);
       updateCartCounter(cartNo);
+      updateUserAddress(address);
     } catch (err) {
       console.log(err);
       setCartCounter(0);
     }
   }
 
-  const showToast = (message) => {
-    ToastAndroid.show(message, ToastAndroid.SHORT);
-  };
+  // const showToast = (message) => {
+  //   ToastAndroid.show(message, ToastAndroid.SHORT);
+  // };
 
   // const { response, status } = await listCart('user_id');
   // console.log(response, status);
 
 
-  const fetchDataNew = async () => {
-    try {
-      let userId = await AsyncStorage.getItem("_id");
-      let userAddress = await AsyncStorage.getItem("user_address");
-      setInputText(userAddress);
-      const response = await listCart(userId);
-      const { response: res } = response;
+  // const fetchDataNew = async () => {
+  //   try {
+  //     let userId = await AsyncStorage.getItem("_id");
+  //     let userAddress = await AsyncStorage.getItem("user_address");
+  //     setInputText(userAddress);
+  //     const response = await listCart(userId);
+  //     const { response: res } = response;
 
-      console.log(`success-cart=${res}`);
-      // const { data } = response;
-      // const { response: res } = data;
-      const totalPrice = res.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.quantity * currentValue.product_price);
-      }, 0);
+  //     console.log(`success-cart=${res}`);
+  //     // const { data } = response;
+  //     // const { response: res } = data;
+  //     const totalPrice = res.reduce((accumulator, currentValue) => {
+  //       return accumulator + (currentValue.quantity * currentValue.product_price);
+  //     }, 0);
 
-      const numberOfItems = res.reduce((count, obj) => {
-        return count + 1;
-      }, 0);
-      setItemNo(numberOfItems);
-      setTotalPrice(totalPrice);
-      setCart(res);
+  //     const numberOfItems = res.reduce((count, obj) => {
+  //       return count + 1;
+  //     }, 0);
+  //     setItemNo(numberOfItems);
+  //     setTotalPrice(totalPrice);
+  //     setCart(res);
 
-    } catch (err) {
-      // console.log("Error");
-      console.log(err);
-      setCart([]);
-    }
-  }
+  //   } catch (err) {
+  //     // console.log("Error");
+  //     console.log(err);
+  //     setCart([]);
+  //   }
+  // }
 
   const fetchData = async () => {
     try {
       console.log("asjdhskdh");
       let userId = await AsyncStorage.getItem("_id");
-      console.log(`user-id=${userId}`);
-      let userAddress = await AsyncStorage.getItem("my_address");
-      console.log(userAddress);
-      setInputText(userAddress.toString());
+      // let userAddress = await AsyncStorage.getItem("my_address");
+      // console.log(`user-address=${userAddress}`);
+      if (typeof userAddress !== "string") {
+        userAddress = JSON.stringify(userAddress);
+      }
+      // console.log(userAddress);
+      setInputText(userAddress);
       const response = await GeneralService.listCartByUserId(userId);
       const { data } = response;
       const { response: res } = data;
@@ -106,38 +111,39 @@ const Cart = ({ navigation }) => {
       setCart(res);
       getCartCounter();
     } catch (err) {
-      console.log("Error");
-      console.log(err?.response?.data);
+      // console.log("Error");
+      Alert.alert("Error", err);
+      // console.log(`error-response=${err}`);
       setCart([]);
     }
   }
 
 
-  const fetchDataOld2 = async () => {
-    try {
-      let userId = await AsyncStorage.getItem("_id");
-      let userAddress = await AsyncStorage.getItem("user_address");
-      setInputText(userAddress);
-      const response = await GeneralService.listCartByUserId(userId);
-      const { data } = response;
-      const { response: res } = data;
-      const totalPrice = res.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.quantity * currentValue.product_price);
-      }, 0);
+  // const fetchDataOld2 = async () => {
+  //   try {
+  //     let userId = await AsyncStorage.getItem("_id");
+  //     let userAddress = await AsyncStorage.getItem("user_address");
+  //     setInputText(userAddress);
+  //     const response = await GeneralService.listCartByUserId(userId);
+  //     const { data } = response;
+  //     const { response: res } = data;
+  //     const totalPrice = res.reduce((accumulator, currentValue) => {
+  //       return accumulator + (currentValue.quantity * currentValue.product_price);
+  //     }, 0);
 
-      const numberOfItems = res.reduce((count, obj) => {
-        return count + 1;
-      }, 0);
-      setItemNo(numberOfItems);
-      setTotalPrice(totalPrice);
-      setCart(res);
+  //     const numberOfItems = res.reduce((count, obj) => {
+  //       return count + 1;
+  //     }, 0);
+  //     setItemNo(numberOfItems);
+  //     setTotalPrice(totalPrice);
+  //     setCart(res);
 
-    } catch (err) {
-      console.log("Error");
-      console.log(err);
-      setCart([]);
-    }
-  }
+  //   } catch (err) {
+  //     console.log("Error");
+  //     console.log(err);
+  //     setCart([]);
+  //   }
+  // }
 
   const fetchDeliveryCharges = async () => {
     try {
@@ -178,7 +184,7 @@ const Cart = ({ navigation }) => {
   const increaseQuantity = (id) => {
     const increaseQty = async () => {
       try {
-        let userId = await AsyncStorage.getItem("_id");
+        let userId = 35;
         const response = await GeneralService.increaseQty(userId, id);
         console.log(response.data.response);
 
@@ -194,23 +200,23 @@ const Cart = ({ navigation }) => {
   };
 
 
-  const deleteCartNew = (id) => {
-    console.log(id);
-    const delCart = async () => {
-      try {
-        const response = await deleteToCart(id);
-        fetchData();
-        // showToast("Item removed");
+  // const deleteCartNew = (id) => {
+  //   console.log(id);
+  //   const delCart = async () => {
+  //     try {
+  //       const response = await deleteToCart(id);
+  //       fetchData();
+  //       // showToast("Item removed");
 
-      } catch (err) {
-        console.log("delete error");
-        console.log(err?.response?.data);
-      }
-    }
+  //     } catch (err) {
+  //       console.log("delete error");
+  //       console.log(err?.response?.data);
+  //     }
+  //   }
 
-    delCart();
-    // setQuantity(quantity + 1);
-  };
+  //   delCart();
+  //   // setQuantity(quantity + 1);
+  // };
 
   const deleteCart = (id) => {
     console.log(id);
@@ -226,15 +232,7 @@ const Cart = ({ navigation }) => {
         const response = await GeneralService.deleteCart(userId, id);
         console.log(response);
         getCartCounter();
-        // console.log(response.data.response);
 
-        // let cartCounter = await AsyncStorage.getItem("cart_counter");
-        // cartCounter = parseInt(cartCounter, 10);
-        // cartCounter--;
-        // console.log(cartCounter);
-        // await AsyncStorage.setItem("cart_counter", cartCounter.toString());
-        // setCartCounter(cartCounter);
-        // getCartCounter();
         fetchData();
 
       } catch (err) {
@@ -244,25 +242,21 @@ const Cart = ({ navigation }) => {
     }
 
     delCart();
-    // setQuantity(quantity + 1);
   };
 
   const handleInputChange = (text) => {
     setInputText(text);
   };
-  // TODO address moved to payment method page
   const placeOrder = () => {
     const orderPlace = async () => {
       if (inputText) {
         setInputError("");
-        // await clearCart();
         navigation.navigate("PaymentMethod", { total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText });
       } else {
         setInputError("Please enter address");
       }
       console.log(inputText);
     }
-    // TODO
     if (parseInt(totalPrice) >= 1000) {
       orderPlace();
     } else {

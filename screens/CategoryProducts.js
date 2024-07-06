@@ -34,7 +34,7 @@ const CategoryProducts = ({ route }) => {
       const cartResponse = await GeneralService.cartCounterByUserId(userId);
       const { data: cartData } = cartResponse;
       // console.log(`home-data=${cartData}`);
-      const { response: cartNo } = cartData;
+      const { counter: cartNo, address } = cartData;
       setCartCounter(cartNo);
 
     } catch (err) {

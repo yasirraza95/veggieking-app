@@ -19,14 +19,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { categories } from '../data/categories'
 import MyLoader from './MyLoader'
-import { addToCart, decreaseQty, syncProducts, cartCounting } from '../utils/sqlite';
 import { ToastAndroid } from 'react-native';
 import { cartStyles } from '../styles/CartStyles'
 import { useCart } from '../context/CartContext';
 import { debounce } from 'lodash';
-
+const placeholderImage = require('../assets/images/restaurants/restaurant6.png');
 
 const HomeV2 = ({ navigation }) => {
+  const [loadedImages, setLoadedImages] = useState(Array(1).fill(false));
+
   const [scrollOffset, setScrollOffset] = useState(0);
 
   const handleScroll = (event) => {
@@ -34,7 +35,7 @@ const HomeV2 = ({ navigation }) => {
     setScrollOffset(contentOffset.y);
   };
 
-  const { updateCartCounter } = useCart();
+  const { updateCartCounter, updateUserAddress } = useCart();
   const [sliders, setSliders] = useState([restaurant6]);
   // const [sliders, setSliders] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,11 +56,36 @@ const HomeV2 = ({ navigation }) => {
   const [snacks, setSnacks] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [spices, setSpices] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [peeledVgs, setPeeledVgs] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [meat, setMeat] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [milk, setMilk] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
+  const [aata, setAata] = useState(Array.from({ length: 4 }, (_, index) => ({ id: index, name: 'Loading...', image: '', price: '', quantity_added: '' })));
   const [prodCategory, setProdCategory] = useState([]);
   const [prodCatLoading, setProdCatLoading] = useState(false);
   const [storedNotificationId, setStoredNotificationId] = useState(null);
 
   const navigate = useNavigation();
+
+  const handleImageLoad = (index) => {
+    const newLoadedImages = [...loadedImages];
+    newLoadedImages[index] = true;
+    setLoadedImages(newLoadedImages);
+  };
+
+  useEffect(() => {
+    const preloadImages = async () => {
+      const promises = sliders.map((item, index) =>
+        Image.prefetch(`https://api.veggieking.pk/public/upload/${item}`).then(() => {
+          const newLoadedImages = [...loadedImages];
+          newLoadedImages[index] = true;
+          setLoadedImages(newLoadedImages);
+        })
+      );
+      await Promise.all(promises);
+    };
+
+    preloadImages();
+  }, []);
+
 
   const handlePressGotIt = async () => {
     setModalVisible(false);
@@ -164,6 +190,42 @@ const HomeV2 = ({ navigation }) => {
             return product;
           });
           setPeeledVgs(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 14) {
+          const updatedProducts = meat.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setMeat(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 15) {
+          const updatedProducts = milk.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setMilk(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 16) {
+          const updatedProducts = aata.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) - 1
+              };
+            }
+            return product;
+          });
+          setAata(updatedProducts);
           console.log(updatedProducts);
         }
 
@@ -308,9 +370,10 @@ const HomeV2 = ({ navigation }) => {
       const cartResponse = await GeneralService.cartCounterByUserId(userId);
       const { data: cartData } = cartResponse;
       // console.log(`home-data=${cartData}`);
-      const { response: cartNo } = cartData;
+      const { counter: cartNo, address } = cartData;
       setCartCounter(cartNo);
       updateCartCounter(cartNo);
+      updateUserAddress(address);
     } catch (err) {
       console.log(err);
       setCartCounter(0);
@@ -404,6 +467,42 @@ const HomeV2 = ({ navigation }) => {
         });
         setPeeledVgs(updatedProducts);
         console.log(updatedProducts);
+      } else if (catId == 14) {
+        const updatedProducts = meat.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setMeat(updatedProducts);
+        console.log(updatedProducts);
+      } else if (catId == 15) {
+        const updatedProducts = milk.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setMilk(updatedProducts);
+        console.log(updatedProducts);
+      } else if (catId == 16) {
+        const updatedProducts = aata.map(product => {
+          if (product.id === prodId) {
+            return {
+              ...product,
+              quantity_added: parseInt(product.quantity_added || 0) + 1
+            };
+          }
+          return product;
+        });
+        setAata(updatedProducts);
+        console.log(updatedProducts);
       }
 
       const timeout = 2000;
@@ -451,8 +550,11 @@ const HomeV2 = ({ navigation }) => {
       fetchSnacks();
       fetchSpices();
       fetchPeeledVgs();
+      fetchMeat();
       // cartCounter();
       fetchAddress();
+      fetchMilk();
+      fetchAata();
       // fetchVegetables();
       // fetchFruits();
       // Cleanup function (optional)
@@ -528,31 +630,6 @@ const HomeV2 = ({ navigation }) => {
         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
       ]);
       // console.log(response.data.response);
-      if (response) {
-        setVegetables(response.data.response);
-      } else {
-        throw new Error('No response from the server');
-      }
-
-      setFeatureLoading(false);
-      // console.error('More products fetched');
-    } catch (error) {
-      setFeatureLoading(false);
-      setVegetables([]);
-    }
-  };
-
-
-  const fetchVegetablesOld = async () => {
-    try {
-      setFeatureLoading(true);
-
-      const timeout = 8000;
-      const response = await Promise.race([
-        GeneralService.listProductByCat(2),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-      ]);
-
       if (response) {
         setVegetables(response.data.response);
       } else {
@@ -693,6 +770,75 @@ const HomeV2 = ({ navigation }) => {
     }
   };
 
+  const fetchMeat = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await Promise.race([
+        GeneralService.listLimProductByCatCart(14, userId),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setMeat(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+      setFeatureLoading(false);
+    } catch (error) {
+      setFeatureLoading(false);
+      setMeat([]);
+    }
+  };
+
+  const fetchMilk = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await Promise.race([
+        GeneralService.listLimProductByCatCart(15, userId),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setMilk(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+      setFeatureLoading(false);
+    } catch (error) {
+      setFeatureLoading(false);
+      setMilk([]);
+    }
+  };
+
+  const fetchAata = async () => {
+    try {
+      setFeatureLoading(true);
+
+      const timeout = 8000;
+      let userId = await AsyncStorage.getItem("_id");
+      const response = await Promise.race([
+        GeneralService.listLimProductByCatCart(16, userId),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      ]);
+
+      if (response) {
+        setAata(response.data.response);
+      } else {
+        throw new Error('No response from the server');
+      }
+      setFeatureLoading(false);
+    } catch (error) {
+      setFeatureLoading(false);
+      setAata([]);
+    }
+  };
+
   const productsByCategory = async (id) => {
     try {
       setProdCatLoading(true);
@@ -759,14 +905,27 @@ const HomeV2 = ({ navigation }) => {
               borderWidth: 1,
               justifyContent: 'center',
             }}>
+              {loadedImages[index] ? (
+                <Image
+                  source={{ uri: `https://api.veggieking.pk/public/upload/${item}` }}
+                  onLoad={() => handleImageLoad(index)}
+                  style={{
+                    width: SIZES.width - 1,
+                    height: width / 2,
+                    borderRadius: 15
+                  }}
+                />
+              ) : (
+                <Image
+                  source={placeholderImage}
+                  style={{
+                    width: SIZES.width - 1,
+                    height: width / 2,
+                    borderRadius: 15
+                  }}
+                />
+              )}
 
-              <Image source={{ uri: `https://api.veggieking.pk/public/upload/${item}` }}
-                defaultSource={require('../assets/images/restaurants/restaurant6.png')}
-                style={{
-                  width: SIZES.width - 1,
-                  height: width / 2,
-                  borderRadius: 15
-                }} />
             </View>
           )}
         />
@@ -945,7 +1104,8 @@ const HomeV2 = ({ navigation }) => {
                       }}
                     />
                   </View>
-                  <Text style={{ fontSize: 12, fontFamily: 'bold', textAlign: 'center', justifyContent: 'center', marginTop: 5 }}>{item.name}</Text>
+                  {/* <Text style={{ fontSize: 12, fontFamily: 'bold', textAlign: 'center', justifyContent: 'center', marginTop: 5 }}>{item.name}</Text> */}
+                  <Text style={{ width: "70%", fontSize: 12, fontFamily: 'bold', textAlign: 'center', justifyContent: 'center', marginTop: 5 }}>{item.name}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -1237,7 +1397,11 @@ const HomeV2 = ({ navigation }) => {
 
   const renderVerticalProducts = (id, title, data, isLast) => {
     const [quantity, setQuantity] = useState(1);
-    const width = Dimensions.get('window').width;
+    const windowWidth = Dimensions.get('window').width;
+    const horizontalSpacing = 13; // Adjust as needed
+    const marginRight = 13; // Adjust as needed
+    const itemWidth = (windowWidth - 2 * horizontalSpacing - marginRight) / 2;
+    // const itemWidth = (windowWidth - 24) / 2;
 
     const numColumns = 2;
     let marginBottomStyle = {};
@@ -1246,7 +1410,7 @@ const HomeV2 = ({ navigation }) => {
     }
 
     // let result = <View style={{ flex: 1, ...marginBottomStyle }}>
-    let result = <View>
+    let result = <View style={{ flex: 1 }}>
       <View style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -1300,7 +1464,7 @@ const HomeV2 = ({ navigation }) => {
         <FlatList
           showsHorizontalScrollIndicator={false}
           // horizontal={true}
-          numColumns={2}
+          numColumns={numColumns}
           data={data} keyExtractor={item => item.id}
           contentContainerStyle={{ paddingHorizontal: 8 }}
           style={{
@@ -1317,7 +1481,7 @@ const HomeV2 = ({ navigation }) => {
                   paddingHorizontal: 2,
                   paddingVertical: 4,
                   height: "auto",
-                  width: 160,
+                  width: itemWidth,
                   borderWidth: 1,
                   borderColor: COLORS.gray6,
                   borderRadius: 15,
@@ -1367,186 +1531,7 @@ const HomeV2 = ({ navigation }) => {
     );
   }
 
-  // const renderVegetables = () => {
-  //   const [quantity, setQuantity] = useState(1);
-  //   const width = Dimensions.get('window').width;
-  //   const flatListRef = useRef(null);
-  //   const [scrollIndex, setScrollIndex] = useState(null);
 
-  //   const scrollToIndex = (index) => {
-  //     if (flatListRef.current && index !== null && index !== undefined) {
-  //       flatListRef.current.scrollToIndex({
-  //         animated: true,
-  //         index: index,
-  //         viewPosition: 0.5, // Adjust the view position for the scrolled item
-  //       });
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     if (scrollIndex !== null) {
-  //       scrollToIndex(scrollIndex);
-  //       setScrollIndex(null); // Reset scroll index after scrolling
-  //     }
-  //   }, [scrollIndex]);
-
-  //   const getItemLayout = (data, index) => ({
-  //     length: 100, // Adjust the length as per your item height
-  //     offset: 100 * index,
-  //     index,
-  //   });
-
-  //   const addCart2 = async (type, prodId, index) => {
-  //     try {
-
-  //       if (type == "fruits") {
-  //         const updatedProducts = fruits.map(product => {
-  //           if (product.id === prodId) {
-  //             return {
-  //               ...product,
-  //               quantity_added: parseInt(product.quantity_added || 0) + 1
-  //             };
-  //           }
-  //           return product;
-  //         });
-  //         setFruits(updatedProducts);
-  //         setScrollIndex(index);
-  //       } else if (type == "vegetables") {
-  //         const updatedProducts = vegetables.map(product => {
-  //           if (product.id === prodId) {
-  //             return {
-  //               ...product,
-  //               quantity_added: parseInt(product.quantity_added || 0) + 1
-  //             };
-  //           }
-  //           return product;
-  //         });
-  //         setVegetables(updatedProducts);
-  //         setScrollIndex(index);
-  //         console.log(updatedProducts);
-  //       }
-
-  //       const timeout = 2000;
-  //       let userId = await AsyncStorage.getItem("_id");
-  //       const response = await Promise.race([
-  //         GeneralService.addCart(userId, prodId),
-  //         new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-  //       ]);
-
-  //       if (response) {
-
-  //         console.log(response);
-  //         // showToast('Added to cart');
-
-  //         getCartCounter();
-  //       } else {
-  //         throw new Error('No response from the server');
-  //       }
-
-  //     } catch (err) {
-  //       // showToast("Error adding to cart");
-  //     }
-  //   }
-
-
-  //   const numColumns = 2;
-  //   let result = <View style={{ flex: 1 }}>
-  //     <View style={{
-  //       flexDirection: 'row',
-  //       justifyContent: 'space-between',
-  //       marginVertical: 8,
-  //       alignItems: 'center',
-  //       // paddingHorizontal: 16
-  //     }}>
-  //       <Text style={{ ...FONTS.body2 }}>Vegetables</Text>
-  //     </View>
-  //     <FlatList
-  //       ref={flatListRef}
-  //       getItemLayout={getItemLayout}
-  //       showsHorizontalScrollIndicator={false}
-  //       horizontal={true}
-  //       data={vegetables} keyExtractor={item => item.id}
-  //       contentContainerStyle={{ paddingHorizontal: 8 }}
-  //       // style={{
-  //       //   marginBottom: "30%",
-  //       // }}
-  //       renderItem={({ item, index }) => {
-  //         return (
-  //           <TouchableOpacity key={item.id} onPress={() => navigate.navigate("FoodDetails", { id: item.id, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
-  //             style={{
-  //               flexDirection: 'column',
-  //               paddingHorizontal: 2,
-  //               paddingVertical: 4,
-  //               height: "auto",
-  //               width: 200,
-  //               borderWidth: 1,
-  //               borderColor: "#f78c47",
-  //               borderRadius: 20,
-  //               marginRight: 6,
-  //               marginLeft: 0,
-  //               marginBottom: 16,
-  //               position: 'relative',
-  //             }}
-  //           >
-  //             <Image
-  //               source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-  //               resizeMode='cover'
-  //               style={{
-  //                 borderTopLeftRadius: 20,
-  //                 borderTopRightRadius: 20,
-  //                 width: '100%',
-  //                 height: 84,
-  //               }}
-  //             />
-  //             <View style={{
-  //               padding: 8,
-  //             }}>
-  //               <View style={{
-  //                 flexDirection: 'row',
-  //                 justifyContent: 'space-between',
-  //                 alignItems: 'center',
-  //               }}>
-  //                 <Text style={{ fontSize: 18, textTransform: 'capitalize' }}>{item.name}</Text>
-  //                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-  //                   {item.quantity_added >= 1 && (
-  //                     <>
-  //                       <TouchableOpacity
-  //                         onPress={() => decreaseQuantity("vegetables", item.id)}
-  //                         style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-  //                         <Text style={cartStyles.body2}>-</Text>
-  //                       </TouchableOpacity>
-  //                       <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 8 }}>{item.quantity_added}</Text>
-  //                     </>
-  //                   )}
-  //                   <TouchableOpacity
-  //                     onPress={() => addCart2("vegetables", item.id, index)}
-  //                     style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-  //                     <Text style={cartStyles.body2}>+</Text>
-  //                   </TouchableOpacity>
-  //                 </View>
-  //               </View>
-  //               <Text style={{ fontFamily: 'regular', marginVertical: 3 }}>Rs. {item.price}</Text>
-  //             </View>
-  //           </TouchableOpacity>
-  //         )
-  //       }}
-  //     />
-  //   </View>;
-
-  //   let response = moreProd.length > 0 ? result : <View style={{ flex: 1 }}>
-  //     <Text style={{
-  //       color: COLORS.black,
-  //       fontSize: 14,
-  //       fontFamily: 'regular',
-  //       textAlign: 'center'
-  //     }}>No record found</Text></View>;
-
-  //   response = featureLoading ?
-  //     <ActivityIndicator size="large" color="blue" /> : result
-  //   return (
-  //     response
-  //   );
-  // }
 
   const renderVegetables = () => {
     const [quantity, setQuantity] = useState(1);
@@ -2027,6 +2012,9 @@ const HomeV2 = ({ navigation }) => {
           {renderVerticalProducts(9, "Snacks", snacks)}
           {renderVerticalProducts(13, "Spices", spices)}
           {renderVerticalProducts(12, "Peeled Vgs", peeledVgs)}
+          {renderVerticalProducts(14, "Meat", meat)}
+          {renderVerticalProducts(15, "Milk", milk)}
+          {renderVerticalProducts(16, "Desi Chakki Aata", aata)}
           {/* {featureProducts()} */}
           {/* {renderVegetables()} */}
           {/* {renderProducts("Vegetables", "vegetables", vegetables)} */}

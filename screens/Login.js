@@ -21,6 +21,7 @@ import { bindActionCreators } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 // import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { useCart } from '../context/CartContext';
 
 const initialState = {
   inputValues: {
@@ -38,6 +39,7 @@ const Login = ({ navigation }) => {
   // const userActions = bindActionCreators(actionCreaters, dispatch);
   // const state = useSelector((state) => state.stateVals);
   // const { id, userType } = state;
+  const { updateUserAddress } = useCart();
 
   const [error, setError] = useState()
   const [isLoading, setIsLoading] = useState(false)
@@ -119,6 +121,7 @@ const Login = ({ navigation }) => {
       // await AsyncStorage.setItem("name", first_name + " " + last_name);
       await AsyncStorage.setItem("user_name", first_name + " " + last_name);
       await AsyncStorage.setItem("my_address", address);
+      updateUserAddress(address);
       await AsyncStorage.setItem("user_phone", phone);
       await AsyncStorage.setItem("user_email", email);
       await AsyncStorage.setItem("cart_counter", String(cartNo));

@@ -17,7 +17,6 @@ import { useNavigation } from '@react-navigation/native'
 
 const isTestMode = true
 
-
 const ResetPassword = ({ navigation, route }) => {
     const initialState = {
         inputValues: {
@@ -30,15 +29,15 @@ const ResetPassword = ({ navigation, route }) => {
     const [error, setError] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const [formState, dispatchFormState] = useReducer(reducer, initialState)
-    
-    const {otp, email} = route.params;
+
+    const { otp, email } = route.params;
 
     const updatePassword = async (values) => {
 
         // console.log(values);
         try {
             // let userId = await AsyncStorage.getItem("_id");
-    // console.log(otp, password, values.password);
+            // console.log(otp, password, values.password);
             setIsLoading(true);
             setIsEnable(false);
             console.log(values.password);
@@ -47,7 +46,7 @@ const ResetPassword = ({ navigation, route }) => {
                 GeneralService.updatePassword(otp, email, values.password),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
             ]);
-    
+
             if (response) {
                 Alert.alert('Success', 'Information updated successfully');
                 navigate.replace("Login");
@@ -91,7 +90,6 @@ const ResetPassword = ({ navigation, route }) => {
             onSubmit={updatePassword}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-
 
                 <View style={{ flex: 1, backgroundColor: COLORS.primary }}>
                     <StatusBar style="light" />

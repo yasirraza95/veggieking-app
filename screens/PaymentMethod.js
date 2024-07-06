@@ -6,7 +6,6 @@ import { SIZES, illustrations, images } from '../constants'
 import GeneralService from '../services/general.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { listCart } from '../utils/sqlite';
 
 const PaymentMethod = ({ route }) => {
   const [instruction, setInstruction] = useState("");
@@ -49,6 +48,8 @@ const PaymentMethod = ({ route }) => {
       } catch (err) {
         if(err?.response?.status === 404) {
           Alert.alert("Error", "No items in cart");
+        } else if(err?.response?.status === 403) {
+          Alert.alert("Error", "You are disabled, contact Admin");
         } else {
           Alert.alert("Error", "Error in order");
         }

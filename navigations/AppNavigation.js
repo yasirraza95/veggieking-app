@@ -21,6 +21,7 @@ import TrackingOrderV3 from '../screens/TrackingOrderV3';
 import CategoryProducts from '../screens/CategoryProducts';
 import Thankyou from '../screens/Thankyou';
 import Contact from '../screens/Contact';
+import EditPassword from '../screens/EditPassword';
 // import { Toast } from '@react-native-toast-message';
 
 const Stack = createNativeStackNavigator()
@@ -101,6 +102,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="Menu" component={Menu} />
                 <Stack.Screen name="PersonalProfile" component={PersonalProfile} />
                 <Stack.Screen name="EditProfile" component={EditProfile} />
+                <Stack.Screen name="EditPassword" component={EditPassword} />
                 <Stack.Screen name="Address" component={Address} />
                 <Stack.Screen name="AddNewAddress" component={AddNewAddress} />
                 <Stack.Screen name="Chat" component={Chat} />
