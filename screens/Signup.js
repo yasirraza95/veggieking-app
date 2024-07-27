@@ -72,7 +72,7 @@ const Signup = ({ navigation }) => {
             await AsyncStorage.setItem("user_phone", phone);
             await AsyncStorage.setItem("user_email", email);
             await AsyncStorage.setItem("cart_counter", String(cartNo));
-            navigation.replace('LocationAccess');
+            navigation.replace('Main');
         } catch (err) {
             console.log(err)
             Alert.alert("Login Error", "Server error. Please try again later.");

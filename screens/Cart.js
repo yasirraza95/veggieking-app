@@ -21,13 +21,34 @@ const Cart = ({ navigation }) => {
   const [quantity, setQuantity] = useState(1);
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
-  const [totalPrice, setTotalPrice] = useState(0)
+  const [totPrice, setTotPrice] = useState(0)
+  const [address, setAddress] = useState("")
   const [itemNo, setItemNo] = useState(0)
-  const [cartCounter, setCartCounter] = useState(0); ``
+  const [cartCounter, setCartCounter] = useState(0);
   const [inputText, setInputText] = useState('');
   const [inputError, setInputError] = useState('');
   const [deliveryCharges, setDeliveryCharges] = useState(0);
-  const { updateCartCounter, updateUserAddress, userAddress } = useCart();
+  const { totalPrice, increaseQty, removeItemFromCart, decreaseQty, cartItems, updateCartCounter, updateUserAddress, userAddress } = useCart();
+  // var userId;
+
+  useEffect(() => {
+    getData = async () => {
+      // userId = await AsyncStorage.getItem("_id");
+      const savedAddress = await AsyncStorage.getItem("address");
+      if (savedAddress) {
+        setAddress(savedAddress);
+      }
+    }
+
+    getData();
+  }, []);
+
+  useEffect(() => {
+    if (Array.isArray(cartItems)) {
+      fetchData();
+      fetchDeliveryCharges();
+    }
+  }, [cartItems]);
 
   const getCartCounter = async () => {
     try {
@@ -84,39 +105,53 @@ const Cart = ({ navigation }) => {
   //   }
   // }
 
+  // const fetchData = async () => {
+  //   try {
+  //     console.log("asjdhskdh");
+  //     let userId = await AsyncStorage.getItem("_id");
+  //     // let userAddress = await AsyncStorage.getItem("my_address");
+  //     // console.log(`user-address=${userAddress}`);
+  //     if (typeof userAddress !== "string") {
+  //       userAddress = JSON.stringify(userAddress);
+  //     }
+  //     // console.log(userAddress);
+  //     setInputText(userAddress);
+  //     const response = await GeneralService.listCartByUserId(userId);
+  //     const { data } = response;
+  //     const { response: res } = data;
+  //     const totalPrice = res.reduce((accumulator, currentValue) => {
+  //       return accumulator + (currentValue.quantity * currentValue.product_price);
+  //     }, 0);
+
+  //     const numberOfItems = res.reduce((count, obj) => {
+  //       return count + 1;
+  //     }, 0);
+
+  //     setItemNo(numberOfItems);
+  //     setTotPrice(totalPrice);
+  //     setCart(res);
+  //     getCartCounter();
+  //   } catch (err) {
+  //     // console.log("Error");
+  //     Alert.alert("Error", err);
+  //     // console.log(`error-response=${err}`);
+  //     setCart([]);
+  //   }
+  // }
+
   const fetchData = async () => {
     try {
-      console.log("asjdhskdh");
-      let userId = await AsyncStorage.getItem("_id");
-      // let userAddress = await AsyncStorage.getItem("my_address");
-      // console.log(`user-address=${userAddress}`);
-      if (typeof userAddress !== "string") {
-        userAddress = JSON.stringify(userAddress);
-      }
-      // console.log(userAddress);
-      setInputText(userAddress);
-      const response = await GeneralService.listCartByUserId(userId);
-      const { data } = response;
-      const { response: res } = data;
-      const totalPrice = res.reduce((accumulator, currentValue) => {
-        return accumulator + (currentValue.quantity * currentValue.product_price);
+      const totalPrice = cartItems.reduce((accumulator, currentValue) => {
+        return accumulator + (currentValue.quantity * currentValue.price);
       }, 0);
 
-      const numberOfItems = res.reduce((count, obj) => {
-        return count + 1;
-      }, 0);
+      const numberOfItems = cartItems.length;
 
       setItemNo(numberOfItems);
-      setTotalPrice(totalPrice);
-      setCart(res);
-      getCartCounter();
     } catch (err) {
-      // console.log("Error");
-      Alert.alert("Error", err);
-      // console.log(`error-response=${err}`);
-      setCart([]);
+      console.log("Error");
     }
-  }
+  };
 
 
   // const fetchDataOld2 = async () => {
@@ -248,20 +283,28 @@ const Cart = ({ navigation }) => {
     setInputText(text);
   };
   const placeOrder = () => {
+    // console.log("btn clicked");
     const orderPlace = async () => {
       if (inputText) {
         setInputError("");
-        navigation.navigate("PaymentMethod", { total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText });
+        let userId = await AsyncStorage.getItem("_id");
+        if (!userId) {
+          // console.log("!userId");
+          navigation.navigate("Login", { page: "Cart" });
+        } else if (parseInt(totalPrice) >= 1000) {
+          navigation.navigate("PaymentMethod", { cart: cartItems, total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText });
+          // console.log(">=1000");
+        } else {
+          Alert.alert("Price Alert", "Minimum order is Rs 1000");
+        }
       } else {
         setInputError("Please enter address");
       }
       console.log(inputText);
     }
-    if (parseInt(totalPrice) >= 1000) {
-      orderPlace();
-    } else {
-      Alert.alert("Price Alert", "Minimum order is Rs 1000");
-    }
+
+    orderPlace();
+
   }
 
   return (
@@ -292,7 +335,7 @@ const Cart = ({ navigation }) => {
         </View>
 
         {
-          cartCounter == 0 ? (
+          cartItems.length == 0 ? (
             <View style={[styles.centeredContainer, { backgroundColor: 'lightGrey' }]}>
               <Image source={basket} style={{ width: "40%", height: "20%", marginHorizontal: 10 }} />
               <Text style={{
@@ -304,7 +347,7 @@ const Cart = ({ navigation }) => {
             </View>
           ) : (
             <FlatList
-              data={cart}
+              data={cartItems}
               showsVerticalScrollIndicator={false}
               keyExtractor={item => item.id.toString()}
               renderItem={({ item, index }) => {
@@ -314,14 +357,14 @@ const Cart = ({ navigation }) => {
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         {/* Delete Button */}
                         <TouchableOpacity
-                          onPress={() => deleteCart(item.prod_id)}
+                          onPress={() => removeItemFromCart(item)}
                           style={styles.deleteButton}
                         >
                           <FontAwesome name="remove" size={24} color="red" style={{ marginRight: 10 }} />
                         </TouchableOpacity>
                         <View style={{ width: 80, marginRight: 10 }}>
                           <Image
-                            source={{ uri: `https://api.veggieking.pk/public/upload/${item.product_image}` }}
+                            source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
                             resizeMode='contain'
                             style={{
                               height: 80,
@@ -338,19 +381,19 @@ const Cart = ({ navigation }) => {
                               fontFamily: 'regular',
                               textTransform: 'capitalize',
                               marginBottom: 6,
-                            }}>{item.product_name}</Text>
+                            }}>{item.name}</Text>
                           <Text style={{
                             fontSize: 20,
                             color: '#f44c00',
                             fontFamily: 'bold',
                             marginBottom: 6,
-                          }}>Rs. {item.product_price * item.quantity}</Text>
+                          }}>Rs. {item.price * item.quantity}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
                           {/* Minus Button */}
                           <TouchableOpacity
-                            onPress={() => decreaseQuantity(item.prod_id)}
+                            onPress={() => decreaseQty(item)}
                             style={styles.roundedBtn}
                           >
                             <Text style={cartStyles.body2}>-</Text>
@@ -364,7 +407,7 @@ const Cart = ({ navigation }) => {
                           }}>{item.quantity}</Text>
                           {/* Plus Button */}
                           <TouchableOpacity
-                            onPress={() => increaseQuantity(item.prod_id)}
+                            onPress={() => increaseQty(item)}
                             style={styles.roundedBtn}
                           >
                             <Text style={cartStyles.body2}>+</Text>
@@ -383,7 +426,7 @@ const Cart = ({ navigation }) => {
 
       </View>
       {
-        cart.length > 0 && (
+        cartItems.length > 0 && (
           <Animatable.View animation="fadeInUpBig" style={cartStyles.footer}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
               <Text style={cartStyles.body3}>Delivery Address</Text>

@@ -76,7 +76,7 @@ const Login = ({ navigation }) => {
     if (userId) {
       console.log(userType);
       if (userType == 'user') {
-        navigation.replace('LocationAccess');
+        navigation.replace('Main');
         // navigation.replace('RiderOrders');
       } else {
         navigation.replace('RiderOrders');
@@ -126,7 +126,7 @@ const Login = ({ navigation }) => {
       await AsyncStorage.setItem("user_email", email);
       await AsyncStorage.setItem("cart_counter", String(cartNo));
       if (user_type == 'user') {
-        navigation.replace('LocationAccess');
+        navigation.replace('Main');
         // navigation.replace('RiderOrders');
       } else {
         navigation.replace('RiderOrders');

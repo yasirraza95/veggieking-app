@@ -35,7 +35,7 @@ const HomeV2 = ({ navigation }) => {
     setScrollOffset(contentOffset.y);
   };
 
-  const { updateCartCounter, updateUserAddress } = useCart();
+  const { updateCartCounter, updateUserAddress, addItemToCart, removeItemFromCart, decreaseQty, cartItems } = useCart();
   const [sliders, setSliders] = useState([restaurant6]);
   // const [sliders, setSliders] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
   const [searchQuery, setSearchQuery] = useState('');
@@ -115,7 +115,7 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const decreaseQuantity = (catId, prodId) => {
+  const decreaseQuantity = (catId, prodId, product) => {
     const decreaseQnty = async () => {
       try {
         // setScreenLoading(true);
@@ -229,28 +229,12 @@ const HomeV2 = ({ navigation }) => {
           console.log(updatedProducts);
         }
 
-        const timeout = 2000;
-        let userId = await AsyncStorage.getItem("_id");
-        const response = await Promise.race([
-          GeneralService.decreaseQty(userId, prodId),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-        ]);
-
-        if (response) {
-
-          console.log(response);
-          // showToast('Quantity decreased');
-
-          getCartCounter();
-          // setScreenLoading(false);
-        } else {
-          throw new Error('No response from the server');
-        }
+        decreaseQty(product);
       } catch (err) {
         console.log(err?.response?.data);
       }
     }
-
+    // getCartCounter();
     decreaseQnty();
   };
 
@@ -348,6 +332,12 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
+  const getQuantityInCart = (productId) => {
+    // console.log(`id=${productId}`);
+    const item = cartItems.find(i => i.id === productId);
+    return item ? item.quantity : 0;
+  };
+
   const fetchSliders = async () => {
     try {
       const response = await GeneralService.getSliders();
@@ -392,139 +382,128 @@ const HomeV2 = ({ navigation }) => {
     }
   }
 
-  const addCart = async (catId, prodId) => {
-    try {
-      console.log(catId, prodId);
+  const addCart = async (catId, prodId, product) => {
+    const increaseQnty = async () => {
+      try {
+        // console.log(catId, prodId);
 
-      if (catId == 1) {
-        const updatedProducts = fruits.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setFruits(updatedProducts);
-      } else if (catId == 2) {
-        const updatedProducts = vegetables.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setVegetables(updatedProducts);
-        console.log(updatedProducts);
-      } else if (catId == 8) {
-        const updatedProducts = dryFruits.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setDryFruits(updatedProducts);
-        console.log(updatedProducts);
-      } else if (catId == 9) {
-        const updatedProducts = snacks.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setSnacks(updatedProducts);
-        console.log(updatedProducts);
-      } else if (catId == 13) {
-        const updatedProducts = spices.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setSpices(updatedProducts);
-        console.log(updatedProducts);
-      } else if (catId == 12) {
-        const updatedProducts = peeledVgs.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setPeeledVgs(updatedProducts);
-        console.log(updatedProducts);
-      } else if (catId == 14) {
-        const updatedProducts = meat.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setMeat(updatedProducts);
-        console.log(updatedProducts);
-      } else if (catId == 15) {
-        const updatedProducts = milk.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setMilk(updatedProducts);
-        console.log(updatedProducts);
-      } else if (catId == 16) {
-        const updatedProducts = aata.map(product => {
-          if (product.id === prodId) {
-            return {
-              ...product,
-              quantity_added: parseInt(product.quantity_added || 0) + 1
-            };
-          }
-          return product;
-        });
-        setAata(updatedProducts);
-        console.log(updatedProducts);
+        if (catId == 1) {
+          const updatedProducts = fruits.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setFruits(updatedProducts);
+        } else if (catId == 2) {
+          const updatedProducts = vegetables.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setVegetables(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 8) {
+          const updatedProducts = dryFruits.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setDryFruits(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 9) {
+          const updatedProducts = snacks.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setSnacks(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 13) {
+          const updatedProducts = spices.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setSpices(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 12) {
+          const updatedProducts = peeledVgs.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setPeeledVgs(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 14) {
+          const updatedProducts = meat.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setMeat(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 15) {
+          const updatedProducts = milk.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setMilk(updatedProducts);
+          console.log(updatedProducts);
+        } else if (catId == 16) {
+          const updatedProducts = aata.map(product => {
+            if (product.id === prodId) {
+              return {
+                ...product,
+                quantity_added: parseInt(product.quantity_added || 0) + 1
+              };
+            }
+            return product;
+          });
+          setAata(updatedProducts);
+          console.log(updatedProducts);
+        }
+
+        addItemToCart(product);
+
+      } catch (err) {
+        // showToast("Error adding to cart");
       }
-
-      const timeout = 2000;
-      let userId = await AsyncStorage.getItem("_id");
-      const response = await Promise.race([
-        GeneralService.addCart(userId, prodId),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-      ]);
-
-      if (response) {
-
-        console.log(response);
-        // showToast('Added to cart');
-
-        getCartCounter();
-      } else {
-        throw new Error('No response from the server');
-      }
-
-    } catch (err) {
-      // showToast("Error adding to cart");
     }
+    // getCartCounter();
+    increaseQnty();
   }
 
   const fetchAllProducts = async () => {
@@ -1497,18 +1476,18 @@ const HomeV2 = ({ navigation }) => {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {item.quantity_added >= 1 && (
+                    {getQuantityInCart(item.id) > 0 && (
                       <>
                         <TouchableOpacity
-                          onPress={() => decreaseQuantity(id, item.id)}
+                          onPress={() => decreaseQuantity(id, item.id, item)}
                           style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
                           <Text style={cartStyles.body2}>-</Text>
                         </TouchableOpacity>
-                        <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
+                        <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{getQuantityInCart(item.id)}</Text>
                       </>
                     )}
                     <TouchableOpacity
-                      onPress={() => addCart(id, item.id)}
+                      onPress={() => addCart(id, item.id, item)}
                       style={[cartStyles.roundedBtn,
                       { backgroundColor: '#f44c00' }]}>
                       <Text style={cartStyles.body2}>+</Text>
@@ -1983,8 +1962,8 @@ const HomeV2 = ({ navigation }) => {
                 fontSize: 12,
                 fontWeight: 'bold',
                 color: COLORS.primary
-              }}>Address</Text>
-              <View style={{
+              }}>Veggie King</Text>
+              {/* <View style={{
                 flexDirection: 'row',
                 alignItems: 'center'
               }}>
@@ -1992,7 +1971,7 @@ const HomeV2 = ({ navigation }) => {
                   fontSize: 14,
                   fontWeight: 'regular'
                 }}>{userAddress ?? "N/A"}</Text>
-              </View>
+              </View> */}
             </View>
           </View>
         </View>

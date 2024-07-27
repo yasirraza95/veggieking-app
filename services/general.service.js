@@ -396,13 +396,14 @@ const deleteProduct = (values) => {
     );
 };
 
-const placeOrder = (userId, address, instruction) => {
-    console.log(userId, address, instruction);
+const placeOrder = (cart, userId, address, instruction) => {
+    console.log(cart, userId, address, instruction);
     const headers = {
         "Content-Type": "application/json",
     };
     return axios.post(
-        `${API_URL}/place-order`, {
+        `${API_URL}/place-order-new`, {
+        cart: cart,
         user_id: userId,
         address: address,
         instruction: instruction,

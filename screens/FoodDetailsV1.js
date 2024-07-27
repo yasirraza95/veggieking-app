@@ -9,12 +9,14 @@ import Button from "../components/Button";
 import { StatusBar } from 'expo-status-bar';
 import GeneralService from '../services/general.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useCart } from '../context/CartContext';
 
 const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili];
 
 const FoodDetailsV1 = ({ route }) => {
+  const { updateCartCounter, updateUserAddress, userInfo, decreaseQty, cartItems, addItemToCart } = useCart();
   const { id: prodId, name, description, image, price, minQty, quantity_added, type } = route.params;
-
+  const product = { id: prodId, name: name, price: price, description: description, quantity_added: quantity_added, image: image };
   const [data, setData] = useState({});
   const [quantity, setQuantity] = useState(0);
   const [cartCounter, setCartCounter] = useState(0);
@@ -22,6 +24,11 @@ const FoodDetailsV1 = ({ route }) => {
 
   const handleQuantityChange = (newQuantity) => {
     setQuantity(newQuantity);
+  };
+
+  const getQuantityInCart = (productId) => {
+    const item = cartItems.find(i => i.id === productId);
+    return item ? item.quantity : 0;
   };
 
   const fetchData = async (id) => {
@@ -68,49 +75,51 @@ const FoodDetailsV1 = ({ route }) => {
     }, [])
   );
 
-  const decreaseQuantity = (id) => {
-    const decreaseQty = async () => {
+  const decreaseQuantity = (id, product) => {
+    const decreaseQnty = async () => {
       try {
-        let userId = await AsyncStorage.getItem("_id");
+        decreaseQty(product);
+        // let userId = await AsyncStorage.getItem("_id");
         // const response = await GeneralService.decreaseQty(userId, id);
 
-        const timeout = 8000;
-        const response = await Promise.race([
-          GeneralService.decreaseQty(userId, id),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-        ]);
+        // const timeout = 8000;
+        // const response = await Promise.race([
+          // GeneralService.decreaseQty(userId, id),
+          // new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        // ]);
         // console.log(response.data.response);
-        if (response) {
-          fetchData(prodId);
-          getCartCounter();
+        // if (response) {
+          // fetchData(prodId);
+          // getCartCounter();
 
-        } else {
-          throw new Error('No response from the server');
-        }
+        // } else {
+          // throw new Error('No response from the server');
+        // }
       } catch (err) {
         console.log(err?.response?.data);
       }
     }
 
-    decreaseQty();
+    decreaseQnty();
   };
 
-  const cartAddition = (id) => {
+  const cartAddition = (id, product) => {
     console.log(`id=${id}`);
 
     const addCart = async () => {
       try {
-        let userId = await AsyncStorage.getItem("_id");
-        setScreenLoading(true);
+        addItemToCart(product);
+        // let userId = await AsyncStorage.getItem("_id");
+        // setScreenLoading(true);
 
-        const timeout = 8000;
-        const response = await Promise.race([
-          GeneralService.addCart(userId, id),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-        ]);
+        // const timeout = 8000;
+        // const response = await Promise.race([
+        //   GeneralService.addCart(userId, id),
+        //   new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        // ]);
 
-        if (response) {
-          fetchData(prodId);
+        // if (response) {
+          // fetchData(prodId);
           // if (response.status == 200) {
           //   let cartCounter = await AsyncStorage.getItem("cart_counter");
           //   cartCounter = parseInt(cartCounter, 10);
@@ -118,12 +127,12 @@ const FoodDetailsV1 = ({ route }) => {
           //   await AsyncStorage.setItem("cart_counter", cartCounter.toString());
           // }
 
-          getCartCounter();
+          // getCartCounter();
           // setCartCounter(cartCounter);
-          setScreenLoading(false);
-        } else {
-          throw new Error('No response from the server');
-        }
+          // setScreenLoading(false);
+        // } else {
+        //   throw new Error('No response from the server');
+        // }
       } catch (err) {
         setScreenLoading(false);
       }
@@ -286,13 +295,13 @@ const FoodDetailsV1 = ({ route }) => {
               marginBottom: 16,
             }}>
             </View>
-            {quantity > 0 ? (
+            {getQuantityInCart(prodId) > 0 ? (
               <View style={quantityStyle.container}>
-                <TouchableOpacity onPress={() => decreaseQuantity(prodId)} style={quantityStyle.button}>
+                <TouchableOpacity onPress={() => decreaseQuantity(prodId, product)} style={quantityStyle.button}>
                   <Text style={quantityStyle.buttonText}>-</Text>
                 </TouchableOpacity>
-                <Text style={quantityStyle.quantity}>{quantity}</Text>
-                <TouchableOpacity onPress={() => cartAddition(prodId)} style={quantityStyle.button}>
+                <Text style={quantityStyle.quantity}>{getQuantityInCart(prodId)}</Text>
+                <TouchableOpacity onPress={() => cartAddition(prodId, product)} style={quantityStyle.button}>
                   <Text style={quantityStyle.buttonText}>+</Text>
                 </TouchableOpacity>
               </View>

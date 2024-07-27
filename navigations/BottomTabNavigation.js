@@ -2,14 +2,14 @@ import { View, Text, Platform, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { COLORS } from '../constants'
-import { HomeV1, Profile, Search, Card, Notifications, Menu, MyOrders, Message, PersonalProfile, Cart } from '../screens'
+import { HomeV1, Profile, Search, Card, Notifications, Menu, MyOrders, Message, PersonalProfile, Cart, Login } from '../screens'
 import { Ionicons, SimpleLineIcons } from '@expo/vector-icons'
 import DrawerNavigation from './DrawerNavigation'
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect } from '@react-navigation/core'
 import { useCart } from '../context/CartContext';
-
+var userId;
 const Tab = createBottomTabNavigator()
 
 const screenOptions = {
@@ -28,6 +28,14 @@ const screenOptions = {
 
 const BottomTabNavigation = () => {
     const { cartCounter } = useCart();
+
+    const checkAuthentication = async () => {
+        userId = await AsyncStorage.getItem("_id");
+    }
+
+    useEffect(() => {
+        checkAuthentication();
+    }, []);
 
     // useFocusEffect(
     //     React.useCallback(() => {
@@ -53,52 +61,27 @@ const BottomTabNavigation = () => {
                 }}
             />
 
-            <Tab.Screen
-                name="MyOrders"
-                component={MyOrders}
-                options={{
-                    tabBarIcon: ({ focused }) => {
-                        return (
-                            <Ionicons
-                                name="gift-outline"
-                                size={24}
-                                color={
-                                    focused
-                                        ? COLORS.primary
-                                        : COLORS.black
-                                }
-                            />
-                        )
-                    },
-                }}
-            />
-
-            {/* <Tab.Screen
-                name="Search"
-                component={Search}
-                options={{
-                    tabBarIcon: () => {
-                        return (
-                            <View
-                                style={{
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: COLORS.primary,
-                                    height: Platform.OS == 'ios' ? 70 : 60,
-                                    width: Platform.OS == 'ios' ? 70 : 60,
-                                    top: Platform.OS == 'ios' ? -20 : -30,
-                                    borderRadius:
-                                        Platform.OS == 'ios' ? 35 : 30,
-                                    borderWidth: 2,
-                                    borderColor: COLORS.white,
-                                }}
-                            >
-                                <Ionicons name="search-outline" size={24} color={COLORS.white} />
-                            </View>
-                        )
-                    },
-                }}
-            /> */}
+            {userId && (
+                <Tab.Screen
+                    name="MyOrders"
+                    component={MyOrders}
+                    options={{
+                        tabBarIcon: ({ focused }) => {
+                            return (
+                                <Ionicons
+                                    name="gift-outline"
+                                    size={24}
+                                    color={
+                                        focused
+                                            ? COLORS.primary
+                                            : COLORS.black
+                                    }
+                                />
+                            )
+                        },
+                    }}
+                />
+            )}
 
             <Tab.Screen
                 name="Cart"
@@ -127,7 +110,8 @@ const BottomTabNavigation = () => {
 
             <Tab.Screen
                 name="Profile"
-                component={PersonalProfile}
+                component={userId ? PersonalProfile : Login}
+                // component={Login}
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (

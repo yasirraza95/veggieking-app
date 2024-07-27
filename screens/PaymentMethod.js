@@ -15,9 +15,12 @@ const PaymentMethod = ({ route }) => {
     const { contentOffset } = event.nativeEvent;
     setShowStickyNote(contentOffset.y > 0);
   };
+  // const location = useLocation();
 
   const navigation = useNavigation();
-  const { address, items, delivery, total } = route.params;
+  const { cart, address, items, delivery, total } = route.params;
+
+  // const { cart, address, items, delivery, total } = location.state || {};
 
   const handleChangeText = (text) => {
     setInstruction(text);
@@ -31,7 +34,7 @@ const PaymentMethod = ({ route }) => {
         let userId = await AsyncStorage.getItem("_id");
         const timeout = 8000;
         const response = await Promise.race([
-          GeneralService.placeOrder(userId, address, instruction),
+          GeneralService.placeOrder(cart, userId, address, instruction),
           new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
         ]);
         if (response) {
@@ -46,9 +49,9 @@ const PaymentMethod = ({ route }) => {
         console.log(response);
 
       } catch (err) {
-        if(err?.response?.status === 404) {
+        if (err?.response?.status === 404) {
           Alert.alert("Error", "No items in cart");
-        } else if(err?.response?.status === 403) {
+        } else if (err?.response?.status === 403) {
           Alert.alert("Error", "You are disabled, contact Admin");
         } else {
           Alert.alert("Error", "Error in order");
@@ -377,7 +380,7 @@ const styles = StyleSheet.create({
   },
   editText: {
     fontSize: 16,
-    fontWeight:'bold'
+    fontWeight: 'bold'
   },
   editIcon: {
     borderWidth: 1,

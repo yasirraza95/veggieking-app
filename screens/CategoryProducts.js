@@ -14,6 +14,9 @@ import { StatusBar } from 'expo-status-bar'
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { cartStyles } from '../styles/CartStyles'
+import BottomTabNavigation from '../navigations/BottomTabNavigation'
+import FooterNavigation from '../navigations/FooterNavigation'
+import { useCart } from '../context/CartContext'
 
 
 const CategoryProducts = ({ route }) => {
@@ -25,8 +28,15 @@ const CategoryProducts = ({ route }) => {
   const [selectedStars, setSelectedStars] = useState(Array(5).fill(false));
   // const [products, setProducts] = useState([]);
   const [products, setProducts] = useState(Array.from({ length: 6 }, (_, index) => ({ id: index, name: 'Loading...', image: '' })));
+  const { addItemToCart, decreaseQty, removeItemFromCart, cartItems } = useCart();
 
   const navigation = useNavigation();
+
+  const getQuantityInCart = (productId) => {
+    // console.log(`id=${productId}`);
+    const item = cartItems.find(i => i.id === productId);
+    return item ? item.quantity : 0;
+  };
 
   const getCartCounter = async () => {
     try {
@@ -56,7 +66,7 @@ const CategoryProducts = ({ route }) => {
   );
 
 
-  const addCart = async (prodId) => {
+  const addCart = async (prodId, product) => {
     try {
       // setScreenLoading(true);
       const updatedProducts = products.map(product => {
@@ -69,30 +79,31 @@ const CategoryProducts = ({ route }) => {
         return product;
       });
       setProducts(updatedProducts);
+      addItemToCart(product);
 
-      const timeout = 2000;
-      let userId = await AsyncStorage.getItem("_id");
+      // const timeout = 2000;
+      // let userId = await AsyncStorage.getItem("_id");
 
-      const response = await Promise.race([
-        GeneralService.addCart(userId, prodId),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-      ]);
+      // const response = await Promise.race([
+      //   GeneralService.addCart(userId, prodId),
+      //   new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+      // ]);
 
-      if (response) {
-        // showToast('Added to cart');
+      // if (response) {
+      //   // showToast('Added to cart');
 
-        getCartCounter();
-        // fetchProducts();
-        // setScreenLoading(false);
-      } else {
-        throw new Error('No response from the server');
-      }
+      //   getCartCounter();
+      //   // fetchProducts();
+      //   // setScreenLoading(false);
+      // } else {
+      //   throw new Error('No response from the server');
+      // }
     } catch (err) {
       // setScreenLoading(false);
     }
   }
 
-  const decreaseQuantity = (prodId) => {
+  const decreaseQuantity = (prodId, product) => {
     const decreaseQnty = async () => {
       try {
         // setScreenLoading(true);
@@ -107,24 +118,25 @@ const CategoryProducts = ({ route }) => {
           return product;
         });
         setProducts(updatedProducts);
+        decreaseQty(product);
 
-        const timeout = 2000;
-        let userId = await AsyncStorage.getItem("_id");
-        const response = await Promise.race([
-          GeneralService.decreaseQty(userId, prodId),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-        ]);
+        // const timeout = 2000;
+        // let userId = await AsyncStorage.getItem("_id");
+        // const response = await Promise.race([
+        //   GeneralService.decreaseQty(userId, prodId),
+        //   new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        // ]);
 
-        if (response) {
+        // if (response) {
 
-          console.log(response);
-          // showToast('Quantity decreased');
+        //   console.log(response);
+        //   // showToast('Quantity decreased');
 
-          getCartCounter();
-          // setScreenLoading(false);
-        } else {
-          throw new Error('No response from the server');
-        }
+        //   getCartCounter();
+        //   // setScreenLoading(false);
+        // } else {
+        //   throw new Error('No response from the server');
+        // }
       } catch (err) {
         console.log(err?.response?.data);
       }
@@ -315,17 +327,17 @@ const CategoryProducts = ({ route }) => {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {item.quantity_added >= 1 && (
+                  {getQuantityInCart(item.id) > 0 && (
                     <>
                       <TouchableOpacity
-                        onPress={() => decreaseQuantity(item.id)}
+                        onPress={() => decreaseQuantity(item.id, item)}
                         style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
                         <Text style={cartStyles.body2}>-</Text>
                       </TouchableOpacity>
-                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{item.quantity_added}</Text>
+                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{getQuantityInCart(item.id)}</Text>
                     </>
                   )}
-                  <TouchableOpacity onPress={() => addCart(item.id)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                  <TouchableOpacity onPress={() => addCart(item.id, item)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
                     <Text style={cartStyles.body2}>+</Text>
                   </TouchableOpacity>
                 </View>
@@ -600,6 +612,7 @@ const CategoryProducts = ({ route }) => {
         </ScrollView>
       </View>
       {renderSearchModal()}
+      <FooterNavigation />
     </SafeAreaView>
   )
 }

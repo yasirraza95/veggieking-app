@@ -62,7 +62,7 @@ const AppNavigation = () => {
                 //     isFirstLaunch ? 'HomeV2' : 'Login'
                 // }
                 initialRouteName={
-                    'Login'
+                    'Main'
                 }
             >
                 <Stack.Screen name="Onboarding1" component={Onboarding1} />
