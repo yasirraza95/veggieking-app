@@ -304,7 +304,7 @@ const CategoryProducts = ({ route }) => {
         {
           products.map((item, index) => (
             <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg" })}
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg", stock: item.stock })}
               key={index}
               style={{
                 flexDirection: 'column',
@@ -325,22 +325,25 @@ const CategoryProducts = ({ route }) => {
               />
               <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {getQuantityInCart(item.id) > 0 && (
-                    <>
-                      <TouchableOpacity
-                        onPress={() => decreaseQuantity(item.id, item)}
-                        style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
-                        <Text style={cartStyles.body2}>-</Text>
-                      </TouchableOpacity>
-                      <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{getQuantityInCart(item.id)}</Text>
-                    </>
-                  )}
-                  <TouchableOpacity onPress={() => addCart(item.id, item)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
-                    <Text style={cartStyles.body2}>+</Text>
-                  </TouchableOpacity>
-                </View>
+                {item.stock == 'in' && (<Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>)}
+                {item.stock == 'out' && (<Text style={{ fontSize: 15, fontFamily: 'bold', color: 'red' }}>Out of Stock</Text>)}
+                {item.stock == 'in' && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {getQuantityInCart(item.id) > 0 && (
+                      <>
+                        <TouchableOpacity
+                          onPress={() => decreaseQuantity(item.id, item)}
+                          style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
+                          <Text style={cartStyles.body2}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{getQuantityInCart(item.id)}</Text>
+                      </>
+                    )}
+                    <TouchableOpacity onPress={() => addCart(item.id, item)} style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00' }]}>
+                      <Text style={cartStyles.body2}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
 
             </TouchableOpacity>

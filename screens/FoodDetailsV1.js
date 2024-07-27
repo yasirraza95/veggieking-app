@@ -15,8 +15,9 @@ const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili];
 
 const FoodDetailsV1 = ({ route }) => {
   const { updateCartCounter, updateUserAddress, userInfo, decreaseQty, cartItems, addItemToCart } = useCart();
-  const { id: prodId, name, description, image, price, minQty, quantity_added, type } = route.params;
-  const product = { id: prodId, name: name, price: price, description: description, quantity_added: quantity_added, image: image };
+  const { stock: stock, id: prodId, name, description, image, price, minQty, quantity_added, type } = route.params;
+  const product = { stock: stock, id: prodId, name: name, price: price, description: description, quantity_added: quantity_added, image: image };
+  // console.log(product);
   const [data, setData] = useState({});
   const [quantity, setQuantity] = useState(0);
   const [cartCounter, setCartCounter] = useState(0);
@@ -84,16 +85,16 @@ const FoodDetailsV1 = ({ route }) => {
 
         // const timeout = 8000;
         // const response = await Promise.race([
-          // GeneralService.decreaseQty(userId, id),
-          // new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
+        // GeneralService.decreaseQty(userId, id),
+        // new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
         // ]);
         // console.log(response.data.response);
         // if (response) {
-          // fetchData(prodId);
-          // getCartCounter();
+        // fetchData(prodId);
+        // getCartCounter();
 
         // } else {
-          // throw new Error('No response from the server');
+        // throw new Error('No response from the server');
         // }
       } catch (err) {
         console.log(err?.response?.data);
@@ -119,17 +120,17 @@ const FoodDetailsV1 = ({ route }) => {
         // ]);
 
         // if (response) {
-          // fetchData(prodId);
-          // if (response.status == 200) {
-          //   let cartCounter = await AsyncStorage.getItem("cart_counter");
-          //   cartCounter = parseInt(cartCounter, 10);
-          //   cartCounter++;
-          //   await AsyncStorage.setItem("cart_counter", cartCounter.toString());
-          // }
+        // fetchData(prodId);
+        // if (response.status == 200) {
+        //   let cartCounter = await AsyncStorage.getItem("cart_counter");
+        //   cartCounter = parseInt(cartCounter, 10);
+        //   cartCounter++;
+        //   await AsyncStorage.setItem("cart_counter", cartCounter.toString());
+        // }
 
-          // getCartCounter();
-          // setCartCounter(cartCounter);
-          // setScreenLoading(false);
+        // getCartCounter();
+        // setCartCounter(cartCounter);
+        // setScreenLoading(false);
         // } else {
         //   throw new Error('No response from the server');
         // }
@@ -282,38 +283,40 @@ const FoodDetailsV1 = ({ route }) => {
         {renderFoodDetails()}
         {/* </ScrollView> */}
         <View style={styles.addToCartContainer}>
-          <View style={{
-            backgroundColor: COLORS.tertiaryGray,
-            borderRadius: 24,
-            paddingHorizontal: 10,
-            paddingVertical: 16,
-            position: 'relative'
-          }}>
+          {stock == 'in' ? (
             <View style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginBottom: 16,
+              backgroundColor: COLORS.tertiaryGray,
+              borderRadius: 24,
+              paddingHorizontal: 10,
+              paddingVertical: 16,
+              position: 'relative'
             }}>
-            </View>
-            {getQuantityInCart(prodId) > 0 ? (
-              <View style={quantityStyle.container}>
-                <TouchableOpacity onPress={() => decreaseQuantity(prodId, product)} style={quantityStyle.button}>
-                  <Text style={quantityStyle.buttonText}>-</Text>
-                </TouchableOpacity>
-                <Text style={quantityStyle.quantity}>{getQuantityInCart(prodId)}</Text>
-                <TouchableOpacity onPress={() => cartAddition(prodId, product)} style={quantityStyle.button}>
-                  <Text style={quantityStyle.buttonText}>+</Text>
-                </TouchableOpacity>
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginBottom: 16,
+              }}>
               </View>
-            ) : (
-              <Button
-                filled
-                onPress={() => cartAddition(prodId)}
-                isEnable={true}
-                title={`ADD TO CART`}
-              />
-            )}
-          </View>
+              {getQuantityInCart(prodId) > 0 ? (
+                <View style={quantityStyle.container}>
+                  <TouchableOpacity onPress={() => decreaseQuantity(prodId, product)} style={quantityStyle.button}>
+                    <Text style={quantityStyle.buttonText}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={quantityStyle.quantity}>{getQuantityInCart(prodId)}</Text>
+                  <TouchableOpacity onPress={() => cartAddition(prodId, product)} style={quantityStyle.button}>
+                    <Text style={quantityStyle.buttonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <Button
+                  filled
+                  onPress={() => cartAddition(prodId)}
+                  isEnable={true}
+                  title={`ADD TO CART`}
+                />
+              )}
+            </View>
+          ) : <View style={quantityStyle.container}><Text style={{ color: 'red' }}>Out of Stock</Text></View>}
         </View>
       </View>
     </SafeAreaView>
