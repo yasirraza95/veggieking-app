@@ -28,6 +28,7 @@ const Cart = ({ navigation }) => {
   const [inputText, setInputText] = useState('');
   const [inputError, setInputError] = useState('');
   const [deliveryCharges, setDeliveryCharges] = useState(0);
+  const [minCharges, setMinCharges] = useState(0);
   const { totalPrice, increaseQty, removeItemFromCart, decreaseQty, cartItems, updateCartCounter, updateUserAddress, userAddress } = useCart();
   // var userId;
 
@@ -192,10 +193,23 @@ const Cart = ({ navigation }) => {
     }
   }
 
+  const fetchMinCharges = async () => {
+    try {
+      const response = await GeneralService.getMinCharges();
+      const { data } = response;
+      const { response: res } = data;
+      // console.log(res);
+      setMinCharges(res.price);
+    } catch (err) {
+      setMinCharges(0);
+    }
+  }
+
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
       fetchDeliveryCharges();
+      fetchMinCharges();
     }, [])
   );
 
@@ -291,7 +305,7 @@ const Cart = ({ navigation }) => {
         if (!userId) {
           // console.log("!userId");
           navigation.navigate("Login", { page: "Cart" });
-        } else if (parseInt(totalPrice) >= 1000) {
+        } else if (parseInt(totalPrice) >= parseInt(minCharges)) {
           navigation.navigate("PaymentMethod", { cart: cartItems, total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText });
           // console.log(">=1000");
         } else {

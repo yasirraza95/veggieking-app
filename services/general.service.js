@@ -696,11 +696,23 @@ const getCharges = () => {
     );
 };
 
+const getMinCharges = () => {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    return axios.get(
+        `${API_URL}/get-min-charges`,
+        {
+            headers: headers,
+        }
+    );
+};
+
 const GeneralService = {
     login, register, forgot, forgotOtp, checkForgotToken, showProfile, locationUpdate, smsVerification, emailVerification, listCartByUserId,
     cartCounterByUserId, increaseQty, decreaseQty, deleteCart, fetchProductByType, listAllProducts, listProductByCat, listProductByCatCart,
     listLimProductByCatCart, listAllCategories, listFeaturedProducts, listFeaturedProductByCart, addProduct, updateProduct, deleteProduct, placeOrder, listAllOrders, listOrdersByUserIdandStatus,
-    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, getProductCartById, getNotification, getSliders, updateUserById, updatePasswordById, updatePassword,
+    listOrdersDetailByOrderId, updateOrderStatus, orderInfoById, getMinCharges, orderInfoForPrintById, updateOrderInfoById, listAllRiders, assignOrderToRider, getUserById, getProductCartById, getNotification, getSliders, updateUserById, updatePasswordById, updatePassword,
     listHistoryAssignedOrderByRiderId, listOngoingAssignedOrderByRiderId, sendNotification, listOrdersByUserIdOngoing, listOrdersByUserIdHistory, addCart, getCharges, submitMessage
 };
 export default GeneralService;

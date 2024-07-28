@@ -8,7 +8,7 @@ const Logout = ({ navigation }) => {
       await AsyncStorage.removeItem("user_type");
       console.error('Cleared successfully:');
 
-      navigation.replace('Login');
+      // navigation.replace('Login');
     } catch (error) {
       console.error('Error clearing AsyncStorage:', error);
     }
