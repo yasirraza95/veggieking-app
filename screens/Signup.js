@@ -56,7 +56,7 @@ const Signup = ({ navigation }) => {
             const response = await GeneralService.login(values);
             const { data } = response;
             const { access_token, user } = data;
-            const { id, user_type, first_name, last_name, address, phone, email } = user;
+            const { id, user_type, first_name, last_name, phone, email, address } = user;
 
             const cartResponse = await GeneralService.cartCounterByUserId(id);
             const { data: cartData } = cartResponse;
@@ -71,6 +71,7 @@ const Signup = ({ navigation }) => {
             await AsyncStorage.setItem("user_name", first_name + " " + last_name);
             await AsyncStorage.setItem("user_phone", phone);
             await AsyncStorage.setItem("user_email", email);
+            await AsyncStorage.setItem("user_address", address);
             await AsyncStorage.setItem("cart_counter", String(cartNo));
             navigation.replace('Main');
         } catch (err) {

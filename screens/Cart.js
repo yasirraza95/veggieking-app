@@ -22,6 +22,7 @@ const Cart = ({ navigation }) => {
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
   const [totPrice, setTotPrice] = useState(0)
+  const [userId, setUserId] = useState("")
   const [address, setAddress] = useState("")
   const [itemNo, setItemNo] = useState(0)
   const [cartCounter, setCartCounter] = useState(0);
@@ -34,8 +35,11 @@ const Cart = ({ navigation }) => {
 
   useEffect(() => {
     getData = async () => {
-      // userId = await AsyncStorage.getItem("_id");
-      const savedAddress = await AsyncStorage.getItem("address");
+      const userId = await AsyncStorage.getItem("_id");
+      if (userId) {
+        setUserId(userId);
+      }
+      const savedAddress = await AsyncStorage.getItem("user_address");
       if (savedAddress) {
         setAddress(savedAddress);
       }
@@ -294,27 +298,35 @@ const Cart = ({ navigation }) => {
   };
 
   const handleInputChange = (text) => {
-    setInputText(text);
+    setAddress(text);
   };
   const placeOrder = () => {
     // console.log("btn clicked");
     const orderPlace = async () => {
-      if (inputText) {
-        setInputError("");
-        let userId = await AsyncStorage.getItem("_id");
-        if (!userId) {
-          // console.log("!userId");
-          navigation.navigate("Login", { page: "Cart" });
-        } else if (parseInt(totalPrice) >= parseInt(minCharges)) {
-          navigation.navigate("PaymentMethod", { cart: cartItems, total: totalPrice, delivery: deliveryCharges, items: itemNo, address: inputText });
-          // console.log(">=1000");
+      let userId = await AsyncStorage.getItem("_id");
+      if (!userId) {
+        console.log("!userId");
+        navigation.navigate("Login", { page: "Cart" });
+      } else if (parseInt(totalPrice) >= parseInt(minCharges)) {
+        console.log(">=1000");
+        if (address) {
+          setInputError("");
         } else {
-          Alert.alert("Price Alert", "Minimum order is Rs 1000");
+          setInputError("Please enter address");
         }
+
+        navigation.navigate("PaymentMethod", { cart: cartItems, total: totalPrice, delivery: deliveryCharges, items: itemNo, address: address });
       } else {
-        setInputError("Please enter address");
+        Alert.alert("Price Alert", "Minimum order is Rs 1000");
+
+        if (address) {
+          setInputError("");
+        } else {
+          setInputError("Please enter address");
+        }
       }
-      console.log(inputText);
+
+      // console.log(inputText);
     }
 
     orderPlace();
@@ -442,19 +454,25 @@ const Cart = ({ navigation }) => {
       {
         cartItems.length > 0 && (
           <Animatable.View animation="fadeInUpBig" style={cartStyles.footer}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-              <Text style={cartStyles.body3}>Delivery Address</Text>
-            </View>
-            <Input
-              name="address"
-              id="address"
-              onChangeText={handleInputChange}
-              value={inputText}
-              placeholder="Delivery Address"
-              placeholderTextColor={COLORS.gray4}
-              keyboardType="text"
-            />
-            {inputError && <Text style={styles.error}>{inputError}</Text>}
+            {
+              userId && (
+                <>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <Text style={cartStyles.body3}>Delivery Address</Text>
+                  </View>
+                  <Input
+                    name="address"
+                    id="address"
+                    onChangeText={handleInputChange}
+                    value={address}
+                    placeholder="Delivery Address"
+                    placeholderTextColor={COLORS.gray4}
+                    keyboardType="text"
+                  />
+                  {inputError && <Text style={styles.error}>{inputError}</Text>}
+                </>
+              )
+            }
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>

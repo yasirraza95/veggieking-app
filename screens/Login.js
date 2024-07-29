@@ -34,7 +34,10 @@ const initialState = {
   }
 }
 
-const Login = ({ navigation }) => {
+const Login = ({ navigation, route }) => {
+  const { page } = route.params || "";
+  const [paging, setPaging] = useState("");
+  // console.log(`page=${page}`);
   // const dispatch = useDispatch();
   // const userActions = bindActionCreators(actionCreaters, dispatch);
   // const state = useSelector((state) => state.stateVals);
@@ -60,6 +63,8 @@ const Login = ({ navigation }) => {
     React.useCallback(() => {
       // Code to run when the screen gains focus
       checkAuthentication();
+      setPaging(page);
+
 
       return () => {
         // Code to run when the screen loses focus
@@ -76,7 +81,11 @@ const Login = ({ navigation }) => {
     if (userId) {
       console.log(userType);
       if (userType == 'user') {
-        navigation.replace('Main');
+        if (paging) {
+          navigation.replace("Cart");
+        } else {
+          navigation.replace("Main");
+        }
         // navigation.replace('RiderOrders');
       } else {
         navigation.replace('RiderOrders');
@@ -98,7 +107,7 @@ const Login = ({ navigation }) => {
       const { data } = response;
       const { access_token, user } = data;
       const { id, user_type, first_name, last_name, address, phone, email } = user;
-      console.log(user);
+      console.log(`address=${address}`);
 
 
       const cartResponse = await GeneralService.cartCounterByUserId(id);
@@ -124,6 +133,7 @@ const Login = ({ navigation }) => {
       updateUserAddress(address);
       await AsyncStorage.setItem("user_phone", phone);
       await AsyncStorage.setItem("user_email", email);
+      await AsyncStorage.setItem("user_address", address);
       await AsyncStorage.setItem("cart_counter", String(cartNo));
       if (user_type == 'user') {
         navigation.replace('Main');
