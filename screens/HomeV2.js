@@ -383,6 +383,9 @@ const HomeV2 = ({ navigation }) => {
   }
 
   const addCart = async (catId, prodId, product) => {
+    let allowdQty = product.max_qty;
+    let addedQty = getQuantityInCart(prodId);
+
     const increaseQnty = async () => {
       try {
         // console.log(catId, prodId);
@@ -503,7 +506,10 @@ const HomeV2 = ({ navigation }) => {
       }
     }
     // getCartCounter();
-    increaseQnty();
+
+    if (parseInt(addedQty) < parseInt(allowdQty)) {
+      increaseQnty();
+    }
   }
 
   const fetchAllProducts = async () => {
@@ -1170,7 +1176,7 @@ const HomeV2 = ({ navigation }) => {
           return (
             <TouchableOpacity key={index} onPress={() => navigate.navigate("FoodDetails", {
               id: item.id, name: item.name, description: item.description,
-              image: item.image, price: item.price, minQty: 1, type: "kg"
+              image: item.image, price: item.price, minQty: 1, type: "kg", max_qty: item.max_qty
             })}
               style={{
                 flexDirection: 'column',

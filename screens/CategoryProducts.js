@@ -67,6 +67,9 @@ const CategoryProducts = ({ route }) => {
 
 
   const addCart = async (prodId, product) => {
+    let allowdQty = product.max_qty;
+    let addedQty = getQuantityInCart(prodId);
+
     try {
       // setScreenLoading(true);
       const updatedProducts = products.map(product => {
@@ -78,29 +81,12 @@ const CategoryProducts = ({ route }) => {
         }
         return product;
       });
-      setProducts(updatedProducts);
-      addItemToCart(product);
 
-      // const timeout = 2000;
-      // let userId = await AsyncStorage.getItem("_id");
-
-      // const response = await Promise.race([
-      //   GeneralService.addCart(userId, prodId),
-      //   new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-      // ]);
-
-      // if (response) {
-      //   // showToast('Added to cart');
-
-      //   getCartCounter();
-      //   // fetchProducts();
-      //   // setScreenLoading(false);
-      // } else {
-      //   throw new Error('No response from the server');
-      // }
-    } catch (err) {
-      // setScreenLoading(false);
-    }
+      if (parseInt(addedQty) < parseInt(allowdQty)) {
+        setProducts(updatedProducts);
+        addItemToCart(product);
+      }
+    } catch (err) { }
   }
 
   const decreaseQuantity = (prodId, product) => {

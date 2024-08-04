@@ -15,8 +15,8 @@ const ingridents = [icons.salt, icons.chickenLeg, icons.onion, icons.chili];
 
 const FoodDetailsV1 = ({ route }) => {
   const { updateCartCounter, updateUserAddress, userInfo, decreaseQty, cartItems, addItemToCart } = useCart();
-  const { stock: stock, id: prodId, name, description, image, price, minQty, quantity_added, type } = route.params;
-  const product = { stock: stock, id: prodId, name: name, price: price, description: description, quantity_added: quantity_added, image: image };
+  const { stock: stock, id: prodId, name, description, image, price, minQty, quantity_added, type, max_qty } = route.params;
+  const product = { stock: stock, id: prodId, name: name, price: price, description: description, quantity_added: quantity_added, image: image, max_qty: max_qty };
   // console.log(product);
   const [data, setData] = useState({});
   const [quantity, setQuantity] = useState(0);
@@ -105,40 +105,22 @@ const FoodDetailsV1 = ({ route }) => {
   };
 
   const cartAddition = (id, product) => {
-    console.log(`id=${id}`);
+    // console.log(`id=${id}`);
+
+    let allowdQty = product.max_qty;
+    let addedQty = getQuantityInCart(id);
 
     const addCart = async () => {
       try {
         addItemToCart(product);
-        // let userId = await AsyncStorage.getItem("_id");
-        // setScreenLoading(true);
-
-        // const timeout = 8000;
-        // const response = await Promise.race([
-        //   GeneralService.addCart(userId, id),
-        //   new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-        // ]);
-
-        // if (response) {
-        // fetchData(prodId);
-        // if (response.status == 200) {
-        //   let cartCounter = await AsyncStorage.getItem("cart_counter");
-        //   cartCounter = parseInt(cartCounter, 10);
-        //   cartCounter++;
-        //   await AsyncStorage.setItem("cart_counter", cartCounter.toString());
-        // }
-
-        // getCartCounter();
-        // setCartCounter(cartCounter);
-        // setScreenLoading(false);
-        // } else {
-        //   throw new Error('No response from the server');
-        // }
       } catch (err) {
         setScreenLoading(false);
       }
     }
-    addCart();
+
+    if (parseInt(addedQty) < parseInt(allowdQty)) {
+      addCart();
+    }
   }
 
   const renderHeader = () => {
