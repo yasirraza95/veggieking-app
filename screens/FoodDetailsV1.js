@@ -106,9 +106,9 @@ const FoodDetailsV1 = ({ route }) => {
 
   const cartAddition = (id, product) => {
     // console.log(`id=${id}`);
-
     let allowdQty = product.max_qty;
     let addedQty = getQuantityInCart(id);
+    console.log(allowdQty);
 
     const addCart = async () => {
       try {

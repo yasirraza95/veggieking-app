@@ -433,7 +433,11 @@ const Cart = ({ navigation }) => {
                           }}>{item.quantity}</Text>
                           {/* Plus Button */}
                           <TouchableOpacity
-                            onPress={() => increaseQty(item)}
+                            onPress={() => {
+                              if (parseInt(item.quantity) < parseInt(item.max_qty)) {
+                                increaseQty(item)
+                              }
+                            }}
                             style={styles.roundedBtn}
                           >
                             <Text style={cartStyles.body2}>+</Text>

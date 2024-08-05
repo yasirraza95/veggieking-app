@@ -1459,7 +1459,7 @@ const HomeV2 = ({ navigation }) => {
             // console.log(item);
             return (
               <TouchableOpacity
-                onPress={() => navigation.navigate("FoodDetails", { stock: item.stock, id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg" })}
+                onPress={() => navigation.navigate("FoodDetails", { stock: item.stock, id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg", max_qty: item.max_qty })}
                 key={index}
                 style={{
                   flexDirection: 'column',

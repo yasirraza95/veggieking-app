@@ -290,7 +290,7 @@ const CategoryProducts = ({ route }) => {
         {
           products.map((item, index) => (
             <TouchableOpacity
-              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg", stock: item.stock })}
+              onPress={() => navigation.navigate("FoodDetails", { id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, type: "kg", stock: item.stock, max_qty: item.max_qty })}
               key={index}
               style={{
                 flexDirection: 'column',
