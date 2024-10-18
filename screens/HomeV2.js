@@ -12,8 +12,6 @@ import { StatusBar } from 'expo-status-bar'
 import CustomModal from '../components/CustomModal'
 import Carousel from 'react-native-reanimated-carousel';
 import restaurant6 from '../assets/images/restaurants/restaurant6.png';
-import restaurant7 from '../assets/images/restaurants/restaurant7.jpg';
-import restaurant8 from '../assets/images/restaurants/restaurant8.png';
 import GeneralService from '../services/general.service'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
@@ -1459,51 +1457,116 @@ const HomeV2 = ({ navigation }) => {
             // console.log(item);
             return (
               <TouchableOpacity
-                onPress={() => navigation.navigate("FoodDetails", { stock: item.stock, id: item.id, description: item.description, name: item.name, image: item.image, price: item.price, minQty: 1, quantity_added: item.quantity_added, type: "kg", max_qty: item.max_qty })}
-                key={index}
+              onPress={() =>
+                navigation.navigate("FoodDetails", {
+                  id: item.id,
+                  description: item.description,
+                  name: item.name,
+                  image: item.image,
+                  price: item.price,
+                  minQty: 1,
+                  quantity_added: item.quantity_added,
+                  type: "kg",
+                })
+              }
+              key={index}
+              style={{
+                flexDirection: 'column',
+                paddingHorizontal: 10,
+                paddingVertical: 10,
+                width: itemWidth,
+                borderWidth: 1,
+                borderColor: COLORS.gray6,
+                borderRadius: 15,
+                marginRight: 10,
+                marginBottom: 16,
+                backgroundColor: '#fff',  // Adds a clean white background
+                shadowColor: "#000",  // Adds shadow for depth effect
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.2,
+                shadowRadius: 5,
+                elevation: 2,
+                transition: 'all 0.3s ease-in-out',  // Smooth transition effect
+              }}
+            >
+              {/* Image */}
+              <Image
+                source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+                resizeMode='cover'
                 style={{
-                  flexDirection: 'column',
-                  paddingHorizontal: 2,
-                  paddingVertical: 4,
-                  height: "auto",
-                  width: itemWidth,
-                  borderWidth: 1,
-                  borderColor: COLORS.gray6,
+                  width: "100%",
+                  height: 110,  // Increased height for better image view
                   borderRadius: 15,
-                  marginRight: 6,
-                  marginBottom: 16
-                }}>
-                <Image
-                  source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-                  resizeMode='cover'
-                  style={{ width: "100%", height: 84, borderRadius: 15 }}
-                />
-                <Text style={{ fontSize: 14, fontFamily: "bold", marginVertical: 4 }}>{item.name}</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  {item.stock == 'in' && (<Text style={{ fontSize: 15, fontFamily: 'bold' }}>Rs. {item.price}</Text>)}
-                  {item.stock == 'out' && (<Text style={{ fontSize: 15, fontFamily: 'bold', color: 'red' }}>Out of Stock</Text>)}
-                  {item.stock == 'in' && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {getQuantityInCart(item.id) > 0 && (
-                        <>
-                          <TouchableOpacity
-                            onPress={() => decreaseQuantity(id, item.id, item)}
-                            style={[cartStyles.roundedBtn, { backgroundColor: '#f44c00', marginRight: 4 }]}>
-                            <Text style={cartStyles.body2}>-</Text>
-                          </TouchableOpacity>
-                          <Text style={{ fontSize: 16, fontFamily: 'regular', marginHorizontal: 4 }}>{getQuantityInCart(item.id)}</Text>
-                        </>
-                      )}
+                  transition: 'transform 0.3s ease-in-out',  // Smooth zoom effect on hover
+                }}
+              />
+            
+              {/* Product Name */}
+              <Text style={{
+                fontSize: 14,
+                fontFamily: "bold",
+                marginVertical: 6,
+                color: COLORS.primary,  // Highlighting the name with primary color
+                flex: 1,  // Make this take available space
+              }}>
+                {item.name}
+              </Text>
+            
+              {/* Price and Cart Actions */}
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: 8,  // Space between text and buttons
+              }}>
+                {/* Price */}
+                <Text style={{ fontSize: 16, fontFamily: 'bold', color: COLORS.black }}>
+                  Rs. {item.price}
+                </Text>
+            
+                {/* Add/Remove Cart Buttons */}
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {item.quantity_added >= 1 && (
+                    <>
                       <TouchableOpacity
-                        onPress={() => addCart(id, item.id, item)}
-                        style={[cartStyles.roundedBtn,
-                        { backgroundColor: '#f44c00' }]}>
-                        <Text style={cartStyles.body2}>+</Text>
+                        onPress={() => decreaseQuantity(id, item.id)}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 14,
+                          backgroundColor: '#7cc000',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginRight: 6,
+                        }}
+                      >
+                        <Text style={{ color: COLORS.white, fontSize: 16 }}>-</Text>
                       </TouchableOpacity>
-                    </View>
+                      <Text style={{ fontSize: 16, marginHorizontal: 4 }}>
+                        {item.quantity_added}
+                      </Text>
+                    </>
                   )}
+                  <TouchableOpacity
+                    onPress={() => addCart(id, item.id)}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 14,
+                      backgroundColor: '#f44c00',  // Button with brand color
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text style={{ color: COLORS.white, fontSize: 16 }}>+</Text>
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+            
             )
           }}
         />

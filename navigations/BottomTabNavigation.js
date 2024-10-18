@@ -1,16 +1,14 @@
-import { View, Text, Platform, StyleSheet } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { COLORS } from '../constants'
-import { HomeV1, Profile, Search, Card, Notifications, Menu, MyOrders, Message, PersonalProfile, Cart, Login } from '../screens'
-import { Ionicons, SimpleLineIcons } from '@expo/vector-icons'
-import DrawerNavigation from './DrawerNavigation'
-import GeneralService from '../services/general.service'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useFocusEffect } from '@react-navigation/core'
+import { View, Text, Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { COLORS } from '../constants';
+import { HomeV1, Profile, MyOrders, PersonalProfile, Cart, Login } from '../screens';
+import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
+import DrawerNavigation from './DrawerNavigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCart } from '../context/CartContext';
-var userId;
-const Tab = createBottomTabNavigator()
+
+const Tab = createBottomTabNavigator();
 
 const screenOptions = {
     tabBarShowLabel: false,
@@ -22,26 +20,25 @@ const screenOptions = {
         left: 0,
         elevation: 0,
         height: Platform.OS === 'ios' ? 90 : 60,
-        background: COLORS.white,
+        backgroundColor: '#f44c00', // Updated background color
+        borderTopLeftRadius: 20, // Apply border radius
+        borderTopRightRadius: 20, // Apply border radius
+        overflow: 'hidden', // Ensure the border radius is effective
     },
-}
+};
 
 const BottomTabNavigation = () => {
     const { cartCounter } = useCart();
+    const [userId, setUserId] = useState(null); // State to hold userId
 
     const checkAuthentication = async () => {
-        userId = await AsyncStorage.getItem("_id");
-    }
+        const id = await AsyncStorage.getItem("_id");
+        setUserId(id); // Set the userId in state
+    };
 
     useEffect(() => {
         checkAuthentication();
     }, []);
-
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         getCartCounter();
-    //     }, [])
-    // );
 
     return (
         <Tab.Navigator screenOptions={screenOptions}>
@@ -49,36 +46,28 @@ const BottomTabNavigation = () => {
                 name="Home"
                 component={DrawerNavigation}
                 options={{
-                    tabBarIcon: ({ focused }) => {
-                        return (
-                            <SimpleLineIcons name="home" size={24} color={
-                                focused
-                                    ? COLORS.primary
-                                    : COLORS.black
-                            } />
-                        )
-                    },
+                    tabBarIcon: ({ focused }) => (
+                        <SimpleLineIcons 
+                            name="home" 
+                            size={24} 
+                            color="white" // Icon color set to white
+                        />
+                    ),
                 }}
             />
 
-            {userId && (
+            {userId && ( // Conditional rendering for MyOrders screen based on userId
                 <Tab.Screen
                     name="MyOrders"
                     component={MyOrders}
                     options={{
-                        tabBarIcon: ({ focused }) => {
-                            return (
-                                <Ionicons
-                                    name="gift-outline"
-                                    size={24}
-                                    color={
-                                        focused
-                                            ? COLORS.primary
-                                            : COLORS.black
-                                    }
-                                />
-                            )
-                        },
+                        tabBarIcon: ({ focused }) => (
+                            <Ionicons
+                                name="gift-outline"
+                                size={24}
+                                color="white" // Icon color set to white
+                            />
+                        ),
                     }}
                 />
             )}
@@ -87,61 +76,50 @@ const BottomTabNavigation = () => {
                 name="Cart"
                 component={Cart}
                 options={{
-                    tabBarIcon: ({ focused }) => {
-                        return (
-                            <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
-                                <Ionicons
-                                    name={focused ? "cart-sharp" : "cart-outline"}
-                                    size={24}
-                                    color={
-                                        focused ? COLORS.primary : COLORS.black
-                                    }
-                                />
-                                {cartCounter > 0 && (
-                                    <View style={styles.cartBadge}>
-                                        <Text style={styles.cartBadgeText}>{cartCounter}</Text>
-                                    </View>
-                                )}
-                            </View>
-                        )
-                    },
+                    tabBarIcon: ({ focused }) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
+                            <Ionicons
+                                name={focused ? "cart-sharp" : "cart-outline"}
+                                size={24}
+                                color="white" // Icon color set to white
+                            />
+                            {cartCounter > 0 && (
+                                <View style={styles.cartBadge}>
+                                    <Text style={styles.cartBadgeText}>{cartCounter}</Text>
+                                </View>
+                            )}
+                        </View>
+                    ),
                 }}
             />
 
             <Tab.Screen
                 name="Profile"
                 component={userId ? PersonalProfile : Login}
-                // component={Login}
                 options={{
-                    tabBarIcon: ({ focused }) => {
-                        return (
-                            <Ionicons
-                                name="person-outline"
-                                size={24}
-                                color={
-                                    focused ? COLORS.primary : COLORS.black
-                                }
-                            />
-                        )
-                    },
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            name="person-outline"
+                            size={24}
+                            color="white" // Icon color set to white
+                        />
+                    ),
                 }}
             />
         </Tab.Navigator>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
-    cartBadgeContainer: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        transform: [{ translateX: 6 }, { translateY: -8 }],
-    },
     cartBadge: {
         backgroundColor: 'red',
         borderRadius: 10,
         paddingHorizontal: 6,
         paddingVertical: 2,
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        transform: [{ translateX: 6 }, { translateY: -8 }],
     },
     cartBadgeText: {
         color: 'white',
@@ -149,4 +127,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default BottomTabNavigation
+export default BottomTabNavigation;

@@ -168,14 +168,14 @@ const Signup = ({ navigation }) => {
                                         />
                                         {touched.address && errors.address && <Text style={styles.error}>{errors.address}</Text>}
 
-                                        <Text style={commonStyles.inputHeader}>Phone No.</Text>
+                                        <Text style={commonStyles.inputHeader}>Phone No</Text>
                                         <Input
                                             name="phone"
                                             id="phone"
                                             onChangeText={handleChange('phone')}
                                             onBlur={handleBlur('phone')}
                                             value={values.phone}
-                                            placeholder="Phone No."
+                                            placeholder="Phone No"
                                             placeholderTextColor={COLORS.black}
                                             keyboardType="numeric"
                                         />

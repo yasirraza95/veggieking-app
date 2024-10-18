@@ -28,43 +28,54 @@ const Stack = createNativeStackNavigator()
 // const Stack = createStackNavigator()
 
 const AppNavigation = () => {
-    const [isFirstLaunch, setIsFirstLaunch] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const [isFirstLaunch, setIsFirstLaunch] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const checkIfFirstLaunch = async () => {
             try {
-                const value = await AsyncStorage.getItem('alreadyLaunched')
+                const value = await AsyncStorage.getItem('alreadyLaunched');
                 if (value === null) {
-                    await AsyncStorage.setItem('alreadyLaunched', 'true')
-                    setIsFirstLaunch(true)
+                    await AsyncStorage.setItem('alreadyLaunched', 'true');
+                    setIsFirstLaunch(true);
                 } else {
-                    setIsFirstLaunch(false)
+                    setIsFirstLaunch(false);
                 }
             } catch (error) {
-                setIsFirstLaunch(false)
+                setIsFirstLaunch(false);
             }
-            setIsLoading(false) // Set loading state to false once the check is complete
-        }
+            setIsLoading(false);
+        };
 
-        checkIfFirstLaunch()
-    }, [])
+        checkIfFirstLaunch();
+    }, []);
+
+    const shouldShowBottomTab = (routeName) => {
+        // Define the routes where BottomTabNavigation should NOT be displayed
+        const hiddenRoutes = [
+            'Login',
+            'Signup',
+            'ForgotPassword',
+            'ResetPassword',
+            'Verification',
+            // Add any other routes here as needed
+        ];
+        return !hiddenRoutes.includes(routeName);
+    };
 
     if (isLoading) {
-        return null // Render a loader or any other loading state component
+        return null; // Render a loader or any other loading state component
     }
 
     return (
         <NavigationContainer>
             <Stack.Navigator
-                screenOptions={{ headerShown: false }}
-                // initialRouteName={
-                //     isFirstLaunch ? 'HomeV2' : 'Login'
-                // }
-                initialRouteName={
-                    'Main'
-                }
+                screenOptions={({ route }) => ({
+                    headerShown: false,
+                })}
+                initialRouteName={'Main'}
             >
+                {/* Onboarding and Auth Screens */}
                 <Stack.Screen name="Onboarding1" component={Onboarding1} />
                 <Stack.Screen name="Onboarding2" component={Onboarding2} />
                 <Stack.Screen name="Onboarding3" component={Onboarding3} />
@@ -72,17 +83,18 @@ const AppNavigation = () => {
                 <Stack.Screen name="Signup" component={Signup} />
                 <Stack.Screen name="StartUpScreen" component={StartUpScreen} />
                 <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="opt" component={Otp} />
-                {/* <Stack.Screen name="MapLocation" component={MapLocation}/> */}
+                <Stack.Screen name="Otp" component={Otp} />
                 <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
                 <Stack.Screen name="ResetPassword" component={ResetPassword} />
                 <Stack.Screen name="Verification" component={Verification} />
                 <Stack.Screen name="LocationAccess" component={LocationAccess} />
                 <Stack.Screen name="LocationSearch" component={LocationSearch} />
+                
+                {/* Main Screens */}
+                <Stack.Screen name="Main" component={shouldShowBottomTab('Main') ? BottomTabNavigation : StartUpScreen} />
                 <Stack.Screen name="HomeV1" component={HomeV1} />
                 <Stack.Screen name="HomeV2" component={HomeV2} />
                 <Stack.Screen name="HomeV3" component={HomeV3} />
-                <Stack.Screen name="Main" component={BottomTabNavigation} />
                 <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
                 <Stack.Screen name="FoodByKeywords" component={FoodByKeywords} />
                 <Stack.Screen name="FoodDetails" component={FoodDetailsV1} />
@@ -120,10 +132,8 @@ const AppNavigation = () => {
                 <Stack.Screen name="SubmitQuestion" component={SubmitQuestion} />
                 <Stack.Screen name="History" component={History} />
             </Stack.Navigator>
-            {/* <Toast ref={(ref) => Toast.setRef(ref)} /> */}
-
         </NavigationContainer>
-    )
-}
+    );
+};
 
-export default AppNavigation
+export default AppNavigation;
