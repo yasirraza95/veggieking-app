@@ -1,112 +1,237 @@
-import { View, StyleSheet,Text, FlatList } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { COLORS } from '../constants'
-import { ScrollView } from 'react-native-virtualized-view'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { TransactionHistoryData } from '../data/utils'
-import Header from '../components/Header'
-import OrdDtlCard from '../components/OrdDtlCard'
-import GeneralService from '../services/general.service'
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Text, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { COLORS, icons } from '../constants';
+import GeneralService from '../services/general.service';
+import { commonStyles } from '../styles/CommonStyles';
 
-const OrderDetail = ({ route, navigation }) => {
-
+const OrderDetail = ({ route }) => {
   const { orderId } = route.params;
-  console.log(orderId);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
   const [detailData, setDetailData] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    const getOrderDetail = async (id) => {
+    const fetchOrderDetails = async () => {
       try {
-        setIsLoading(true);
-        const ordersData = await GeneralService.listOrdersDetailByOrderId(id);
+        const ordersData = await GeneralService.listOrdersDetailByOrderId(orderId);
         const { data } = ordersData;
         const { response } = data;
-        console.log(`detail-data=${JSON.stringify(response)}`);
-        setIsLoading(false);
         setDetailData(response);
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.error(error);
+      } finally {
         setIsLoading(false);
-        setDetailData([]);
       }
+    };
+
+    fetchOrderDetails();
+  }, [orderId]);
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={commonStyles.header1Icon}>
+        <Image
+          resizeMode='contain'
+          source={icons.arrowLeft}
+          style={styles.headerIcon}
+        />
+      </TouchableOpacity>
+      <Text style={styles.headerTitle}>Orders Details</Text>
+    </View>
+  );
+
+  const renderLoadingIndicator = () => (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color={COLORS.primary} />
+      <Text style={styles.loadingText}>Loading...</Text>
+    </View>
+  );
+
+  const renderEmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No items found for this order.</Text>
+    </View>
+  );
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Pending':
+        return COLORS.yellow;
+      case 'Shipped':
+        return COLORS.green;
+      case 'Delivered':
+        return COLORS.blue;
+      case 'Cancelled':
+        return COLORS.red;
+      default:
+        return COLORS.gray;
     }
+  };
 
-    getOrderDetail(orderId);
-  }, [orderId, navigation]);
-
+  const renderItem = ({ item }) => (
+    <View style={styles.cardContainer}>
+      <View style={styles.orderRow}>
+        {/* Image for the order */}
+        <View style={styles.imageWrapper}>
+          <Image 
+            source={{ uri: item.prod_image }}  // Updated to use item.prod_image
+            style={styles.orderImage}
+            onError={() => console.log('Error loading image')} // Log error if image fails to load
+            defaultSource={require('../assets/images/blnk.jpg')} // Add a placeholder image
+          />
+        </View>
+        <View style={styles.orderInfo}>
+          <View style={{ marginLeft: 12 }}>
+            <Text style={styles.orderIdText}>Order ID: {item.order_no}</Text>
+            <View style={styles.separator}></View>
+            <View style={styles.orderDetailsRow}>
+              <Text style={styles.orderAmountText}>Rs. {item.bill}</Text>
+              <Text style={styles.orderDateText}> | {item.created_at}</Text>
+            </View>
+          </View>
+        </View>
+        <Text style={[styles.statusText, { backgroundColor: getStatusColor(item.status) }]}>{item.status}</Text>
+      </View>
+    </View>
+  );
+  
   return (
-    <SafeAreaView style={styles.area}>
-      <View style={styles.container}>
-        <Header title="Order Detail" />
-        {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-  <Text style={{ fontSize: 18, fontWeight: 'bold', marginRight: 10 }}>Order Detail</Text>
-</View> */}
-
-
-        <ScrollView>
+    <GestureHandlerRootView style={styles.area}>
+      <SafeAreaView style={styles.area}>
+        <View style={styles.container}>
           <FlatList
             data={detailData}
-            keyExtractor={item => item.id}
-            renderItem={({ item, index }) => (
-              <OrdDtlCard
-                image={item.prod_image}
-                amount={item.prod_price}
-                type={item.type}
-                price={item.price}
-                date={item.date}
-                name={item.prod_name}
-                quantity={item.quantity}
-                totalAmt={item.order_amount}
-              />
-            )}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={renderHeader}
+            ListEmptyComponent={isLoading ? renderLoadingIndicator() : renderEmptyState()}
           />
-        </ScrollView>
-      </View>
-    </SafeAreaView>
-  )
-}
+        </View>
+      </SafeAreaView>
+    </GestureHandlerRootView>
+  );
+};
 
 const styles = StyleSheet.create({
   area: {
     flex: 1,
-    backgroundColor: COLORS.white
+    backgroundColor: COLORS.white,
   },
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
-    padding: 12
   },
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 12,
-    alignItems: "center"
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: COLORS.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   headerIcon: {
-    height: 50,
-    width: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 999,
-    backgroundColor: COLORS.gray
-  },
-  arrowLeft: {
-    height: 24,
     width: 24,
-    tintColor: COLORS.black
-  },
-  moreIcon: {
     height: 24,
-    width: 24,
-    tintColor: COLORS.black
   },
-  subtitle: {
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginLeft: 20,
+    color: COLORS.white,
+    textTransform: 'capitalize',
+  },
+  cardContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    marginHorizontal: 12,
+    marginVertical: 8,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: COLORS.gray6,
+  },
+  orderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  imageWrapper: {
+    width: 80, // Larger image area
+    height: 80,
+    borderRadius: 10, // Rounded corners
+    overflow: 'hidden',
+    backgroundColor: COLORS.gray6,
+  },
+  orderImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
+  },
+  orderInfo: {
+    flex: 1,
+  },
+  orderIdText: {
     fontSize: 16,
-    fontFamily: "bold",
-    color: COLORS.black
+    fontWeight: 'bold',
+    color: COLORS.black,
   },
-})
+  separator: {
+    height: 1,
+    backgroundColor: COLORS.gray6,
+    marginVertical: 8,
+  },
+  orderDetailsRow: {
+    flexDirection: 'row',
+  },
+  orderAmountText: {
+    fontSize: 16,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+  },
+  orderDateText: {
+    fontSize: 16,
+    color: COLORS.gray5,
+  },
+  statusText: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 4,
+    color: COLORS.white,
+    fontWeight: 'bold',
+    overflow: 'hidden',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: COLORS.gray,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: COLORS.gray,
+  },
+});
 
-export default OrderDetail
+export default OrderDetail;

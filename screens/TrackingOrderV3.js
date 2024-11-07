@@ -1,18 +1,13 @@
-import { View, Text, StyleSheet, Image } from 'react-native'
-import React, { useRef, useEffect, useState } from 'react'
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { images, icons, SIZES, COLORS, FONTS, illustrations } from '../constants'
-import { orderList } from '../data/utils'
-import { TouchableOpacity } from 'react-native'
-import RBSheet from "react-native-raw-bottom-sheet"
-import { Feather, FontAwesome5 } from "@expo/vector-icons"
-import VerticalStepper from '../components/VerticalStepper'
-import { StatusBar } from 'expo-status-bar'
-import GeneralService from '../services/general.service'
-import { ScrollView } from 'react-native-virtualized-view'
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { images, icons, SIZES, COLORS, FONTS, illustrations } from '../constants';
+import { TouchableOpacity } from 'react-native';
+import VerticalStepper from '../components/VerticalStepper';
+import { StatusBar } from 'expo-status-bar';
+import GeneralService from '../services/general.service';
+import { ScrollView } from 'react-native-virtualized-view';
 
-// TODO
 const TrackingOrderV3 = ({ route, navigation }) => {
   const [loading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -28,7 +23,6 @@ const TrackingOrderV3 = ({ route, navigation }) => {
       const ordersData = await GeneralService.listOrdersDetailByOrderId(id);
       const { data } = ordersData;
       const { response } = data;
-      // console.log(`tracking=${JSON.stringify(response)}`);
       setIsLoading(false);
       setData(response);
     } catch (err) {
@@ -39,162 +33,138 @@ const TrackingOrderV3 = ({ route, navigation }) => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightBackground }}>
       <StatusBar hidden={true} />
-      <View style={{
-        position: 'absolute',
-        marginHorizontal: 16,
-        position: 'absolute',
-        flexDirection: 'row',
-        alignItems: 'center',
-        top: 22,
-        zIndex: 999
-      }}>
+      <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{
-            height: 45,
-            width: 45,
-            borderRadius: 22.5,
-            backgroundColor: COLORS.black,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 16,
-            zIndex: 9999
-          }}
+          style={styles.backButton}
         >
           <Image
             source={icons.arrowLeft}
             resizeMode="contain"
-            style={{
-              height: 24,
-              width: 24,
-              tintColor: COLORS.white
-            }}
+            style={styles.backIcon}
           />
         </TouchableOpacity>
-        <Text style={{ ...FONTS.body3 }}>Track Order</Text>
+        <Text style={styles.headerTitle}>Track Order</Text>
       </View>
 
-      <View style={{
-        width: SIZES.width - 32,
-        marginHorizontal: 16,
-        top: 90,
-      }}>
+      <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={true}>
-          <View
-            style={{ flexDirection: 'row' }}
-          >
-            <View style={{
-              marginRight: 12
-            }}>
-            </View>
-            <View style={{
-              flexDirection: 'column',
-            }}>
-              <Text style={{ ...FONTS.h4 }}>{orderNo}</Text>
-              <Text style={styles.body3}>Orderd at {orderDate}</Text>
-              {data.map((res) => {
-                return (
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.h3}>{res.quantity}x</Text>
-                    <Text style={styles.body3}>{res.prod_name}</Text>
+          {loading ? (
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          ) : (
+            <>
+              <View style={styles.orderDetails}>
+                <Text style={styles.orderNumber}>{orderNo}</Text>
+                <Text style={styles.orderDate}>Ordered at {orderDate}</Text>
+                {data.map((res, index) => (
+                  <View key={index} style={styles.productDetail}>
+                    <Text style={styles.productQuantity}>{res.quantity}x</Text>
+                    <Text style={styles.productName}>{res.prod_name}</Text>
                   </View>
-                )
-              })}
+                ))}
+              </View>
 
-            </View>
-          </View>
-          <View style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginVertical: 22
-          }}>
-          </View>
+              <VerticalStepper status={orderStatus} />
 
-          <VerticalStepper status={orderStatus} />
-
-          <Image
-            // source={illustrations.deliverd}
-            // source={illustrations.packing}
-            source={orderStatus === "PENDING" ? illustrations.received :
-              (orderStatus === "DELIVERED" ? illustrations.deliverd :
-                (orderStatus === "PACKING" ? illustrations.packing :
-                  (orderStatus === "CANCELLED" ? COLORS.red : illustrations.deliverd)))}
-            style={[styles.locationImage, { alignSelf: 'center' }]}
-          />
-
+              <Image
+                source={orderStatus === "PENDING" ? illustrations.received :
+                  (orderStatus === "DELIVERED" ? illustrations.deliverd :
+                    (orderStatus === "PACKING" ? illustrations.packing :
+                      (orderStatus === "CANCELLED" ? COLORS.red : illustrations.deliverd)))}
+                style={styles.locationImage}
+              />
+            </>
+          )}
         </ScrollView>
-
       </View>
-
-
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  // Callout bubble
-  bubble: {
-    flexDirection: 'column',
-    alignSelf: 'flex-start',
-    backgroundColor: '#fff',
-    borderRadius: 6,
-    borderColor: '#ccc',
-    borderWidth: 0.5,
-    padding: 15,
-    width: 'auto',
-  },
-  // Arrow below the bubble
-  arrow: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-    borderTopColor: '#fff',
-    borderWidth: 16,
-    alignSelf: 'center',
-    marginTop: -32,
-  },
-  arrowBorder: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-    borderTopColor: '#007a87',
-    borderWidth: 16,
-    alignSelf: 'center',
-    marginTop: -0.5,
-  },
-  body3: {
-    fontSize: 12,
-    color: COLORS.gray5,
-    marginVertical: 3,
-  },
-  h3: {
-    fontSize: 12,
-    color: COLORS.gray5,
-    marginVertical: 3,
-    fontFamily: 'bold',
-    marginRight: 6
-  },
-  btn1: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center'
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  btn2: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    borderColor: COLORS.primary,
-    borderWidth: 1,
+  backButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.white,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+
+  backIcon: {
+    height: 24,
+    width: 24,
+    tintColor: COLORS.black,
+  },
+  headerTitle: {
+    ...FONTS.h2,
+    color: COLORS.white,
+  },
+  container: {
+    flex: 1,
+    width: SIZES.width - 32,
+    marginHorizontal: 16,
+    top: 30,
+  },
+  orderDetails: {
+    backgroundColor: COLORS.white,
+    padding: 16,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2.62,
+    elevation: 4,
+    marginBottom: 10,
+  },
+  orderNumber: {
+    ...FONTS.h4,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+  },
+  orderDate: {
+    ...FONTS.body3,
+    color: COLORS.gray5,
+    marginBottom: 4,
+  },
+  productDetail: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 6,
+    backgroundColor: COLORS.lightGray,
+    padding: 0,
+    borderRadius: 4,
+  },
+  productQuantity: {
+    ...FONTS.body3,
+    color: COLORS.black,
+    marginRight: 10,
+  },
+  productName: {
+    ...FONTS.body3,
+    color: COLORS.gray5,
   },
   locationImage: {
     height: SIZES.width * 0.7,
     width: SIZES.width * 0.7,
+    alignSelf: 'center',
+    marginTop: 20,
   },
 })
 
-export default TrackingOrderV3
+export default TrackingOrderV3;

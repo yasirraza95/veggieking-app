@@ -1,6 +1,6 @@
 import {
   Dimensions, View, Text, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, FlatList,
-  ActivityIndicator, Alert, useWindowDimensions
+  ActivityIndicator, Alert, useWindowDimensions, Animated
 } from
   'react-native'
 import React, { useState, useEffect, useRef } from 'react'
@@ -1028,93 +1028,131 @@ const HomeV2 = ({ navigation }) => {
 
   const renderCategories = () => {
     const { width } = useWindowDimensions();
-    const numColumns = width > 600 ? 4 : 3;
-    let result = <>
+    const numColumns = width > 600 ? 4 : 3;  // Adjusting columns for mobile vs desktop views
+    const navigation = useNavigation();
+    const scrollX = useRef(new Animated.Value(0)).current;
+    const [currentIndex, setCurrentIndex] = useState(0);
+  
+    // Create the infinite scroll effect
+    const extendedCategories = [...category, ...category]; // Duplicate the array for infinite scroll
+  
+    useEffect(() => {
+      const interval = setInterval(() => {
+        // Loop over the original category array, ensuring smooth transition
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % category.length);
+      }, 2000); // Auto-slide every 2 seconds
+  
+      return () => clearInterval(interval);
+    }, [category.length]);
+  
+    useEffect(() => {
+      // This effect controls the sliding behavior with animation
+      Animated.timing(scrollX, {
+        toValue: currentIndex * (width / numColumns),
+        duration: 500, // Smooth transition duration
+        useNativeDriver: true,
+      }).start();
+    }, [currentIndex, width, numColumns]);
+  
+    return (
       <View>
-        <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginVertical: 8,
-          alignItems: 'center',
-        }}>
-          <Text style={{ ...FONTS.body2 }}>Categories</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8, alignItems: 'center' }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Categories</Text>
         </View>
-
+  
         <View>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 8 }}>
-            {category.map((item, index) => {
-              // Define an array of border colors
-              const borderColors = ['#FF6347', '#6A5ACD', '#32CD32', '#FFD700', '#20B2AA', '#9370DB', '#FF8C00', '#00CED1', '#8A2BE2', '#ADFF2F'];
-              // Use modulo operator to ensure the index is within the range of borderColors array
-              const borderColorIndex = index % borderColors.length;
-
-              return (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => navigate.navigate("CategoryProducts", {
-                    catId: item.id, catName: item.name
-                  })}
+          <Animated.View
+            style={{
+              flexDirection: 'row',
+              transform: [{ translateX: Animated.multiply(scrollX, -1) }], // Controls the smooth horizontal scroll
+            }}
+          >
+            {extendedCategories.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => navigation.navigate("CategoryProducts", { catId: item.id, catName: item.name })}
+                style={{
+                  alignItems: 'center',
+                  marginBottom: 15,
+                  width: `${100 / numColumns}%`, // Adjust item width based on number of columns
+                  paddingHorizontal: 5, // To prevent item overcrowding on small screens
+                }}
+              >
+                <View
                   style={{
+                    height: width > 600 ? 120 : 100,  // Adjust circle size based on screen width
+                    width: width > 600 ? 120 : 100,   // Same here for consistency
+                    borderRadius: 60,
+                    overflow: 'hidden',
+                    shadowColor: '#000', 
+                    shadowOffset: { width: 5, height: 5 }, 
+                    shadowOpacity: 0.7,
+                    shadowRadius: 10,
+                    elevation: 10, 
+                    borderWidth: 3,
+                    borderColor: 'rgb(129, 196, 8)', 
+                    backgroundColor: 'orange',
+                    justifyContent: 'center',
                     alignItems: 'center',
-                    marginBottom: 15,
-                    width: `${100 / numColumns}%`,
+                    transform: [{ scale: 1.05 }],
+                    transition: 'transform 0.3s',
                   }}
                 >
-                  <View style={{
-                    height: 90,
-                    width: 90,
-                    borderRadius: 45,
-                    overflow: 'hidden',
-                    shadowColor: '#F1F1F1',
-                    shadowOffset: {
-                      width: 2,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 5,
-                    elevation: 5,
-                    borderWidth: 2, // Add borderWidth
-                    borderColor: borderColors[borderColorIndex], // Assign different borderColor
-                    backgroundColor: 'orange',
-                  }}>
-                    <Image
-                      source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
-                      resizeMode='cover'
+                  <Image
+                    source={{ uri: `https://api.veggieking.pk/public/upload/${item.image}` }}
+                    resizeMode="cover"
+                    style={{
+                      flex: 1,
+                      height: '100%',
+                      width: '100%',
+                      borderRadius: 60,
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                    }}
+                  />
+                  <View
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      backgroundColor: 'rgb(129, 196, 8)',
+                      width: '100%',
+                      alignItems: 'center',
+                      paddingVertical: 5, 
+                      justifyContent: 'center',
+                      paddingHorizontal: 8, 
+                      borderTopLeftRadius: 15,
+                      borderTopRightRadius: 15, 
+                    }}
+                  >
+                    <Text
                       style={{
-                        flex: 1,
-                        height: '100%',
-                        width: '100%',
+                        fontSize: width > 600 ? 10 : 8,  // Decreased font size on mobile for better fit
+                        color: 'white',
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
                       }}
-                    />
+                      numberOfLines={1} // Ensure text stays on a single line
+                    >
+                      {item.name}
+                    </Text>
                   </View>
-                  {/* <Text style={{ fontSize: 12, fontFamily: 'bold', textAlign: 'center', justifyContent: 'center', marginTop: 5 }}>{item.name}</Text> */}
-                  <Text style={{ width: "70%", fontSize: 12, fontFamily: 'bold', textAlign: 'center', justifyContent: 'center', marginTop: 5 }}>{item.name}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-
+                </View>
+              </TouchableOpacity>
+            ))}
+          </Animated.View>
         </View>
-
-      </View >
-    </>
-
-    let response = category.length > 0 ? result : <View style={{ flex: 1 }}>
-      <Text style={{
-        color: COLORS.black,
-        fontSize: 14,
-        fontFamily: 'regular',
-        textAlign: 'center'
-      }}>No record found</Text></View>;
-
-    // response = categoryLoading ? <ActivityIndicator size="large" color="blue" /> : result
-    response = result
-    return (
-      response
-    )
-  }
-
+      </View>
+    );
+  };
+  
+  
+  
+  
+  
 
 
   const renderFeatureProductsNew = () => {

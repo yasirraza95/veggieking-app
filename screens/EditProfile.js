@@ -1,98 +1,89 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native'
-import React, { useState, useReducer, useEffect, useCallback } from 'react'
-import { COLORS, SIZES, icons, images } from "../constants"
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { commonStyles } from '../styles/CommonStyles'
-import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { launchImagePicker } from '../utils/imagePickerHelper'
-import Input from '../components/Input'
-import Button from '../components/Button'
-import { validateInput } from '../utils/actions/formActions'
-import { reducer } from '../utils/reducers/formReducers'
-import { ScrollView } from 'react-native-virtualized-view'
-import { StatusBar } from 'expo-status-bar'
-import { Formik } from 'formik'
-import { signInSchema, userProfile } from '../schema'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import GeneralService from '../services/general.service'
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    StyleSheet,
+    Alert,
+    ScrollView,
+} from 'react-native';
+import React, { useState, useReducer, useEffect, useCallback } from 'react';
+import {
+    COLORS,
+    SIZES,
+    icons,
+    images,
+} from '../constants';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { commonStyles } from '../styles/CommonStyles';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { launchImagePicker } from '../utils/imagePickerHelper';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import { validateInput } from '../utils/actions/formActions';
+import { reducer } from '../utils/reducers/formReducers';
+import { StatusBar } from 'expo-status-bar';
+import { Formik } from 'formik';
+import { signInSchema, userProfile } from '../schema';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import GeneralService from '../services/general.service';
 import { useCart } from '../context/CartContext';
 
 const EditProfile = () => {
     const { updateUserAddress } = useCart();
     const [image, setImage] = useState(null);
-    const [error, setError] = useState();
     const [profileInfo, setProfileInfo] = useState({
-        name: "",
-        address: "",
-        phone: "",
-        email: "",
+        name: '',
+        address: '',
+        phone: '',
+        email: '',
     });
-    const [emailError, setEmailError] = useState("");
-    const [phoneError, setPhoneError] = useState("");
+    const [emailError, setEmailError] = useState('');
+    const [phoneError, setPhoneError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isEnable, setIsEnable] = useState(true);
+    const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
-    const togglePasswordVisibility = () => {
-        setIsPasswordVisible(!isPasswordVisible);
-    };
-
-    const [formState, dispatchFormState] = useReducer(reducer, initialState)
-
-    const inputChangedHandler = useCallback(
-        (inputId, inputValue) => {
-            const result = validateInput(inputId, inputValue)
-            dispatchFormState({ inputId, validationResult: result, inputValue })
-        },
-        [dispatchFormState]
-    )
+    const inputChangedHandler = useCallback((inputId, inputValue) => {
+        const result = validateInput(inputId, inputValue);
+        dispatchFormState({ inputId, validationResult: result, inputValue });
+    }, [dispatchFormState]);
 
     const getUserById = async () => {
         try {
-            let userId = await AsyncStorage.getItem("_id");
-            const timeout = 8000;
-            const response = await Promise.race([
-                GeneralService.getUserById(userId),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-            ]);
-
+            let userId = await AsyncStorage.getItem('_id');
+            const response = await GeneralService.getUserById(userId);
             if (response) {
                 setProfileInfo({
-                    name: response.data.response.first_name + " " + response.data.response.last_name,
+                    name: response.data.response.first_name + ' ' + response.data.response.last_name,
                     address: response.data.response.address,
                     phone: response.data.response.phone,
                     email: response.data.response.email,
                 });
             } else {
-                throw new Error('No response from the server');
+                throw new Error('No response from server');
             }
         } catch (err) {
-            // console.log(err);
-            Alert.alert("Error", "No response from server");
+            Alert.alert('Error', 'Unable to fetch profile data');
         }
-    }
+    };
 
     const initialState = {
         inputValues: {
             name: profileInfo.name,
             email: profileInfo.email,
             phone: profileInfo.phone,
-            address: profileInfo.address
+            address: profileInfo.address,
         },
         inputValidities: {
             name: false,
             email: false,
             phone: false,
-            address: profileInfo.address
+            address: profileInfo.address,
         },
         formIsValid: false,
-    }
-
-    // useEffect(() => {
-    //     getUserById();
-    // }, []);
+    };
 
     useFocusEffect(
         React.useCallback(() => {
@@ -101,247 +92,204 @@ const EditProfile = () => {
     );
 
     const updateProfile = async (values) => {
-        console.log(values);
         try {
-            let userId = await AsyncStorage.getItem("_id");
-
+            let userId = await AsyncStorage.getItem('_id');
             setIsLoading(true);
             setIsEnable(false);
-            // console.log(values);
-            const timeout = 8000;
-            const response = await Promise.race([
-                GeneralService.updateUserById(values.name, values.address, values.phone, values.email, userId),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), timeout))
-            ]);
+            const response = await GeneralService.updateUserById(
+                values.name,
+                values.address,
+                values.phone,
+                values.email,
+                userId
+            );
 
             if (response) {
-                await AsyncStorage.setItem("my_address", values.address);
+                await AsyncStorage.setItem('my_address', values.address);
                 updateUserAddress(values.address);
+                Alert.alert('Success', 'Profile updated successfully');
                 getUserById();
-                Alert.alert('Success', 'Information updated successfully');
             } else {
                 throw new Error('No response from the server');
             }
-            // const response = await GeneralService.updateUserById(values.name, values.address, values.phone, values.email, userId);
-            // console.log('SignUp response:', response);
-            setIsLoading(false);
-            setIsEnable(true);
-            // Alert.alert('Success', 'User registered successfully');
         } catch (err) {
-            // console.log(err);
+            Alert.alert('Error', 'Unable to update profile. Please try again.');
+        } finally {
             setIsLoading(false);
             setIsEnable(true);
-            setEmailError("");
-            setPhoneError("");
-            if (err?.response?.status === 422) {
-                // console.log(err?.response?.data);
-                if (err?.response?.data?.email) {
-                    setEmailError(err?.response?.data?.email[0]);
-                }
-
-                if (err?.response?.data?.phone) {
-                    setPhoneError(err?.response?.data?.phone[0]);
-                }
-            } else {
-                Alert.alert("Error", "Server error. Please try again later.");
-            }
         }
     };
 
-    useEffect(() => {
-        if (error) {
-            Alert.alert('An error occured', error)
-        }
-    }, [error])
-
     const pickImage = async () => {
         try {
-            const tempUri = await launchImagePicker()
-
-            if (!tempUri) return
-
-            // set the image
-            setImage({ uri: tempUri })
-        } catch (error) { }
-    }
+            const tempUri = await launchImagePicker();
+            if (tempUri) setImage({ uri: tempUri });
+        } catch (error) {
+            Alert.alert('Error', 'Failed to pick image');
+        }
+    };
 
     const renderHeader = () => {
-        const navigation = useNavigation()
+        const navigation = useNavigation();
         return (
-            <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: 20,
-            }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                        style={commonStyles.header1Icon}
-                    >
-                        <Image
-                            resizeMode='contain'
-                            source={icons.arrowLeft}
-                            style={{ height: 24, width: 24, tintColor: COLORS.black }}
-                        />
-                    </TouchableOpacity>
-                    <Text style={{ marginLeft: 12, fontSize: 17, fontFamily: 'regular' }}>Edit Profile</Text>
-                </View>
-
-            </View>
-        )
-    }
-
-    const renderEditProfileForm = () => {
-        const navigation = useNavigation()
-        return (
-            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                {/* <View style={{ marginVertical: 12 }}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={commonStyles.header1Icon}>
                     <Image
-                        source={
-                            image === null ?
-                                images.avatar2 :
-                                image
-                        }
                         resizeMode='contain'
-                        style={{
-                            height: 130,
-                            width: 130,
-                            borderRadius: 65
-                        }}
+                        source={icons.arrowLeft}
+                        style={styles.headerIcon}
                     />
-                    <TouchableOpacity
-                        onPress={pickImage}
-                        style={{
-                            height: 42,
-                            width: 42,
-                            borderRadius: 21,
-                            backgroundColor: COLORS.primary,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'absolute',
-                            bottom: 0,
-                            right: 0
-                        }}
-                    >
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Edit Profile</Text>
+            </View>
+        );
+    };
+
+    const renderEditProfileForm = () => (
+        <Formik
+            initialValues={initialState.inputValues}
+            validationSchema={userProfile}
+            enableReinitialize={true}
+            onSubmit={updateProfile}
+        >
+            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                <View style={styles.formContainer}>
+                    {/* <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
+                        <Image
+                            source={image === null ? images.avatar2 : image}
+                            style={styles.profileImage}
+                        />
                         <MaterialCommunityIcons
                             name="pencil-outline"
                             size={24}
-                            color={COLORS.white} />
-                    </TouchableOpacity>
-                </View> */}
-                <Formik
-                    initialValues={initialState.inputValues}
-                    validationSchema={userProfile}
-                    enableReinitialize={true}
-                    onSubmit={updateProfile}
-                >
-                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                        <View style={{
-                            width: SIZES.width - 32, marginVertical: 25
-                        }}>
-                            <Text style={commonStyles.inputHeader}>Name</Text>
-                            <Input
-                                id="name"
-                                name="name"
-                                autoCapitalize="words"
-                                onChangeText={handleChange('name')}
-                                onBlur={handleBlur('name')}
-                                value={values.name}
-                                // onInputChanged={inputChangedHandler}
-                                // errorText={formState.inputValidities['name']}
-                                placeholder="Full Name"
-                                placeholderTextColor={COLORS.black}
-                            />
-                            {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
+                            color={COLORS.white}
+                            style={styles.editImageIcon}
+                        />
+                    </TouchableOpacity> */}
 
-                            <Text style={commonStyles.inputHeader}>Address</Text>
-                            <Input
-                                id="address"
-                                name="address"
-                                onChangeText={handleChange('address')}
-                                onBlur={handleBlur('address')}
-                                // onInputChanged={inputChangedHandler}
-                                // errorText={formState.inputValidities['email']}
-                                value={values.address}
-                                placeholder="Address"
-                                placeholderTextColor={COLORS.black}
-                            />
-                            {touched.address && errors.address && <Text style={styles.error}>{errors.address}</Text>}
+                    <Input
+                        label="Name"
+                        placeholder="Full Name"
+                        onChangeText={handleChange('name')}
+                        onBlur={handleBlur('name')}
+                        value={values.name}
+                        errorMessage={touched.name && errors.name}
+                    />
+                    <Input
+                        label="Address"
+                        placeholder="Address"
+                        onChangeText={handleChange('address')}
+                        onBlur={handleBlur('address')}
+                        value={values.address}
+                        errorMessage={touched.address && errors.address}
+                    />
+                    <Input
+                        label="Phone No."
+                        placeholder="Phone No."
+                        onChangeText={handleChange('phone')}
+                        onBlur={handleBlur('phone')}
+                        value={values.phone}
+                        keyboardType="numeric"
+                        errorMessage={touched.phone && errors.phone || phoneError}
+                    />
+                    <Input
+                        label="Email Address"
+                        placeholder="Email Address"
+                        onChangeText={handleChange('email')}
+                        onBlur={handleBlur('email')}
+                        value={values.email}
+                        keyboardType="email-address"
+                        errorMessage={touched.email && errors.email || emailError}
+                    />
 
-                            <Text style={commonStyles.inputHeader}>Phone No.</Text>
-                            <Input
-                                name="phone"
-                                id="phone"
-                                onChangeText={handleChange('phone')}
-                                onBlur={handleBlur('phone')}
-                                value={values.phone}
-                                placeholder="Phone No."
-                                placeholderTextColor={COLORS.black}
-                                keyboardType="numeric"
-                            />
-                            {!phoneError && touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
-                            {!errors.phone && phoneError && <Text style={styles.error}>{phoneError}</Text>}
-
-                            <Text style={commonStyles.inputHeader}>Email Address</Text>
-                            <Input
-                                name="email"
-                                id="email"
-                                onChangeText={handleChange('email')}
-                                onBlur={handleBlur('email')}
-                                value={values.email}
-                                placeholder="Email Address"
-                                placeholderTextColor={COLORS.black}
-                                keyboardType="email-address"
-                            />
-                            {!emailError && touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
-                            {!errors.email && emailError && <Text style={styles.error}>{emailError}</Text>}
-
-
-                            {/* <Button
-                                title="SAVE"
-                                filled
-                                onPress={() => navigation.navigate("PersonalProfile")}
-                                style={{
-                                    marginTop: 12
-                                }}
-                            /> */}
-
-                            <Button
-                                title="Update"
-                                isLoading={isLoading}
-                                filled onPress={handleSubmit}
-                                isEnable={isEnable}
-                                style={commonStyles.btn1}
-                            />
-                        </View>
-                    )}
-                </Formik>
-            </View>
-        )
-    }
+                    <Button
+                        title="Update"
+                        onPress={handleSubmit}
+                        isLoading={isLoading}
+                        isEnable={isEnable}
+                        style={styles.updateButton} // Ensure this style includes necessary changes
+                    />
+                </View>
+            )}
+        </Formik>
+    );
 
     return (
-        <SafeAreaView
-            style={{ flex: 1, backgroundColor: COLORS.white }}>
+        <SafeAreaView style={styles.container}>
             <StatusBar hidden={true} />
-            <View style={{
-                flex: 1,
-                marginHorizontal: 16
-            }}>
-                {renderHeader()}
-                <ScrollView>
-                    {renderEditProfileForm()}
-                </ScrollView>
-            </View>
+            {renderHeader()}
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                {renderEditProfileForm()}
+            </ScrollView>
         </SafeAreaView>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.white,
+    },
+    scrollView: {
+        paddingBottom: 20,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: COLORS.primary,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    headerIcon: {
+        width: 24,
+        height: 24,
+    },
+    headerTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginLeft: 20,
+        color: COLORS.white,
+        textTransform: 'capitalize',
+    },
+    formContainer: {
+        paddingHorizontal: 16,
+    },
+    profileImageContainer: {
+        alignSelf: 'center',
+        marginBottom: 16,
+        marginTop: 20, // Added top margin for the profile image
+    },
+    profileImage: {
+        height: 130,
+        width: 130,
+        borderRadius: 65,
+    },
+    editImageIcon: {
+        position: 'absolute',
+        right: -10,
+        bottom: -10,
+        backgroundColor: COLORS.primary,
+        padding: 8,
+        borderRadius: 20,
+    },
+    updateButton: {
+        backgroundColor: COLORS.white, // Changed button color to white
+        borderColor: COLORS.primary, // Optional: Add border color to match the theme
+        borderWidth: 1, // Optional: Add border width for visibility
+        borderRadius: 10, // Rounded corners
+        paddingVertical: 10, // Vertical padding
+        paddingHorizontal: 20, // Horizontal padding
+        alignItems: 'center', // Center the text
+        elevation: 2, // Add shadow for depth
+    },
     error: {
-        color: "red"
+        color: 'red',
     },
 });
 
-export default EditProfile
+export default EditProfile;
